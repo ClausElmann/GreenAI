@@ -1,6 +1,10 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/GreenAi.Api/GreenAi.Api.csproj" />
+    <Project Path="src/GreenAi.DB/GreenAi.DB.sqlproj" Id="a1b2c3d4-e5f6-7890-abcd-ef1234567890">
+      <Build />
+      <Deploy />
+    </Project>
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/GreenAi.Tests/GreenAi.Tests.csproj" />

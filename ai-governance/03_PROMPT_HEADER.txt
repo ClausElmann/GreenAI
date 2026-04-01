@@ -1,0 +1,24 @@
+Use vertical slice architecture.
+Each feature is a self-contained folder under Features/[Domain]/[Feature]/.
+Use Dapper only — never Entity Framework, never LINQ-to-SQL.
+Load SQL from embedded .sql files via SqlLoader — never write inline SQL strings.
+Use ICurrentUser (never inject HttpContext into handlers or components).
+Use IDbSession (never raw SqlConnection or IDbConnection).
+Return Result<T> for all handler outcomes — never throw for business errors.
+All tenant SQL queries MUST include: WHERE CustomerId = @CustomerId
+Do NOT use ASP.NET Identity — use custom JWT via JwtTokenService.
+Do NOT use Entity Framework — not even for migrations (use DbUp).
+Do NOT use Newtonsoft.Json — use System.Text.Json.
+Do NOT introduce repository pattern, service layer abstraction, or generic base repositories.
+Do NOT add cross-feature dependencies.
+Strongly-typed IDs only: UserId, CustomerId, ProfileId — never raw int.
+MediatR pipeline order: LoggingBehavior → AuthorizationBehavior → ValidationBehavior → Handler.
+All code must compile with zero warnings.
+Tests use xUnit v3: IAsyncLifetime returns ValueTask, pass TestContext.Current.CancellationToken to async calls.
+MUST load ai-governance/11_EXECUTION_STATE.json before any action — check current_step and allowed_next_actions.
+MUST load ai-governance/12_DECISION_REGISTRY.json before any decision — locked decisions are final, do not re-evaluate.
+MUST run ai-governance/13_VALIDATION_RULES.json checks before generating any code — validate SQL, IDs, migration sequence.
+MUST stop and report if any validation rule fails — do not generate code that violates a rule and then note the violation after.
+MUST stop after completing a step — do not proceed to the next step automatically.
+MUST NOT continue to the next step without an explicit instruction from the user.
+MUST wait for next instruction after reporting step completion.

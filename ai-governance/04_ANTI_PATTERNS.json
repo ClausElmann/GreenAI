@@ -1,0 +1,109 @@
+{
+  "forbidden_patterns": [
+    {
+      "id": "repository_pattern",
+      "description": "Generic IRepository<T> or base repository classes. Logic goes directly in handlers using IDbSession.",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "service_layer_abstraction",
+      "description": "IOrderService, IUserService etc. as intermediate layer between handler and data access. Handlers are the service.",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "generic_base_repository",
+      "description": "BaseRepository<T> or CrudRepository<T> classes.",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "entity_framework",
+      "description": "Any EF Core DbContext, IQueryable, migrations, or LINQ-to-SQL usage.",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "aspnet_identity",
+      "description": "IdentityUser, UserManager<T>, SignInManager<T>, or any ASP.NET Identity scaffolding.",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "inline_sql_strings",
+      "description": "SQL written as C# string literals or interpolated strings inside handler or repository code.",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "hidden_sql_generation",
+      "description": "Any pattern that generates SQL at runtime without an explicit .sql file (query builders, expression trees for SQL, etc.).",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "global_query_filters",
+      "description": "Implicit tenant or soft-delete filtering applied globally. All filters must be explicit in .sql files.",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "implicit_tenant_filtering",
+      "description": "Any SQL query on a tenant table missing WHERE CustomerId = @CustomerId.",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "httpcontext_in_handlers",
+      "description": "Injecting IHttpContextAccessor or HttpContext directly into MediatR handlers or Blazor components. Use ICurrentUser.",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "throw_for_business_errors",
+      "description": "Throwing exceptions for expected business outcomes (not found, invalid input, auth failure). Use Result<T>.Fail instead.",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "raw_int_ids",
+      "description": "Passing UserId, CustomerId, or ProfileId as raw int across feature boundaries. Use strongly-typed ID structs.",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "cross_feature_dependencies",
+      "description": "One feature directly importing or calling another feature's handler, command, or repository.",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "auto_mapper_usage",
+      "description": "AutoMapper or any convention-based object mapping library.",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "newtonsoft_json",
+      "description": "Newtonsoft.Json (Json.NET). Use System.Text.Json exclusively.",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "shared_sql_files",
+      "description": "A single .sql file used by more than one feature. One .sql file = one operation.",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "shared_mutable_state",
+      "description": "Static mutable fields or singleton services with mutable state across requests.",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "compiler_warnings",
+      "description": "Any code that produces compiler warnings, nullability warnings, or analyzer warnings (including xUnit analyzers).",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "incomplete_update_statements",
+      "description": "Dapper UPDATE statements that omit columns present in the target table. AI context limitations can cause silent field loss. Every UPDATE .sql file must SET all non-key, non-audit columns explicitly. Review the table schema before writing UPDATE SQL.",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "raw_dbsession_bypass",
+      "description": "Using raw SqlConnection, IDbConnection, or SqlCommand directly instead of IDbSession. All DB access must go through IDbSession to ensure consistent connection lifecycle and testability.",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "blazor_statehaschanged_misuse",
+      "description": "Calling StateHasChanged() from a non-UI thread, or confusing Blazor Server component lifecycle (OnInitializedAsync, OnParametersSetAsync) with Blazor WASM patterns. Blazor Server has a persistent circuit — state mutations from background tasks must use InvokeAsync(() => StateHasChanged()).",
+      "violation_behavior": "stop_and_report"
+    }
+  ]
+}

@@ -1,0 +1,115 @@
+@page "/login"
+@layout EmptyLayout
+@using GreenAi.Api.Components.Layout
+@using GreenAi.Api.Features.Auth.Login
+@using GreenAi.Api.SharedKernel.Auth
+@using MediatR
+@using MudBlazor
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@inject GreenAiAuthenticationStateProvider AuthProvider
+@inject IMediator Mediator
+@inject NavigationManager Nav
+
+<PageTitle>Log ind — GreenAi</PageTitle>
+
+<MudGrid Justify="Justify.Center" Class="mt-16">
+    <MudItem xs="12" sm="8" md="5" lg="4">
+        <MudPaper Elevation="4" Class="pa-8">
+            <MudText Typo="Typo.h5" Align="Align.Center" Class="mb-6">Log ind</MudText>
+
+            <EditForm Model="_model" OnValidSubmit="HandleLoginAsync">
+                <DataAnnotationsValidator />
+
+                <MudTextField @bind-Value="_model.Email"
+                              Label="E-mail"
+                              Variant="Variant.Outlined"
+                              InputType="InputType.Email"
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Email"
+                              Class="mb-4"
+                              Disabled="_loading" />
+
+                <MudTextField @bind-Value="_model.Password"
+                              Label="Adgangskode"
+                              Variant="Variant.Outlined"
+                              InputType="_showPassword ? InputType.Text : InputType.Password"
+                              Adornment="Adornment.End"
+                              AdornmentIcon="@(_showPassword ? Icons.Material.Filled.VisibilityOff : Icons.Material.Filled.Visibility)"
+                              OnAdornmentClick="() => _showPassword = !_showPassword"
+                              Class="mb-2"
+                              Disabled="_loading" />
+
+                @if (_errorMessage is not null)
+                {
+                    <MudAlert Severity="Severity.Error" Class="mb-4">@_errorMessage</MudAlert>
+                }
+
+                <MudButton ButtonType="ButtonType.Submit"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           FullWidth="true"
+                           Disabled="_loading"
+                           Class="mt-2">
+                    @if (_loading)
+                    {
+                        <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                        <span>Logger ind...</span>
+                    }
+                    else
+                    {
+                        <span>Log ind</span>
+                    }
+                </MudButton>
+            </EditForm>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private readonly LoginModel _model = new();
+    private bool _loading;
+    private bool _showPassword;
+    private string? _errorMessage;
+
+    private async Task HandleLoginAsync()
+    {
+        _loading = true;
+        _errorMessage = null;
+
+        try
+        {
+            var result = await Mediator.Send(new LoginCommand(_model.Email, _model.Password));
+
+            if (!result.IsSuccess)
+            {
+                _errorMessage = result.Error!.Message;
+                return;
+            }
+
+            if (result.Value!.NeedsCustomerSelection)
+            {
+                // TODO: navigate to customer selection page (Step 5 — multi-tenant flow)
+                _errorMessage = "Multiple tenant memberships detected. Customer selection not yet implemented.";
+                return;
+            }
+
+            await AuthProvider.SignInAsync(
+                result.Value.AccessToken,
+                result.Value.RefreshToken,
+                result.Value.ExpiresAt);
+
+            Nav.NavigateTo("/");
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private sealed class LoginModel
+    {
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+    }
+}

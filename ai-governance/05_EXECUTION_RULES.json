@@ -1,0 +1,126 @@
+{
+  "rules": [
+    {
+      "id": "zero_warnings",
+      "description": "All code must compile with zero warnings. This includes compiler warnings, nullability warnings, and analyzer warnings (xUnit1051 etc.). Fix warnings in the same operation that introduced them. Never defer.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "code_review_autoupdate",
+      "description": "docs/CODE-REVIEW.md must be updated in the same operation whenever: a new package is added, architecture changes, a security layer is added or modified, test strategy changes, or a new trade-off is documented. Also update 'Last updated' date and 'What is Not Yet Implemented' section.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "technology_choice_principles",
+      "description": "Prefer built-in .NET features over third-party packages. Prefer Microsoft-supported or widely-used libraries over niche alternatives. Avoid unnecessary abstraction layers. Always evaluate: (1) AI readability — can an AI agent reason about this without deep framework knowledge? (2) long-term maintainability — will this create debt in 6 months?",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "tools_register_first",
+      "description": "Before searching for scripts, tools, or automation — or before telling the user that a tool does not exist — always read analysis-tool/scripts/TOOLS_REGISTER.json first. This file is the canonical index of all available scripts across the analysis-tool and green-ai workspace. Failure to consult it before concluding a tool is missing is a process violation.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report",
+      "register_path": "C:\\Udvikling\\analysis-tool\\scripts\\TOOLS_REGISTER.json"
+    },
+    {
+      "id": "proactive_improvement_suggestions",
+      "description": "When friction, gaps, contradictions, or missing coverage are detected during work, AI must suggest improvements. Suggestions go at the END of the response in a section titled 'Suggested improvements'. AI must not ask permission before suggesting.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "always_append_suggestions"
+    },
+    {
+      "id": "build_verification",
+      "description": "After any code change, verify the build succeeds with zero warnings and zero errors before reporting completion.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "anti_pattern_enforcement",
+      "description": "All forbidden patterns defined in 04_ANTI_PATTERNS.json must be enforced. Any violation detected in new or modified code must stop execution and be reported to the user before proceeding.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "tenant_query_enforcement",
+      "description": "Every SQL query against a tenant-owned table must include WHERE CustomerId = @CustomerId. This is the single highest-risk rule — a missing CustomerId can cause data leakage across tenants.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "sql_file_per_operation",
+      "description": "Every distinct DB operation must have its own .sql file loaded as an embedded resource. SQL must never appear as a C# string literal.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "xunit_v3_compliance",
+      "description": "IAsyncLifetime.InitializeAsync() and DisposeAsync() must return ValueTask (not Task). All async calls accepting CancellationToken must use TestContext.Current.CancellationToken.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "decisions_log_update",
+      "description": "Any significant architectural decision — new library, pattern change, security trade-off — must be recorded in docs/DECISIONS.md with date, decision, rationale, and alternatives considered.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "tenant_query_pre_check",
+      "description": "Before writing or reviewing any SQL against a tenant-owned table, explicitly verify that WHERE CustomerId = @CustomerId is present. Do not assume it is there — read the SQL file and confirm. Tenant tables: Customers, Users, Profiles, UserRefreshTokens, Logs, and all future domain tables. Missing CustomerId = stop and report immediately.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "dapper_update_completeness",
+      "description": "Before writing a Dapper UPDATE statement: (1) read the full table schema from the SSDT .sql file or migration, (2) list all non-key non-audit columns, (3) include every column in the SET clause. Never derive UPDATE columns from the command/DTO alone — the prompt may not list all persisted fields. Omitting a column in UPDATE causes silent data loss.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "pre_auth_sql_tenant_exception",
+      "description": "SQL queries executed BEFORE a user is authenticated (e.g. FindUserByEmail.sql, FindValidRefreshToken.sql) are explicitly allowed to omit WHERE CustomerId = @CustomerId. These queries resolve GLOBAL USER IDENTITY ONLY using a globally unique credential (email or refresh token). They do NOT resolve tenant context. CustomerId is NOT returned from these queries to infer tenant — after authentication, Customer context MUST be resolved via UserCustomerMembership. This is the ONLY allowed exception to the tenant query rule.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "document_exception",
+      "identity_model_ref": "00_SYSTEM_RULES.json#identity_model",
+      "architect_decision": "2026-03-31 — Option C: global user identity with multi-tenant memberships"
+    },
+    {
+      "id": "post_auth_tenant_resolution",
+      "description": "After a user is authenticated, the system MUST resolve Customer context via UserCustomerMembership before issuing a JWT. If the user has exactly one membership → auto-select. If the user has multiple memberships → the client MUST explicitly select a Customer before a scoped JWT is issued. A JWT without a CustomerId claim MUST NOT be issued. Silent tenant selection is a hard violation.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report",
+      "identity_model_ref": "00_SYSTEM_RULES.json#identity_model"
+    },
+    {
+      "id": "localization_deferred_until_identity_and_profile_complete",
+      "description": "No localization feature (languages, countries, labels) may be implemented while the identity refactor or profile hardening is incomplete. FOUR blocking conditions must ALL be resolved first: (1) UserCustomerMembership table exists and LoginHandler uses it for post-auth resolution, (2) Users.CustomerId FK has been removed, (3) LanguageId placement has been decided and ICurrentUser.LanguageId exists, (4) Profile enforcement is complete — SelectProfile flow (Step 11), ProfileId > 0 enforced in AuthorizationBehavior (Step 12), profileId == 0 bypass removed (Step 13). Attempting to implement localization before all four conditions are met is a hard stop. Rebased 2026-04-01 per PROFILE_CORE_DOMAIN decision.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report",
+      "decision_ref": "docs/DECISIONS.md#2026-04-01-profile-core-domain",
+      "plan_ref": "docs/IDENTITY_REFACTOR_PLAN.md#phase-2-profile-hardening",
+      "unblock_conditions": [
+        "UserCustomerMembership table migrated",
+        "Users.CustomerId FK removed",
+        "LoginHandler uses UserCustomerMembership for post-auth resolution",
+        "ICurrentUser.LanguageId defined and populated in JWT",
+        "SelectProfile flow implemented (Step 11) — ProfileId(0) placeholder removed",
+        "IRequireProfile marker + AuthorizationBehavior enforcement of ProfileId > 0 (Step 12)",
+        "profileId == 0 bypass removed from all handlers and SQL (Step 13)"
+      ]
+    }
+  ],
+  "execution_control": {
+    "state_file": "ai-governance/11_EXECUTION_STATE.json",
+    "decision_registry": "ai-governance/12_DECISION_REGISTRY.json",
+    "validation_rules": "ai-governance/13_VALIDATION_RULES.json",
+    "load_order": [
+      "11_EXECUTION_STATE.json",
+      "12_DECISION_REGISTRY.json",
+      "13_VALIDATION_RULES.json"
+    ],
+    "enforcement": "All three files MUST be read at session start before any planning, code generation, or decision-making. Skipping this load is a process violation.",
+    "on_conflict": "If a rule in 13_VALIDATION_RULES.json conflicts with a decision in 12_DECISION_REGISTRY.json, the locked decision wins. Report the conflict to the user."
+  }

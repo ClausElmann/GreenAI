@@ -30,6 +30,12 @@ public sealed class HttpContextCurrentUser : ICurrentUser
     public ProfileId ProfileId =>
         new(int.Parse(Principal!.FindFirstValue(GreenAiClaims.ProfileId)!));
 
+    public int LanguageId =>
+        int.Parse(Principal!.FindFirstValue(GreenAiClaims.LanguageId)!);
+
+    public string Email =>
+        Principal!.FindFirstValue(ClaimTypes.Email)!;
+
     public bool IsImpersonating =>
         Principal?.FindFirstValue(GreenAiClaims.ImpersonatedUserId) is not null;
 

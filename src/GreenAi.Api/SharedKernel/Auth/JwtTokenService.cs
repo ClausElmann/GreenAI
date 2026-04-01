@@ -17,7 +17,7 @@ public sealed class JwtTokenService
         _options = options.Value;
     }
 
-    public TokenResult CreateToken(UserId userId, CustomerId customerId, ProfileId profileId, string email)
+    public TokenResult CreateToken(UserId userId, CustomerId customerId, ProfileId profileId, string email, int languageId)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -28,6 +28,7 @@ public sealed class JwtTokenService
             new Claim(ClaimTypes.NameIdentifier, userId.Value.ToString()),
             new Claim(GreenAiClaims.CustomerId, customerId.Value.ToString()),
             new Claim(GreenAiClaims.ProfileId, profileId.Value.ToString()),
+            new Claim(GreenAiClaims.LanguageId, languageId.ToString()),
             new Claim(ClaimTypes.Email, email),
         };
 

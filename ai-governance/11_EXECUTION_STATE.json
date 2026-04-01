@@ -1,0 +1,359 @@
+{
+  "phase": "profile_hardening",
+  "current_step": 16,
+  "status": "ready",
+  "allowed_next_actions": ["execute_current_step", "validate_current_step"],
+  "forbidden_actions": ["skip_step", "combine_steps", "modify_plan"],
+  "completed_steps": [1, 2, 3, 4, 5, "6", "6b", 7, 8, 9, 10, 11, 12, 13, 14, 15],
+  "active_violations": [],
+  "foundation_complete": true,
+  "foundation_complete_date": "2026-04-02",
+  "next_phase": "localization_or_next_domain",
+  "execution_guard": {
+    "one_step_at_a_time": true,
+    "require_manual_continue": true,
+    "auto_advance_forbidden": true,
+    "must_report_after_step": true
+  },
+  "plan_ref": "docs/IDENTITY_REFACTOR_PLAN.md",
+  "step_log": [
+    {
+      "step": 1,
+      "description": "UserCustomerMembership migration",
+      "migration": "V004_UserCustomerMembership.sql",
+      "completed_at": "2026-03-31",
+      "tests_green": 32,
+      "build_warnings": 0
+    },
+    {
+      "step": 2,
+      "description": "Backfill UserCustomerMembership from Users.CustomerId",
+      "migration": "V005_Backfill_UserCustomerMembership.sql",
+      "completed_at": "2026-04-01",
+      "tests_green": 32,
+      "build_warnings": 0,
+      "notes": "SSDT GreenAi.DB.sqlproj fails on dotnet CLI (pre-existing, requires VS MSBuild) — not caused by this step"    },
+    {
+      "step": 3,
+      "description": "GetUserMemberships query + UserMembershipRecord + ILoginRepository.GetMembershipsAsync",
+      "files": [
+        "src/GreenAi.Api/Features/Auth/Login/GetUserMemberships.sql",
+        "src/GreenAi.Api/Features/Auth/Login/LoginRepository.cs"
+      ],
+      "completed_at": "2026-04-01",
+      "tests_green": 32,
+      "build_warnings": 0,
+      "notes": "Additive only — method not yet called in handler. UserMembershipRecord uses int fields (consistent with existing Dapper records, no TypeHandler registered)."
+    },
+    {
+      "step": 4,
+      "description": "Prepare LoginHandlerTests mocks for GetMembershipsAsync",
+      "files": [
+        "tests/GreenAi.Tests/Features/Auth/LoginHandlerTests.cs"
+      ],
+      "completed_at": "2026-04-01",
+      "tests_green": 32,
+      "build_warnings": 0,
+      "notes": "GetMembershipsAsync mock added to both success-path tests. Failure-path tests require no setup — handler exits before membership call."
+    },
+    {
+      "step": 5,
+      "description": "Refactor LoginHandler to use membership model",
+      "files": [
+        "src/GreenAi.Api/Features/Auth/Login/LoginHandler.cs",
+        "src/GreenAi.Api/Features/Auth/Login/LoginResponse.cs",
+        "src/GreenAi.Api/Features/Auth/Login/LoginPage.razor"
+      ],
+      "completed_at": "2026-04-01",
+      "tests_green": 32,
+      "build_warnings": 0,
+      "notes": [
+        "LoginHandler: GetMembershipsAsync called post-password-validation. 0 memberships→ACCOUNT_HAS_NO_TENANT, 1→JWT with membership.CustomerId, >1→RequiresCustomerSelection",
+        "LoginResponse: WithToken() and RequiresCustomerSelection() factories added. NeedsCustomerSelection bool discriminates cases. Non-nullable token fields preserve test compatibility.",
+        "LoginPage.razor: NeedsCustomerSelection guard added (TODO placeholder for customer selection page).",
+        "LanguageId read from membership.LanguageId but not yet embedded in JWT — deferred to Step 6 (GreenAiClaims + ICurrentUser).",
+        "JwtTokenService signature unchanged to avoid cascading changes to RefreshTokenHandler which has no LanguageId yet."
+      ]
+    },
+    {
+      "step": 6,
+      "description": "Add LanguageId to full auth flow (claim, ICurrentUser, JwtTokenService, LoginHandler, RefreshTokenHandler)",
+      "files": [
+        "src/GreenAi.Api/SharedKernel/Auth/GreenAiClaims.cs",
+        "src/GreenAi.Api/SharedKernel/Auth/ICurrentUser.cs",
+        "src/GreenAi.Api/SharedKernel/Auth/HttpContextCurrentUser.cs",
+        "src/GreenAi.Api/SharedKernel/Auth/JwtTokenService.cs",
+        "src/GreenAi.Api/Features/Auth/Login/LoginHandler.cs",
+        "src/GreenAi.Api/Features/Auth/RefreshToken/RefreshTokenHandler.cs"
+      ],
+      "completed_at": "2026-04-01",
+      "tests_green": 32,
+      "build_warnings": 0,
+      "notes": [
+        "GreenAiClaims.LanguageId = 'greenai:language_id' added",
+        "ICurrentUser.LanguageId: int property added",
+        "HttpContextCurrentUser: reads GreenAiClaims.LanguageId from principal",
+        "JwtTokenService.CreateToken: languageId int parameter added, embedded as claim",
+        "LoginHandler: passes membership.LanguageId to CreateToken",
+        "RefreshTokenHandler: passes languageId=1 (default) — gap: UserRefreshTokens has no LanguageId column yet, to be addressed in Step 7+"
+      ]
+    },
+    {
+      "step": "6b",
+      "description": "Persist LanguageId through refresh-token flow",
+      "files": [
+        "src/GreenAi.Api/Database/Migrations/V006_Add_LanguageId_to_UserRefreshTokens.sql",
+        "src/GreenAi.Api/Features/Auth/Login/SaveRefreshToken.sql",
+        "src/GreenAi.Api/Features/Auth/RefreshToken/SaveNewRefreshToken.sql",
+        "src/GreenAi.Api/Features/Auth/RefreshToken/FindValidRefreshToken.sql",
+        "src/GreenAi.Api/Features/Auth/RefreshToken/RefreshTokenRepository.cs",
+        "src/GreenAi.Api/Features/Auth/Login/LoginRepository.cs",
+        "src/GreenAi.Api/Features/Auth/RefreshToken/RefreshTokenHandler.cs",
+        "src/GreenAi.Api/Features/Auth/Login/LoginHandler.cs",
+        "tests/GreenAi.Tests/Features/Auth/LoginHandlerTests.cs",
+        "tests/GreenAi.Tests/Features/Auth/RefreshTokenHandlerTests.cs",
+        "tests/GreenAi.Tests/Features/Auth/LoginRepositoryTests.cs",
+        "tests/GreenAi.Tests/Features/Auth/RefreshTokenRepositoryTests.cs"
+      ],
+      "completed_at": "2026-04-01",
+      "tests_green": 32,
+      "build_warnings": 0,
+      "notes": [
+        "V006: ALTER TABLE UserRefreshTokens ADD LanguageId INT NOT NULL DEFAULT 1",
+        "LanguageId persisted at login time (membership.LanguageId), rotated through refresh flow (record.LanguageId)",
+        "LANGUAGE_PLACEMENT locked decision now fully honoured end-to-end — LanguageId originates in UserCustomerMembership at login, persisted through token rotation without recalculation",
+        "RefreshTokenRecord gains LanguageId field — Dapper column order updated in FindValidRefreshToken.sql"
+      ]
+    },
+    {
+      "step": 7,
+      "description": "SelectCustomer vertical slice — multi-tenant customer selection",
+      "files": [
+        "src/GreenAi.Api/Features/Auth/SelectCustomer/SelectCustomerCommand.cs",
+        "src/GreenAi.Api/Features/Auth/SelectCustomer/SelectCustomerResponse.cs",
+        "src/GreenAi.Api/Features/Auth/SelectCustomer/ISelectCustomerRepository.cs",
+        "src/GreenAi.Api/Features/Auth/SelectCustomer/SelectCustomerRepository.cs",
+        "src/GreenAi.Api/Features/Auth/SelectCustomer/SelectCustomerHandler.cs",
+        "src/GreenAi.Api/Features/Auth/SelectCustomer/SelectCustomerEndpoint.cs",
+        "src/GreenAi.Api/Features/Auth/SelectCustomer/FindMembership.sql",
+        "src/GreenAi.Api/Features/Auth/SelectCustomer/SaveRefreshToken.sql",
+        "src/GreenAi.Api/SharedKernel/Auth/ICurrentUser.cs",
+        "src/GreenAi.Api/SharedKernel/Auth/HttpContextCurrentUser.cs",
+        "src/GreenAi.Api/Program.cs"
+      ],
+      "completed_at": "2026-04-01",
+      "tests_green": 32,
+      "build_warnings": 0,
+      "notes": [
+        "POST /api/auth/select-customer — requires authentication (IRequireAuthentication marker + .RequireAuthorization())",
+        "Handler reads UserId from ICurrentUser (never from client), verifies membership in UserCustomerMembership, issues JWT with LanguageId from membership row",
+        "ICurrentUser.Email added (reads ClaimTypes.Email from principal) — needed by JwtTokenService.CreateToken",
+        "MembershipRecord: CustomerId, LanguageId, DefaultProfileId — DefaultProfileId from LEFT JOIN Profiles",
+        "FindMembership.sql filters UserId AND CustomerId AND IsActive=1",
+        "SelectCustomerRepository.SaveRefreshToken.sql is co-located — no cross-feature SQL dependency"
+      ]
+    },
+    {
+      "step": 8,
+      "description": "Remove Users.CustomerId; rewrite FindUserByEmail.sql as pure identity query",
+      "migration": "V007_Remove_Users_CustomerId.sql",
+      "files": [
+        "src/GreenAi.Api/Database/Migrations/V007_Remove_Users_CustomerId.sql",
+        "src/GreenAi.Api/Features/Auth/Login/FindUserByEmail.sql",
+        "src/GreenAi.Api/Features/Auth/Login/LoginRepository.cs",
+        "src/GreenAi.Api/Features/Auth/Login/LoginHandler.cs",
+        "tests/GreenAi.Tests/Features/Auth/AuthTestDataBuilder.cs",
+        "tests/GreenAi.Tests/Features/Auth/LoginHandlerTests.cs",
+        "tests/GreenAi.Tests/Features/Auth/LoginRepositoryTests.cs",
+        "tests/GreenAi.Tests/Features/Auth/RefreshTokenRepositoryTests.cs"
+      ],
+      "completed_at": "2026-04-02",
+      "tests_green": 31,
+      "build_warnings": 0,
+      "notes": [
+        "Users.CustomerId FK dropped (dynamic FK discovery) and column removed in V007 (idempotent)",
+        "FindUserByEmail.sql rewritten: pure identity query — no JOIN, no CustomerId, no DefaultProfileId",
+        "LoginUserRecord: CustomerId and DefaultProfileId removed; fields: Id, Email, PasswordHash, PasswordSalt, FailedLoginCount, IsLockedOut",
+        "LoginHandler: user.DefaultProfileId replaced with new ProfileId(0) placeholder — Profile decision deferred to Step 11",
+        "AuthTestDataBuilder.InsertUserAsync: customerId param removed; INSERT no longer writes CustomerId column",
+        "LoginRepositoryTests: 2 profile-dependent FindByEmail tests deleted, 1 identity-only test added (net -1 = 31 total)",
+        "FindValidRefreshToken.sql NOT changed — reads CustomerId from UserRefreshTokens (not Users) — unaffected",
+        "Test count: 31 (was 32) — expected delta from deleted obsolete profile tests"
+      ]
+    },
+    {
+      "step": 9,
+      "description": "Fix test infrastructure gaps: LanguageId in InsertRefreshTokenAsync + InsertUserCustomerMembershipAsync",
+      "files": [
+        "tests/GreenAi.Tests/Features/Auth/AuthTestDataBuilder.cs"
+      ],
+      "completed_at": "2026-04-01",
+      "tests_green": 31,
+      "build_warnings": 0,
+      "notes": [
+        "InsertTokenOptions.LanguageId added (default 1) — INSERT now includes LanguageId column",
+        "InsertRefreshTokenAsync: UserRefreshTokens INSERT updated to include LanguageId — matches V006 schema",
+        "InsertUserCustomerMembershipAsync(UserId, CustomerId, int languageId=1) added — inserts into UserCustomerMembership with IsActive=1",
+        "No production code changes"
+      ]
+    },
+    {
+      "step": 10,
+      "description": "Add full test coverage for SelectCustomer feature",
+      "files": [
+        "tests/GreenAi.Tests/Features/Auth/SelectCustomerHandlerTests.cs",
+        "tests/GreenAi.Tests/Features/Auth/SelectCustomerRepositoryTests.cs",
+        "tests/GreenAi.Tests/Features/Auth/AuthTestDataBuilder.cs"
+      ],
+      "completed_at": "2026-04-01",
+      "tests_green": 44,
+      "build_warnings": 0,
+      "notes": [
+        "SelectCustomerHandlerTests: 6 tests — Handle_ValidMembership_ReturnsToken, Handle_ValidMembership_SavesRefreshTokenWithMembershipLanguageId, Handle_ValidMembership_UsesUserIdFromCurrentUser, Handle_MembershipNotFound_ReturnsError, Handle_InactiveMembership_ReturnsError, Handle_MembershipNotFound_DoesNotSaveRefreshToken",
+        "SelectCustomerRepositoryTests: 7 tests — FindMembership (active, no profile, inactive, unknown user, wrong customer) + SaveRefreshToken (persists languageId, token retrievable)",
+        "CreateHandler helper extracted — removes jwt/currentUser boilerplate from every handler test",
+        "Naming pattern: MethodName_StateUnderTest_ExpectedBehavior applied throughout",
+        "AuthTestDataBuilder: comment added above InsertUserCustomerMembershipAsync documenting that LanguageId=1 default is test-only — production must always pass explicit LanguageId",
+        "No production code changes"
+      ]
+    },
+    {
+      "step": 11,
+      "description": "SelectProfile vertical slice — resolve ProfileId from Profiles table, eliminate ProfileId(0) placeholder from all auth flows",
+      "migration": "V008_Add_ProfileId_to_UserRefreshTokens.sql",
+      "files_created": [
+        "src/GreenAi.Api/Database/Migrations/V008_Add_ProfileId_to_UserRefreshTokens.sql",
+        "src/GreenAi.Api/SharedKernel/Auth/ProfileSummary.cs",
+        "src/GreenAi.Api/Features/Auth/SelectProfile/SelectProfileCommand.cs",
+        "src/GreenAi.Api/Features/Auth/SelectProfile/SelectProfileResponse.cs",
+        "src/GreenAi.Api/Features/Auth/SelectProfile/ISelectProfileRepository.cs",
+        "src/GreenAi.Api/Features/Auth/SelectProfile/SelectProfileRepository.cs",
+        "src/GreenAi.Api/Features/Auth/SelectProfile/SelectProfileHandler.cs",
+        "src/GreenAi.Api/Features/Auth/SelectProfile/SelectProfileEndpoint.cs",
+        "src/GreenAi.Api/Features/Auth/SelectProfile/GetAvailableProfiles.sql",
+        "src/GreenAi.Api/Features/Auth/SelectProfile/SaveRefreshToken.sql",
+        "src/GreenAi.Api/Features/Auth/Login/GetProfiles.sql",
+        "src/GreenAi.Api/Features/Auth/SelectCustomer/GetProfiles.sql",
+        "tests/GreenAi.Tests/Features/Auth/SelectProfileHandlerTests.cs",
+        "tests/GreenAi.Tests/Features/Auth/SelectProfileRepositoryTests.cs"
+      ],
+      "completed_at": "2026-04-02",
+      "tests_green": 76,
+      "build_warnings": 0,
+      "notes": [
+        "Profile model (V009): many-to-many via ProfileUserMappings — Profiles.UserId FK removed. SUPERSEDED by Step 14 (Profile Hardening Phase 2.B).",
+        "V008: ALTER TABLE UserRefreshTokens ADD ProfileId INT NOT NULL DEFAULT 0 — DEFAULT 0 covers pre-migration rows only. New application code must always supply a real ProfileId > 0.",
+        "SelectProfile endpoint: POST /api/auth/select-profile (.RequireAuthorization())",
+        "Handler: 0 profiles→PROFILE_NOT_FOUND, 1→auto-resolve, >1 no cmd.ProfileId→NeedsProfileSelection, explicit valid→select, explicit invalid→PROFILE_ACCESS_DENIED",
+        "ProfileId > 0 guaranteed before JwtTokenService.CreateToken in all three entry flows (Login, SelectCustomer, SelectProfile)",
+        "ISelectCustomerRepository.cs was stale (old signature) — fixed: added GetProfilesAsync + ProfileId param; duplicate interface removed from SelectCustomerRepository.cs",
+        "LoginRepositoryTests.SaveRefreshTokenAsync test updated to pass ProfileId (was missing required param)",
+        "SelectCustomerHandlerTests fully rewritten (8 tests incl. multi-profile + no-profile cases)",
+        "SelectCustomerRepositoryTests fully rewritten (removed DefaultProfileId COALESCE test, added GetProfilesAsync tests)",
+        "AuthTestDataBuilder.InsertTokenOptions gains ProfileId (default 0 for V008 migration path tests)"
+      ]
+    },
+    {
+      "step": 12,
+      "description": "IRequireProfile marker + RequireProfileBehavior — enforce ProfileId > 0 at pipeline level",
+      "files_created": [
+        "src/GreenAi.Api/SharedKernel/Pipeline/RequireProfileBehavior.cs",
+        "tests/GreenAi.Tests/SharedKernel/Pipeline/RequireProfileBehaviorTests.cs"
+      ],
+      "files_modified": [
+        "src/GreenAi.Api/SharedKernel/Auth/ICurrentUser.cs",
+        "src/GreenAi.Api/Program.cs",
+        "ai-governance/13_VALIDATION_RULES.json"
+      ],
+      "completed_at": "2026-04-02",
+      "tests_green": 76,
+      "build_warnings": 0,
+      "notes": [
+        "IRequireProfile marker created in RequireProfileBehavior.cs (same file — mirrors IRequireAuthentication pattern)",
+        "RequireProfileBehavior<TRequest,TResponse>: blocks requests where ProfileId.Value <= 0, returns Result<T>.Fail('PROFILE_NOT_SELECTED'). Auth commands exempt (no IRequireProfile).",
+        "Pipeline order: LoggingBehavior → AuthorizationBehavior → RequireProfileBehavior → ValidationBehavior",
+        "ICurrentUser.cs: XML comments added documenting all runtime guarantees and forbidden states",
+        "13_VALIDATION_RULES.json: profile_required_before_protected_operations promoted from advisory_until_step_12 → mandatory. Added jwt_must_never_contain_unresolved_profile, no_require_profile_on_auth_commands.",
+        "No business commands exist yet — IRequireProfile will be applied as domain features are implemented (Step 13+)",
+        "Option A (MediatR pipeline behavior) chosen over Option B (middleware): clean integration with existing behavior chain, no ASP.NET dependencies in behavior, consistent with AuthorizationBehavior pattern",
+        "RequireProfileBehaviorTests: 7 unit tests — ProfileId=0 blocked, ProfileId<0 blocked, valid ProfileId passes, no-IRequireProfile always passes (3 InlineData variants)"
+      ]
+    },
+    {
+      "step": 13,
+      "description": "Audit and confirm zero profile bypass patterns; update governance/docs to reflect Steps 11+12 completion",
+      "files_modified": [
+        "src/GreenAi.Api/Features/Auth/RefreshToken/RefreshTokenHandler.cs",
+        "ai-governance/00_SYSTEM_RULES.json",
+        "docs/CODE-REVIEW.md"
+      ],
+      "completed_at": "2026-04-02",
+      "tests_green": 76,
+      "build_warnings": 0,
+      "notes": [
+        "AUDIT RESULT: Zero bypass patterns found in production code after Steps 11+12.",
+        "No ProfileId == 0 conditionals allowing execution. No COALESCE. No DefaultProfileId. No optional/nullable ProfileId parameters.",
+        "Single ProfileId source confirmed: ICurrentUser.ProfileId (from JWT claim via HttpContextCurrentUser) is the sole runtime source.",
+        "RefreshTokenHandler comment updated: pre-Step-11 tokens (V008 DEFAULT 0) pass ProfileId = 0 through rotation. This is safe — RequireProfileBehavior blocks all protected operations. No conditional bypass exists.",
+        "00_SYSTEM_RULES.json: VIOLATION-005, 006, 007 marked RESOLVED. enforcement_step updated to COMPLETE.",
+        "CODE-REVIEW.md: pipeline order updated (RequireProfileBehavior added), Profile hardening removed from 'Not Yet Implemented', VIOLATION-005/006/007 marked RESOLVED.",
+        "Profile hardening phase is now complete (Steps 11–13). Step 14 (align JWT/runtime profile source) is next."
+      ]
+    },
+    {
+      "step": 14,
+      "description": "Identity & Access foundation regression gate — full audit + documentation closeout",
+      "files_modified": [
+        "docs/CODE-REVIEW.md",
+        "docs/DECISIONS.md",
+        "ai-governance/13_VALIDATION_RULES.json",
+        "ai-governance/11_EXECUTION_STATE.json"
+      ],
+      "foundation_status": "FOUNDATION_COMPLETE",
+      "completed_at": "2026-04-02",
+      "tests_green": 76,
+      "build_warnings": 0,
+      "notes": [
+        "REGRESSION AUDIT RESULT: Zero forbidden patterns in production code. Two migration comment matches (V005/V007) are historical only.",
+        "ICurrentUser is the sole runtime auth context. ITenantContext is a permitted thin delegate over ICurrentUser.CustomerId — no feature handler uses it yet.",
+        "No changes to production code required — foundation was already clean after Steps 11–13.",
+        "13_VALIDATION_RULES.json: icurrentuser_sole_auth_contract rule added.",
+        "CODE-REVIEW.md: section 9 'Identity & Access Foundation — Complete Criteria' added with invariants table.",
+        "DECISIONS.md: [2026-04-02] foundation closeout entry added at top.",
+        "Localization and downstream domains are UNBLOCKED. Next step: Step 15 — Languages table + service."
+      ]
+    },
+    {
+      "step": 15,
+      "description": "Profile model refactor — Profiles.UserId FK removed; access via ProfileUserMappings (many-to-many)",
+      "migration": "V009_ProfileUserMappings.sql",
+      "files_created": [
+        "src/GreenAi.Api/Database/Migrations/V009_ProfileUserMappings.sql",
+        "src/GreenAi.DB/Tables/ProfileUserMappings.sql"
+      ],
+      "files_modified": [
+        "src/GreenAi.DB/Tables/Profiles.sql",
+        "src/GreenAi.DB/GreenAi.DB.sqlproj",
+        "src/GreenAi.Api/Features/Auth/Login/GetProfiles.sql",
+        "src/GreenAi.Api/Features/Auth/SelectCustomer/GetProfiles.sql",
+        "src/GreenAi.Api/Features/Auth/SelectProfile/GetAvailableProfiles.sql",
+        "tests/GreenAi.Tests/Features/Auth/AuthTestDataBuilder.cs",
+        "tests/GreenAi.Tests/Features/Auth/SelectProfileRepositoryTests.cs",
+        "tests/GreenAi.Tests/Features/Auth/SelectCustomerRepositoryTests.cs"
+      ],
+      "completed_at": "2026-04-01",
+      "tests_green": null,
+      "build_warnings": 0,
+      "notes": [
+        "SUPERSEDES step 11 note: 'Profile model confirmed: direct Profiles.UserId FK'. That decision is now REVERSED.",
+        "V009: CREATE ProfileUserMappings (ProfileId, UserId) PK; FKs to Profiles + Users. Backfill from Profiles.UserId. Drop FK. Drop Profiles.UserId column. Fully idempotent.",
+        "Three GetProfiles/GetAvailableProfiles SQL files rewritten: FROM Profiles p INNER JOIN ProfileUserMappings m ON m.ProfileId = p.Id WHERE m.UserId = @UserId AND p.CustomerId = @CustomerId.",
+        "AuthTestDataBuilder.InsertProfileAsync: Profiles INSERT no longer writes UserId column; mapping row written to ProfileUserMappings after profile insert.",
+        "AuthTestDataBuilder.InsertProfileUserMappingAsync(UserId, profileId) added for many-to-many test setup.",
+        "New tests (×2 per repository test file): ProfileExistsButNoMappingForUser_ReturnsEmpty, ProfileMappedToMultipleUsers_AllUsersCanAccess.",
+        "No handler C# code changes required — repositories unchanged in signature; SQL alone enforces access.",
+        "SelectProfileHandler access validation (profiles.FirstOrDefault) remains correct — mapping-join SQL guarantees only accessible profiles are returned."
+      ]
+    }
+  ]
+}

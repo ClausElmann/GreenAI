@@ -1,0 +1,64 @@
+{
+  "rules": [
+    {
+      "id": "proactive_improvement_suggestions",
+      "description": "AI must ALWAYS suggest improvements when friction, gaps, contradictions, or missing coverage are detected during work. Suggestions must be placed at the END of the response in a section titled 'Suggested improvements'. AI must NOT ask permission before suggesting.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "code_review_autoupdate",
+      "description": "docs/CODE-REVIEW.md must ALWAYS be updated in the same operation when: a new package is added, architecture changes, a security layer is added or modified, test strategy changes, or a new trade-off is documented. Must also update 'Last updated' date and 'What is Not Yet Implemented' section.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "technology_choice_principles",
+      "description": "Prefer: (1) built-in .NET features, (2) Microsoft-supported libraries, (3) widely-used libraries with strong AI training coverage. Avoid: niche libraries, unnecessary abstraction layers, patterns that increase cognitive load. Always evaluate long-term maintainability and AI readability.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "zero_warnings_rule",
+      "description": "ALL code must compile with ZERO warnings. Warnings must be fixed immediately in the same operation. Includes: compiler warnings, nullability warnings, analyzer warnings (xUnit1051, CA-rules etc.).",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "powershell_execution_rule",
+      "description": "All PowerShell commands must run inline in the current terminal. NEVER open new windows. NEVER use Start-Process for command execution.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "powershell_path_rule",
+      "description": "NEVER construct file paths by manually concatenating strings from directory listings. ALWAYS use .FullName from the actual object (e.g. (Get-ChildItem ...).FullName). ALWAYS use absolute paths.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "ssot_enforcement_rule",
+      "description": "When something is marked as SSOT: the entire repo must be scanned for contradictions, contradictions must be removed or replaced with a link to the SSOT, and SSOT must be the single source of truth. Marking as SSOT is not complete until all contradictions are resolved.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "ssot_navigation_rule",
+      "description": "When SSOT index files exist for a topic, they must be consulted FIRST before any grep or file search. grep_search is for searching source code only, not for navigating documentation or SSOT files.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "e2e_post_run_rule",
+      "description": "After every E2E test run: report pass/fail summary, then ask the user whether a ZIP export package should be created for external analysis.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "anti_pattern_enforcement",
+      "description": "All forbidden patterns defined in 04_ANTI_PATTERNS.json must be actively enforced. Any violation detected in new or modified code must stop execution immediately and be reported to the user before any further code is written.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    }
+  ]
+}

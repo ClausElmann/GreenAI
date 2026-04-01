@@ -1,0 +1,82 @@
+{
+  "decisions": [
+    {
+      "id": "IDENTITY_MODEL",
+      "value": "global_user_multi_tenant",
+      "locked": true,
+      "date": "2026-03-31",
+      "rationale": "Users are global; Customer context resolved post-auth via UserCustomerMembership",
+      "ref": "docs/DECISIONS.md#2026-03-31-priority_decision"
+    },
+    {
+      "id": "LANGUAGE_PLACEMENT",
+      "value": "UserCustomerMembership",
+      "locked": true,
+      "date": "2026-03-31",
+      "rationale": "Language is per user-per-customer, not per user globally nor per customer globally",
+      "ref": "docs/DECISIONS.md#languageid-placement",
+      "architect_confidence": 0.99
+    },
+    {
+      "id": "ENDPOINT_STRUCTURE",
+      "value": "strict_co_located",
+      "locked": true,
+      "date": "2026-03-31",
+      "rationale": "Each feature owns its endpoint, handler, SQL, and component — no cross-feature leakage"
+    },
+    {
+      "id": "LANGUAGEID_MIGRATION",
+      "value": "included_in_V004_not_separate",
+      "locked": true,
+      "date": "2026-03-31",
+      "rationale": "LanguageId added as column in V004_UserCustomerMembership.sql, DEFAULT 1 (no FK yet — Languages table does not exist)",
+      "migration": "src/GreenAi.Api/Database/Migrations/V004_UserCustomerMembership.sql"
+    },
+    {
+      "id": "TEST_DATABASE",
+      "value": "GreenAI_DEV_no_separate_test_db",
+      "locked": true,
+      "date": "2026-03-31",
+      "rationale": "Tests run against GreenAI_DEV. DbUp is idempotent — migrations safe to rerun. Respawn resets data between tests. No CREATE/DROP database cycle.",
+      "connection": "(localdb)\\MSSQLLocalDB / GreenAI_DEV"
+    },
+    {
+      "id": "PROFILE_CORE_DOMAIN",
+      "value": "profile_is_core_domain_concept",
+      "locked": true,
+      "date": "2026-04-01",
+      "rationale": "Evidence from analysis-tool (confidence 0.91): Profile is a first-class data partition and capability boundary within Customer. ProfileId is fundamental to messaging, API keys, permissions, address restrictions, and all broadcast operations. Profile is co-equal with Customer as a scoping key — NOT optional or secondary. Source: analysis-tool/domains/Profile/",
+      "rules": [
+        "ProfileId MUST remain in JWT and ICurrentUser — it is architecturally binding",
+        "ProfileId > 0 MUST be enforced before any protected operation",
+        "profileId == 0 is a security gap — bypasses all address restrictions (RULE_P007 from analysis-tool)",
+        "All capability gates (DoesProfileHaveRole) require a valid ProfileId > 0",
+        "Profile is a co-equal partition/capability boundary alongside Customer",
+        "Localization is blocked until Profile enforcement is complete (extends existing localization block)"
+      ],
+      "ssot_ref": "analysis-tool/domains/Profile/",
+      "analysis_confidence": 0.91
+    },
+    {
+      "id": "PROFILEID_UNRESOLVED",
+      "value": "profileid_zero_means_unresolved_security_gap",
+      "locked": true,
+      "date": "2026-04-01",
+      "rationale": "ProfileId == 0 is a SECURITY GAP. In the source system (sms-service), GetAddressRestrictionForProfile(0) returns NoAddressRestriction — bypassing all geographic access control. The same pattern must NOT be allowed in green-ai. ProfileId(0) is a short-lived placeholder in the JWT from login until SelectProfile completes (Step 11). It MUST NOT be used for authorization, filtering, data access, or business logic at any point.",
+      "restrictions": {
+        "forbidden": ["authorization", "filtering", "data_access", "business_logic"],
+        "allowed": ["jwt_pass_through_until_profile_selected_step_11_only"]
+      },
+      "resolution": "Step 11: SelectProfile flow replaces ProfileId(0) with a real ProfileId. After Step 12, AuthorizationBehavior must reject requests with ProfileId == 0 for operations marked IRequireProfile.",
+      "security_ref": "analysis-tool/domains/Profile/070_rules.json#RULE_P007"
+    },
+    {
+      "id": "PRE_AUTH_SQL_EXCEPTION",
+      "value": "pre_auth_queries_may_omit_customerid",
+      "locked": true,
+      "date": "2026-03-31",
+      "rationale": "FindUserByEmail.sql and FindValidRefreshToken.sql resolve global identity only — CustomerId is NOT available at that point",
+      "ref": "ai-governance/05_EXECUTION_RULES.json#pre_auth_sql_tenant_exception"
+    }
+  ]
+}

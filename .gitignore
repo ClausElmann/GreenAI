@@ -5,6 +5,8 @@
 # User-specific files
 *.user
 *.suo
+*.dbmdl
+*.jfm
 .vs/
 
 # Secrets

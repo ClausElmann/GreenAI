@@ -1,0 +1,110 @@
+{
+  "validation_rules": [
+    {
+      "id": "icurrentuser_sole_auth_contract",
+      "description": "ICurrentUser is the ONLY permitted runtime auth context interface. No parallel auth context (IUserContext, IAuthContext, IIdentityContext, etc.) may be introduced. ITenantContext is a thin delegate over ICurrentUser.CustomerId and is permitted as a convenience for SQL query scoping — it must always derive from ICurrentUser, never be an independent auth source. Any new interface that exposes UserId, CustomerId, ProfileId, or LanguageId for runtime use MUST extend or delegate to ICurrentUser.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "no_skip_step",
+      "description": "AI must not skip or merge steps from IDENTITY_REFACTOR_PLAN.md. Execute exactly one step per session. Validate completion before advancing current_step in 11_EXECUTION_STATE.json.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "build_green_before_advance",
+      "description": "Before advancing current_step, verify: build compiles with zero warnings AND all tests pass. Record results in 11_EXECUTION_STATE.json step_log.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "decision_registry_check",
+      "description": "Before making any architectural decision, read 12_DECISION_REGISTRY.json. If a locked decision covers the topic, that decision is final — do not re-evaluate, do not propose alternatives.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "locked_decision_immutable",
+      "description": "Decisions with locked=true in 12_DECISION_REGISTRY.json may not be changed without explicit user instruction and a new decision entry with a revised date. Superseded decisions must be kept with a 'superseded_by' field.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "sql_tenant_guard",
+      "description": "Before generating or reviewing any SQL: (1) determine if the query is pre-auth (exception allowed per 05_EXECUTION_RULES.json#pre_auth_sql_tenant_exception), (2) if not pre-auth, verify WHERE CustomerId = @CustomerId is present. Missing = hard stop.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "migration_sequence_guard",
+      "description": "New migrations must be sequentially numbered (V005, V006, …). A migration may not be renumbered after it has been applied. Never modify an already-applied migration — create a new one.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "localization_gate",
+      "description": "Validate 05_EXECUTION_RULES.json#localization_deferred_until_identity_complete before any localization work. All four unblock_conditions must be met. If any condition is unmet, stop and report which conditions are blocking.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "no_inline_sql",
+      "description": "Validate that no C# string literal contains SQL keywords (SELECT, INSERT, UPDATE, DELETE, FROM, WHERE). SQL must live in .sql files under Database/Migrations or Database/Queries as embedded resources.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "strongly_typed_ids_only",
+      "description": "Validate that handler parameters, command/query records, and Dapper result records never use raw int for UserId, CustomerId, ProfileId. Strongly-typed IDs are required.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "profileid_usage_guard",
+      "description": "ProfileId == 0 means UNRESOLVED and is a security gap. Before writing any code that reads ProfileId: (1) from Step 11 onward, ProfileId > 0 MUST be enforced before issuance — no token may be issued with ProfileId(0) as a result of SelectProfile, LoginHandler auto-resolve, or SelectCustomerHandler auto-resolve. (2) ProfileId may appear in WHERE clauses ONLY when the value is guaranteed > 0 (i.e., came from a real Profiles.Id row). ProfileId == 0 must never reach WHERE clauses, authorization checks, data access filters, or business logic.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report",
+      "allowed_usages": ["jwt_claim_write_with_real_profileid", "jwt_claim_read_for_passthrough", "where_clause_with_confirmed_nonzero_profileid"],
+      "forbidden_usages": ["jwt_claim_write_profileid_zero", "authorization_with_zero_profileid", "where_clause_with_zero_profileid", "data_access_filter_with_zero_profileid"]
+    },
+    {
+      "id": "no_profileid_zero_runtime",
+      "description": "From Step 11 onward, no issued JWT token may contain ProfileId == 0. The SelectProfile flow, LoginHandler auto-resolve, and SelectCustomerHandler auto-resolve MUST all produce ProfileId > 0 OR return a NeedsProfileSelection signal without issuing a JWT. Any code path that calls JwtTokenService.CreateToken() with new ProfileId(0) is a hard violation. ProfileId(0) is only permitted as a SQL column default for previously-existing UserRefreshToken rows (V008 migration DEFAULT 0) — it may never be written by new application code.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report",
+      "exception": "V008 migration DEFAULT 0 is the only allowed source of ProfileId=0 in the database — it covers pre-Step-11 rows. New INSERT statements from application code must always supply a real ProfileId > 0."
+    },
+    {
+      "id": "profile_required_before_protected_operations",
+      "description": "A resolved ProfileId > 0 is required before any protected business operation. Enforced at pipeline level by IRequireProfile marker + RequireProfileBehavior (implemented in Step 12). All business commands that read profile-scoped data MUST implement IRequireProfile. DO NOT implement IRequireProfile on auth commands (Login, SelectCustomer, SelectProfile) — those establish the context.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report",
+      "enforcement_mechanism": "RequireProfileBehavior<TRequest,TResponse> in SharedKernel/Pipeline/ — registered in Program.cs after AuthorizationBehavior"
+    },
+    {
+      "id": "jwt_must_never_contain_unresolved_profile",
+      "description": "A JWT token must never carry ProfileId = 0. JwtTokenService.CreateToken() must always receive ProfileId.Value > 0. Any code path that issues a JWT without a real ProfileId is a hard violation. ProfileId = 0 is exclusively a migration artifact (V008 DEFAULT 0) for pre-existing rows — it is never valid in new application-issued tokens.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "no_require_profile_on_auth_commands",
+      "description": "IRequireProfile must NOT be applied to authentication commands (LoginCommand, SelectCustomerCommand, SelectProfileCommand, RefreshTokenCommand). These commands establish or rotate the identity/profile context. Applying IRequireProfile to them would create a circular dependency — you cannot select a profile if profile selection itself requires a profile.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    },
+    {
+      "id": "execution_state_sync",
+      "description": "After completing a step, 11_EXECUTION_STATE.json must be updated: increment current_step, append to step_log with completion date, test count, and warning count. Never leave execution state stale.",
+      "enforcement_type": "mandatory",
+      "violation_behavior": "stop_and_report"
+    }
+  ],
+  "execution_validation": [
+    "no_step_auto_progression",
+    "must_stop_after_step",
+    "must_return_execution_result",
+    "must_wait_for_next_instruction"
+  ]
+}

@@ -1,0 +1,165 @@
+{
+  "project": "green-ai",
+  "runtime": ".NET 10 / C# 13",
+  "architecture_style": "vertical_slice",
+  "frontend": "blazor_server",
+  "data_access": "dapper",
+  "bulk_operations": "z_dapper_plus",
+  "database": "sql_server",
+  "auth": "custom_jwt",
+  "migrations": "dbup",
+  "logging": "serilog",
+  "json": "system_text_json",
+  "mediator": "mediatr",
+  "validation": "fluentvalidation",
+  "testing": "xunit_v3",
+  "mocking": "nsubstitute",
+
+  "non_negotiables": [
+    "no_entity_framework",
+    "no_aspnet_identity",
+    "no_hidden_magic",
+    "explicit_sql_only",
+    "one_sql_file_per_operation",
+    "vertical_slice_structure",
+    "result_pattern_only",
+    "strongly_typed_ids",
+    "no_httpcontext_in_handlers",
+    "use_icurrentuser",
+    "use_idbsession",
+    "zero_compiler_warnings",
+    "no_newtonsoft_json"
+  ],
+
+  "tenant_rules": {
+    "required": true,
+    "column": "CustomerId",
+    "rule": "all tenant-owned tables must include CustomerId",
+    "query_rule": "all SQL must explicitly include WHERE CustomerId = @CustomerId",
+    "forbidden": [
+      "automatic_sql_rewriting",
+      "global_filters",
+      "hidden_tenant_logic"
+    ],
+    "enforcement": "explicit_only",
+    "validation": "fail_if_missing_customerid",
+    "pre_auth_exception": "Pre-authentication queries (FindUserByEmail, FindValidRefreshToken) identify the global user identity only. They do NOT resolve tenant context. CustomerId is NOT required in these queries. After auth, tenant context MUST be resolved explicitly — either auto-selected (single membership) or explicitly chosen (multiple memberships)."
+  },
+
+  "identity_model": {
+    "user_scope": "global",
+    "email_uniqueness": "global — UIX_Users_Email must remain a global unique index with no CustomerId partition",
+    "tenant_binding": "via UserCustomerMembership table only — User table MUST NOT contain a direct CustomerId FK",
+    "membership_table": "UserCustomerMembership (UserId, CustomerId, Role, LanguageId, CreatedAt)",
+    "language_placement": "UserCustomerMembership.LanguageId — ARCHITECT_RESPONSE 2026-03-31 confidence 0.99",
+    "migration": "V004_UserCustomerMembership.sql — includes LanguageId INT NOT NULL DEFAULT 1",
+    "membership_query": "GetUserMemberships.sql — returns (UserId, CustomerId, Role, LanguageId)",
+    "membership_record": "UserMembershipRecord — includes LanguageId field",
+    "profile_access_model": "ProfileUserMappings (ProfileId, UserId) — many-to-many. Profiles.UserId FK removed in V009. A profile belongs to exactly one Customer; a user may access 0..N profiles per customer via mapping rows. Access queries MUST use INNER JOIN ProfileUserMappings.",
+    "rules": [
+      "A User MAY belong to multiple Customers via UserCustomerMembership",
+      "CustomerId MUST NOT be inferred during pre-authentication",
+      "After authentication, system MUST resolve or select active Customer context",
+      "If user has one membership → auto-select",
+      "If user has multiple memberships → require explicit selection before issuing JWT",
+      "JWT MUST include selected CustomerId as active context",
+      "JWT MUST include LanguageId from UserCustomerMembership as active context",
+      "LanguageId is per-user-per-customer (on UserCustomerMembership) — decision 2026-03-31",
+      "No additional query is allowed to resolve LanguageId after customer selection",
+      "Silent tenant switching is forbidden",
+      "All post-auth queries MUST include CustomerId"
+    ],
+    "forbidden": [
+      "binding User directly to a single Customer",
+      "inferring CustomerId from email",
+      "implicit tenant selection",
+      "queries without CustomerId after authentication",
+      "storing LanguageId on Profile",
+      "optional or nullable LanguageId on membership",
+      "second migration to add LanguageId",
+      "resolving LanguageId via a post-selection query"
+    ],
+    "architect_decision_date": "2026-03-31",
+    "confidence": 0.98
+  },
+
+  "pipeline_order": [
+    "LoggingBehavior",
+    "AuthorizationBehavior",
+    "ValidationBehavior",
+    "Handler"
+  ],
+
+  "result_pattern": {
+    "type": "Result<T>",
+    "factory_ok": "Result<T>.Ok(value)",
+    "factory_fail": "Result<T>.Fail(code, message)",
+    "rule": "handlers never throw for business errors",
+    "allowed_throws": ["infrastructure failures only"]
+  },
+
+  "profile_model": {
+    "domain_role": "DATA_PARTITION_AND_CAPABILITY_BOUNDARY",
+    "analysis_confidence": 0.91,
+    "ssot_ref": "analysis-tool/domains/Profile/",
+    "date": "2026-04-01",
+    "rules": [
+      "Profile is a first-class, co-equal data partition alongside Customer — NOT optional or secondary",
+      "ProfileId MUST remain in JWT and ICurrentUser — this is architecturally binding",
+      "ProfileId > 0 MUST be enforced before any protected business operation",
+      "profileId == 0 is a security gap: it bypasses all address restriction checks — it is NOT a valid runtime context",
+      "JWT MAY carry ProfileId(0) only as a short-lived placeholder between customer selection and profile selection",
+      "All capability checks (e.g. DoesProfileHaveRole) require a resolved ProfileId > 0",
+      "Profile resolution (SelectProfile) MUST precede any operation that reads ProfileId"
+    ],
+    "forbidden": [
+      "treating profileId == 0 as a valid operating state",
+      "using ProfileId for authorization/filtering/data access when value is 0",
+      "implementing any downstream feature that reads ProfileId before profile enforcement is in place",
+      "making Profile optional or nullable in the runtime model"
+    ],
+    "enforcement_step": "COMPLETE — Steps 11+12 done: IRequireProfile marker + RequireProfileBehavior enforce ProfileId > 0 at pipeline level"
+  },
+
+  "build_order": {
+    "decision_date": "2026-03-31",
+    "profile_rebase_date": "2026-04-01",
+    "type": "PRIORITY_DECISION",
+    "implement_now": ["identity_refactor", "profile_hardening"],
+    "defer_until_after_profile_enforcement": ["languages", "countries", "labels"],
+    "sequence": [
+      "1. UserCustomerMembership table + migration [DONE]",
+      "2. Remove Users.CustomerId FK + migration [DONE]",
+      "3. Update FindUserByEmail.sql — omit CustomerId (pre-auth exception applies) [DONE]",
+      "4. Implement post-auth membership resolution in LoginHandler [DONE]",
+      "5. Update JWT claims — include resolved CustomerId [DONE]",
+      "6. Add LanguageId to ICurrentUser and full auth flow [DONE]",
+      "7. SelectCustomer vertical slice [DONE]",
+      "8–10. Remove Users.CustomerId, fix test infrastructure, add SelectCustomer coverage [DONE]",
+      "11. SelectProfile flow — resolve ProfileId from Profiles, replace ProfileId(0) placeholder, persist in UserRefreshTokens",
+      "12. Add IRequireProfile marker + AuthorizationBehavior enforcement of ProfileId > 0",
+      "13. Enforce ProfileId > 0 in capability gates; remove unrestricted-access bypass for profileId == 0",
+      "14. Align JWT/runtime profile source to a single canonical source (Profiles table at selection time)",
+      "15. Profile model refactor — Profiles.UserId FK removed; access via ProfileUserMappings (many-to-many) [DONE]",
+      "16. Then: Languages table + service",
+      "17. Then: Countries table + service",
+      "18. Then: Labels table + service"
+    ],
+    "hard_rules": [
+      "no localization feature may be implemented while LoginHandler reads CustomerId from Users directly",
+      "LanguageId placement MUST be decided as part of identity_refactor, not during localization sprint",
+      "no localization feature may be implemented before Profile enforcement (Steps 11–14) is complete",
+      "profileId == 0 MUST NOT be used for authorization, filtering, data access, or business logic",
+      "do not start sequence step N+1 before step N is complete and green"
+    ],
+    "tracked_violations": [
+      "VIOLATION-001: RESOLVED — FindUserByEmail.sql is now a pure identity query",
+      "VIOLATION-002: RESOLVED — LoginHandler uses UserCustomerMembership for post-auth resolution",
+      "VIOLATION-003: RESOLVED — ICurrentUser.LanguageId implemented (Step 6)",
+      "VIOLATION-004: IsImpersonating/OriginalUserId are dead code — ImpersonatedUserId claim never set in any token",
+      "VIOLATION-005: RESOLVED (Step 11) — LoginHandler ProfileId(0) placeholder eliminated; auto-resolve or NeedsProfileSelection returned",
+      "VIOLATION-006: RESOLVED (Step 11) — FindMembership.sql COALESCE(p.[Id], 0) removed; profile resolution is a separate GetProfilesAsync step",
+      "VIOLATION-007: RESOLVED (Step 12) — RequireProfileBehavior added; blocks ProfileId <= 0 for all IRequireProfile-marked requests"
+    ]
+  }
+}
