@@ -48,4 +48,4 @@
 - [ ] Admin: ManageUsers, ManageProfiles, UserRoleAssignment
 
 ## Tests
-**76 tests grønne** (pre V010). Ny: ~9 PermissionService-tests (kræver V010 migration på LocalDB).
+**91 tests grønne** (inkl. 9 PermissionService-tests + 4 many-to-many tests fra V009/V010).

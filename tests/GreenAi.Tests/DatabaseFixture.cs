@@ -29,7 +29,12 @@ public sealed class DatabaseFixture : IAsyncLifetime
         {
             DbAdapter = DbAdapter.SqlServer,
             SchemasToInclude = ["dbo"],
-            TablesToIgnore = [new Respawn.Graph.Table("dbo", "SchemaVersions")]
+            TablesToIgnore = [
+                new Respawn.Graph.Table("dbo", "SchemaVersions"),
+                new Respawn.Graph.Table("dbo", "UserRoles"),
+                new Respawn.Graph.Table("dbo", "ProfileRoles"),
+                new Respawn.Graph.Table("dbo", "Languages"),
+            ]
         });
     }
 
