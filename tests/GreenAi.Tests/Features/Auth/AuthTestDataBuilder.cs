@@ -154,7 +154,7 @@ public sealed class AuthTestDataBuilder(string connectionString)
     {
         await using var conn = new SqlConnection(connectionString);
         await conn.ExecuteAsync("""
-            INSERT INTO UserCustomerMembership (UserId, CustomerId, LanguageId, IsActive)
+            INSERT INTO UserCustomerMemberships (UserId, CustomerId, LanguageId, IsActive)
             VALUES (@UserId, @CustomerId, @LanguageId, 1)
             """,
             new { UserId = userId.Value, CustomerId = customerId.Value, LanguageId = languageId });

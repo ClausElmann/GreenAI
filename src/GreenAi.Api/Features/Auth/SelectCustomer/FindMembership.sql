@@ -9,7 +9,7 @@
 SELECT
     m.[CustomerId],
     m.[LanguageId]
-FROM [dbo].[UserCustomerMembership] m
+FROM [dbo].[UserCustomerMemberships] m
 WHERE m.[UserId]     = @UserId
   AND m.[CustomerId] = @CustomerId
   AND m.[IsActive]   = 1;

@@ -34,6 +34,7 @@ public sealed class DatabaseFixture : IAsyncLifetime
                 new Respawn.Graph.Table("dbo", "UserRoles"),
                 new Respawn.Graph.Table("dbo", "ProfileRoles"),
                 new Respawn.Graph.Table("dbo", "Languages"),
+                new Respawn.Graph.Table("dbo", "Countries"),
             ]
         });
     }

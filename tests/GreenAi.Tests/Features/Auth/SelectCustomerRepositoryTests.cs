@@ -61,7 +61,7 @@ public sealed class SelectCustomerRepositoryTests : IAsyncLifetime
         var userId = await _builder.InsertUserAsync();
         await using var conn = new SqlConnection(DatabaseFixture.ConnectionString);
         await conn.ExecuteAsync(
-            "INSERT INTO UserCustomerMembership (UserId, CustomerId, LanguageId, IsActive) VALUES (@UserId, @CustomerId, 1, 0)",
+            "INSERT INTO UserCustomerMemberships (UserId, CustomerId, LanguageId, IsActive) VALUES (@UserId, @CustomerId, 1, 0)",
             new { UserId = userId.Value, CustomerId = customerId.Value });
 
         var result = await CreateRepository().FindMembershipAsync(userId, customerId);

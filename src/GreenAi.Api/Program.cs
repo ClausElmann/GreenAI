@@ -7,6 +7,7 @@ using GreenAi.Api.Features.Auth.SelectProfile;
 using GreenAi.Api.Features.System.Ping;
 using GreenAi.Api.SharedKernel.Auth;
 using GreenAi.Api.SharedKernel.Db;
+using GreenAi.Api.SharedKernel.Localization;
 using GreenAi.Api.SharedKernel.Logging;
 using GreenAi.Api.SharedKernel.Permissions;
 using GreenAi.Api.SharedKernel.Pipeline;
@@ -70,6 +71,8 @@ try
     builder.Services.AddScoped<ITenantContext, CurrentUserTenantContext>();
     builder.Services.AddScoped<JwtTokenService>();
     builder.Services.AddScoped<IPermissionService, PermissionService>();
+    builder.Services.AddScoped<ILocalizationRepository, LocalizationRepository>();
+    builder.Services.AddScoped<ILocalizationService, LocalizationService>();
     builder.Services.AddScoped<ILoginRepository, LoginRepository>();
     builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
     builder.Services.AddScoped<ISelectCustomerRepository, SelectCustomerRepository>();

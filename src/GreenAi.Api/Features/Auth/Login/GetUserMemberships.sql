@@ -8,7 +8,7 @@ SELECT
     m.[CustomerId],
     c.[Name]  AS [CustomerName],
     m.[LanguageId]
-FROM [dbo].[UserCustomerMembership] m
+FROM [dbo].[UserCustomerMemberships] m
 INNER JOIN [dbo].[Customers] c ON c.[Id] = m.[CustomerId]
 WHERE m.[UserId]    = @UserId
   AND m.[IsActive]  = 1;
