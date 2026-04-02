@@ -6,6 +6,9 @@ namespace GreenAi.Api.SharedKernel.Auth;
 /// <summary>
 /// ICurrentUser implementation that reads from the authenticated ClaimsPrincipal.
 /// Register as Scoped. Never read HttpContext.User directly outside this class.
+///
+/// Properties other than IsAuthenticated throw InvalidOperationException when accessed
+/// without an authenticated principal — use IsAuthenticated to guard access.
 /// </summary>
 public sealed class HttpContextCurrentUser : ICurrentUser
 {
@@ -18,23 +21,37 @@ public sealed class HttpContextCurrentUser : ICurrentUser
 
     private ClaimsPrincipal? Principal => _accessor.HttpContext?.User;
 
+    /// <summary>Returns an authenticated principal, or throws if no authenticated context is available.</summary>
+    private ClaimsPrincipal AuthenticatedPrincipal =>
+        Principal ?? throw new InvalidOperationException(
+            "HttpContext is not available. ICurrentUser properties cannot be accessed outside an authenticated HTTP request.");
+
     public bool IsAuthenticated =>
         Principal?.Identity?.IsAuthenticated ?? false;
 
     public UserId UserId =>
-        new(int.Parse(Principal!.FindFirstValue(ClaimTypes.NameIdentifier)!));
+        new(int.Parse(
+            AuthenticatedPrincipal.FindFirstValue(ClaimTypes.NameIdentifier)
+            ?? throw new InvalidOperationException("UserId claim is missing from the authenticated principal.")));
 
     public CustomerId CustomerId =>
-        new(int.Parse(Principal!.FindFirstValue(GreenAiClaims.CustomerId)!));
+        new(int.Parse(
+            AuthenticatedPrincipal.FindFirstValue(GreenAiClaims.CustomerId)
+            ?? throw new InvalidOperationException("CustomerId claim is missing from the authenticated principal.")));
 
     public ProfileId ProfileId =>
-        new(int.Parse(Principal!.FindFirstValue(GreenAiClaims.ProfileId)!));
+        new(int.Parse(
+            AuthenticatedPrincipal.FindFirstValue(GreenAiClaims.ProfileId)
+            ?? throw new InvalidOperationException("ProfileId claim is missing from the authenticated principal.")));
 
     public int LanguageId =>
-        int.Parse(Principal!.FindFirstValue(GreenAiClaims.LanguageId)!);
+        int.Parse(
+            AuthenticatedPrincipal.FindFirstValue(GreenAiClaims.LanguageId)
+            ?? throw new InvalidOperationException("LanguageId claim is missing from the authenticated principal."));
 
     public string Email =>
-        Principal!.FindFirstValue(ClaimTypes.Email)!;
+        AuthenticatedPrincipal.FindFirstValue(ClaimTypes.Email)
+        ?? throw new InvalidOperationException("Email claim is missing from the authenticated principal.");
 
     public bool IsImpersonating =>
         Principal?.FindFirstValue(GreenAiClaims.ImpersonatedUserId) is not null;

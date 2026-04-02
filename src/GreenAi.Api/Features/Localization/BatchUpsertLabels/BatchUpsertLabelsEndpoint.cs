@@ -1,4 +1,5 @@
 using GreenAi.Api.Features.Localization.BatchUpsertLabels;
+using GreenAi.Api.SharedKernel.Results;
 using MediatR;
 
 namespace GreenAi.Api.Features.Localization.BatchUpsertLabels;
@@ -13,15 +14,7 @@ public static class BatchUpsertLabelsEndpoint
             CancellationToken ct) =>
         {
             var result = await mediator.Send(command, ct);
-            if (result.IsSuccess)
-                return Results.Ok(result.Value);
-
-            return result.Error!.Code switch
-            {
-                "UNAUTHORIZED" => Results.Unauthorized(),
-                "FORBIDDEN"    => Results.Forbid(),
-                _              => Results.Problem(result.Error.Message, statusCode: 500)
-            };
+            return result.ToHttpResult();
         })
         .RequireAuthorization()
         .WithTags("Localization");

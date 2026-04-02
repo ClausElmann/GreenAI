@@ -5,10 +5,16 @@ using GreenAi.Api.SharedKernel.Results;
 namespace GreenAi.Api.SharedKernel.Pipeline;
 
 /// <summary>
-/// Pipeline behavior order (add behaviors in this order in PipelineRegistration):
-/// 1. LoggingBehavior
-/// 2. ValidationBehavior
-/// 3. AuthorizationBehavior  (if needed)
+/// Pipeline behavior — runs FluentValidation validators registered for TRequest.
+///
+/// Pipeline order (registered in Program.cs):
+///   1. LoggingBehavior
+///   2. AuthorizationBehavior
+///   3. RequireProfileBehavior
+///   4. ValidationBehavior  (this behavior)
+///
+/// When TResponse is Result&lt;T&gt;, validation failures are returned as Result.Fail("VALIDATION_ERROR", ...)
+/// rather than throwing — consistent with the Result&lt;T&gt; error-handling contract.
 /// </summary>
 public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
@@ -33,7 +39,21 @@ public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
             .ToList();
 
         if (failures.Count != 0)
+        {
+            var responseType = typeof(TResponse);
+            if (responseType.IsGenericType && responseType.GetGenericTypeDefinition() == typeof(Result<>))
+            {
+                var failMethod = responseType.GetMethod("Fail", [typeof(string), typeof(string)]);
+                if (failMethod is not null)
+                {
+                    var message = string.Join("; ", failures.Select(f => f.ErrorMessage));
+                    var result = failMethod.Invoke(null, ["VALIDATION_ERROR", message]);
+                    return (TResponse)result!;
+                }
+            }
+
             throw new ValidationException(failures);
+        }
 
         return await next();
     }
