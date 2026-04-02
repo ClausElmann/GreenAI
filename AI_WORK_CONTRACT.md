@@ -38,6 +38,14 @@
 
 ---
 
+## Git Rules (ABSOLUTE — Zero Exceptions)
+
+- ❌ NEVER run `git add`, `git commit`, `git push`, or any history-changing git command
+- ❌ Not even for "obvious" or "clean" changes
+- ✅ Prepare the commit message, present it to the user, wait for explicit "ja" / "gør det"
+
+---
+
 ## Critical Rules
 
 **External Input Rule (NeeoBovisWeb / sms-service / templates):**

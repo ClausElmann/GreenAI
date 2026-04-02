@@ -28,11 +28,12 @@ public sealed class LocalizationServiceTests
     [Fact]
     public async Task GetAsync_KeyExists_ReturnsValue()
     {
+        var ct = TestContext.Current.CancellationToken;
         var (svc, repo) = Create();
-        repo.GetResourceValueAsync("shared.DateFormat", 1, default)
+        repo.GetResourceValueAsync("shared.DateFormat", 1, ct)
             .Returns("dd-MM-yyyy");
 
-        var result = await svc.GetAsync("shared.DateFormat", 1);
+        var result = await svc.GetAsync("shared.DateFormat", 1, ct);
 
         Assert.Equal("dd-MM-yyyy", result);
     }
@@ -40,11 +41,12 @@ public sealed class LocalizationServiceTests
     [Fact]
     public async Task GetAsync_KeyNotFound_ReturnsKeyName()
     {
+        var ct = TestContext.Current.CancellationToken;
         var (svc, repo) = Create();
-        repo.GetResourceValueAsync("missing.Key", 1, default)
+        repo.GetResourceValueAsync("missing.Key", 1, ct)
             .Returns((string?)null);
 
-        var result = await svc.GetAsync("missing.Key", 1);
+        var result = await svc.GetAsync("missing.Key", 1, ct);
 
         Assert.Equal("missing.Key", result);
     }
@@ -52,11 +54,12 @@ public sealed class LocalizationServiceTests
     [Fact]
     public async Task GetAsync_KeyNotFound_NeverReturnsNullOrEmpty()
     {
+        var ct = TestContext.Current.CancellationToken;
         var (svc, repo) = Create();
-        repo.GetResourceValueAsync(Arg.Any<string>(), Arg.Any<int>(), default)
+        repo.GetResourceValueAsync(Arg.Any<string>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns((string?)null);
 
-        var result = await svc.GetAsync("some.Key", 1);
+        var result = await svc.GetAsync("some.Key", 1, ct);
 
         Assert.False(string.IsNullOrEmpty(result));
     }
@@ -68,15 +71,16 @@ public sealed class LocalizationServiceTests
     [Fact]
     public async Task GetAsync_WithParameters_ReplacesTokens()
     {
+        var ct = TestContext.Current.CancellationToken;
         var (svc, repo) = Create();
-        repo.GetResourceValueAsync("greeting", 1, default)
+        repo.GetResourceValueAsync("greeting", 1, ct)
             .Returns("Hello {name}, you have {count} messages");
 
         var result = await svc.GetAsync("greeting", 1, new Dictionary<string, string>
         {
             ["name"]  = "Alice",
             ["count"] = "3",
-        });
+        }, ct);
 
         Assert.Equal("Hello Alice, you have 3 messages", result);
     }
@@ -84,14 +88,15 @@ public sealed class LocalizationServiceTests
     [Fact]
     public async Task GetAsync_WithParameters_KeyNotFound_ReturnsKeyWithNoReplacement()
     {
+        var ct = TestContext.Current.CancellationToken;
         var (svc, repo) = Create();
-        repo.GetResourceValueAsync("missing.Key", 1, default)
+        repo.GetResourceValueAsync("missing.Key", 1, ct)
             .Returns((string?)null);
 
         var result = await svc.GetAsync("missing.Key", 1, new Dictionary<string, string>
         {
             ["name"] = "Alice",
-        });
+        }, ct);
 
         // Returns key as-is — no crash, no null
         Assert.Equal("missing.Key", result);
@@ -105,14 +110,15 @@ public sealed class LocalizationServiceTests
     public async Task GetAllAsync_DelegatesAndUpperCasesKeys()
     {
         var (svc, repo) = Create();
-        repo.GetAllResourcesAsync(1, default)
+        var ct = TestContext.Current.CancellationToken;
+        repo.GetAllResourcesAsync(1, ct)
             .Returns(new Dictionary<string, string>
             {
                 ["SHARED.DATEFORMAT"] = "dd-MM-yyyy",
                 ["SHARED.TIMEFORMAT"] = "HH:mm",
             });
 
-        var result = await svc.GetAllAsync(1);
+        var result = await svc.GetAllAsync(1, ct);
 
         Assert.Equal(2, result.Count);
         Assert.Equal("dd-MM-yyyy", result["SHARED.DATEFORMAT"]);

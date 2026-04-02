@@ -1,9 +1,11 @@
 using GreenAi.Api.Components;
 using GreenAi.Api.Database;
+using GreenAi.Api.Features.Api.V1.Auth.Token;
 using GreenAi.Api.Features.Auth.Login;
 using GreenAi.Api.Features.Auth.RefreshToken;
 using GreenAi.Api.Features.Auth.SelectCustomer;
 using GreenAi.Api.Features.Auth.SelectProfile;
+using GreenAi.Api.Features.Localization.BatchUpsertLabels;
 using GreenAi.Api.Features.System.Ping;
 using GreenAi.Api.SharedKernel.Auth;
 using GreenAi.Api.SharedKernel.Db;
@@ -73,7 +75,9 @@ try
     builder.Services.AddScoped<IPermissionService, PermissionService>();
     builder.Services.AddScoped<ILocalizationRepository, LocalizationRepository>();
     builder.Services.AddScoped<ILocalizationService, LocalizationService>();
+    builder.Services.AddScoped<ILocalizationContext, LocalizationContext>();
     builder.Services.AddScoped<ILoginRepository, LoginRepository>();
+    builder.Services.AddScoped<IGetApiTokenRepository, GetApiTokenRepository>();
     builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
     builder.Services.AddScoped<ISelectCustomerRepository, SelectCustomerRepository>();
     builder.Services.AddScoped<ISelectProfileRepository, SelectProfileRepository>();
@@ -160,6 +164,8 @@ try
     SelectCustomerEndpoint.Map(app);
     SelectProfileEndpoint.Map(app);
     PingEndpoint.Map(app);
+    BatchUpsertLabelsEndpoint.Map(app);
+    GetApiTokenEndpoint.Map(app);
 
     app.MapStaticAssets();
     app.MapRazorComponents<App>()
