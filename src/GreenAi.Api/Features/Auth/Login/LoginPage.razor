@@ -3,6 +3,7 @@
 @using GreenAi.Api.Components.Layout
 @using GreenAi.Api.Features.Auth.Login
 @using GreenAi.Api.SharedKernel.Auth
+@using GreenAi.Api.SharedKernel.Localization
 @using MediatR
 @using MudBlazor
 @using Microsoft.AspNetCore.Components.Forms
@@ -10,19 +11,20 @@
 @inject GreenAiAuthenticationStateProvider AuthProvider
 @inject IMediator Mediator
 @inject NavigationManager Nav
+@inject ILocalizationContext Loc
 
 <PageTitle>Log ind — GreenAi</PageTitle>
 
 <MudGrid Justify="Justify.Center" Class="mt-16">
     <MudItem xs="12" sm="8" md="5" lg="4">
         <MudPaper Elevation="4" Class="pa-8">
-            <MudText Typo="Typo.h5" Align="Align.Center" Class="mb-6">Log ind</MudText>
+            <MudText Typo="Typo.h5" Align="Align.Center" Class="mb-6">@Loc.Get("auth.Login.Title")</MudText>
 
             <EditForm Model="_model" OnValidSubmit="HandleLoginAsync">
                 <DataAnnotationsValidator />
 
                 <MudTextField @bind-Value="_model.Email"
-                              Label="E-mail"
+                              Label="@Loc.Get("shared.EmailLabel")"
                               Variant="Variant.Outlined"
                               InputType="InputType.Email"
                               Adornment="Adornment.Start"
@@ -32,7 +34,7 @@
                               Disabled="_loading" />
 
                 <MudTextField @bind-Value="_model.Password"
-                              Label="Adgangskode"
+                              Label="@Loc.Get("auth.Login.PasswordLabel")"
                               Variant="Variant.Outlined"
                               InputType="_showPassword ? InputType.Text : InputType.Password"
                               Adornment="Adornment.End"
@@ -57,11 +59,11 @@
                     @if (_loading)
                     {
                         <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
-                        <span>Logger ind...</span>
+                        <span>@Loc.Get("auth.Login.Loading")</span>
                     }
                     else
                     {
-                        <span>Log ind</span>
+                        <span>@Loc.Get("auth.Login.SubmitButton")</span>
                     }
                 </MudButton>
             </EditForm>

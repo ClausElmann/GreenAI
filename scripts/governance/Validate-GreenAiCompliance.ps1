@@ -491,7 +491,9 @@ foreach ($file in $commandQueryFiles) {
 #   href values, log messages, comments, framework-generated files.
 # ─────────────────────────────────────────────────────────────
 $exemptRazorFiles = @("Error.razor", "ReconnectModal.razor", "_Imports.razor",
-                      "App.razor", "Routes.razor", "NavMenu.razor")
+                      "App.razor", "Routes.razor", "NavMenu.razor",
+                      "NotFound.razor",    # system page — not localised
+                      "MainLayout.razor")  # brand name "GreenAi" + system reconnect UI intentionally exempt
 $locRazorFiles = $razorFiles | Where-Object {
     $exemptRazorFiles -notcontains $_.Name -and
     $_.FullName -notmatch '\\Components\\Pages\\Error\.razor'
@@ -500,25 +502,42 @@ foreach ($file in $locRazorFiles) {
     $content = Get-Content $file.FullName
     for ($i = 0; $i -lt $content.Count; $i++) {
         $line = $content[$i]
-        # Skip comments and pure Razor code-only lines
-        if ($line -match '^\s*@\*|^\s*//') { continue }
-        # Skip lines that are purely data-testid / CSS identifier attributes (no visible text)
-        if ($line -match '^\s*data-testid=|^\s*class=|^\s*id=|^\s*href=') { continue }
-        # Detect Danish/English visible text literally in markup (between > and <)
-        if ($line -match '>\s*(Gem|Slet|Annuller|Opret|Ingen |Kundestyre|Forside|Status|Aktiv|Inaktiv|Bruger|Profil|Indstillinger|Gemt)\b' -and
+
+        # Skip blank lines
+        if ([string]::IsNullOrWhiteSpace($line)) { continue }
+
+        # Skip Razor comment lines and C# comment lines
+        if ($line -match '^\s*@\*' -or $line -match '^\s*//') { continue }
+
+        # Skip @code block lines (C# inside @code { } — not markup text nodes)
+        # (These are harder to scope perfectly; we skip lines that are pure C# statements)
+        if ($line -match '^\s*(private|protected|public|var |await |if |else|foreach|return |throw |bool |int |string |Task)') { continue }
+
+        # Skip attribute-only lines and structural Razor directives
+        if ($line -match '^\s*(@page|@using|@inject|@model|@namespace|@inherits|@implements|@layout|@rendermode|@attribute)') { continue }
+        if ($line -match '^\s*(class=|id=|href=|src=|data-testid=|style=|type=|name=|value=|placeholder=|autocomplete=)') { continue }
+
+        # ── STRUCTURAL DETECTION: text node between > and < ──────────────────────────
+        # Flag any >TEXT< where TEXT is at least 3 word chars and not wrapped in @Loc.Get or @(...)
+        # This catches ALL visible UI text regardless of language.
+        if ($line -match '>\s*[A-Za-zÆØÅæøå][A-Za-zÆØÅæøå0-9 ,.\-]{2,}[A-Za-zÆØÅæøå0-9]\s*<' -and
             $line -notmatch 'Loc\.Get\(' -and
+            $line -notmatch '@\([^)]+\)' -and
+            $line -notmatch '^\s*@\*' -and
             $line -notmatch 'data-testid') {
-            Add-Violation "LOC-001" $file.FullName ($i + 1) "Hardcoded UI string — use @Loc.Get(`"key`") instead: $($line.Trim())"
+            Add-Violation "LOC-001" $file.FullName ($i + 1) "Hardcoded visible text in markup — use @Loc.Get(`"key`") instead: $($line.Trim())"
         }
-        # Detect C# string literals with DA words NOT using Loc.Get
-        # Exclude: data-testid values, href/NavigateTo paths, comment lines
-        if ($line -match '"(Gem|Slet|Annuller|Opret|Ingen |Kundestyre|Forside|Aktiv|Inaktiv|Bruger|Profil|Indstillinger|Gemt)' -and
+
+        # ── STRUCTURAL DETECTION: C# string literal with visible text ────────────────
+        # Catches Title="Some Text", Label="Some Text" etc. in component attributes.
+        # Uses -cmatch (case-sensitive) so 'Label' only matches PascalCase Blazor attributes,
+        # NOT lowercase HTML attributes like aria-label.
+        # Excludes: route segments (/path), CSS classes, test IDs, log messages, navigateTo paths
+        if ($line -cmatch '(?:Title|Label|Text|Placeholder|HelperText|ErrorText|ButtonText|NoRecordsContent)\s*=\s*"[A-Za-zÆØÅæøå][^"]{2,}"' -and
             $line -notmatch 'Loc\.Get\(' -and
-            $line -notmatch '\/\/' -and
-            $line -notmatch 'data-testid' -and
-            $line -notmatch 'NavigateTo\(' -and
-            $line -notmatch '^\s*@page') {
-            Add-Violation "LOC-001" $file.FullName ($i + 1) "Hardcoded string literal in Blazor — use @Loc.Get(`"key`") instead: $($line.Trim())"
+            $line -notmatch '^\s*//' -and
+            $line -notmatch 'data-testid') {
+            Add-Violation "LOC-001" $file.FullName ($i + 1) "Hardcoded component text attribute — use @Loc.Get(`"key`") instead: $($line.Trim())"
         }
     }
 }
@@ -576,7 +595,35 @@ if (Test-Path $featureContractMapPath) {
 }
 
 # ─────────────────────────────────────────────────────────────
-# RULE GROUP 10 (EXEC-001): EXECUTION_MEMORY.md must have an entry
+# RULE GROUP 10b (FEATURE-003): Blazor-only features (endpoint: null)
+# must have tests.e2e registered. Without E2E, Blazor features have
+# no automated runtime test — integration tests only cover API layer.
+# ─────────────────────────────────────────────────────────────
+if (Test-Path $featureContractMapPath) {
+    $featureMapF3 = Get-Content $featureContractMapPath -Raw | ConvertFrom-Json
+
+    foreach ($feature in $featureMapF3.features) {
+        $fid = $feature.id
+
+        # Only applies to Blazor-only features (no HTTP endpoint)
+        if ($null -ne $feature.endpoint) { continue }
+
+        # Must have tests.e2e
+        $e2eValue = $feature.tests.e2e
+        if (-not $e2eValue) {
+            Add-Violation "FEATURE-003" $featureContractMapPath 0 "Blazor-only feature '$fid' has no e2e test registered (tests.e2e is null) — add E2E test path or create E2E test"
+        } else {
+            # Verify the path exists
+            $absE2ePath = Join-Path $repoRoot $e2eValue.Replace('/', '\')
+            if (-not (Test-Path $absE2ePath)) {
+                Add-Violation "FEATURE-003" $absE2ePath 0 "Feature '$fid': e2e test path registered but file missing — $e2eValue"
+            }
+        }
+    }
+}
+
+# ─────────────────────────────────────────────────────────────
+# RULE GROUP 11 (EXEC-001): EXECUTION_MEMORY.md must have an entry
 # dated within the last 48 hours. Warns when self-improvement loop
 # is stale — does NOT count as a violation (advisory).
 # ─────────────────────────────────────────────────────────────

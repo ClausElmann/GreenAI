@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "description": "green-ai feature contract map — every implemented feature with its red threads, handler, endpoint, SQL files, tests, and UI component. Machine-readable. Update when new feature is added.",
   "version": "1.0.0",
-  "last_updated": "2026-04-06",
+  "last_updated": "2026-04-03",
   "ssot_source": "docs/SSOT/_system/feature-contract-map.json",
   "contract_schema": {
     "id": "unique feature id (snake_case)",
@@ -17,7 +17,8 @@
     "ui_page": "path to .razor page if feature has UI (null if API-only)",
     "tests": {
       "integration": "path to integration test class",
-      "unit": "path to unit test class (null if covered by integration)"
+      "unit": "path to unit test class (null if covered by integration)",
+      "e2e": "path to E2E test file (required when endpoint is null)"
     },
     "auth": "none | authenticated | profile",
     "pipeline_markers": "array of pipeline marker interfaces on Command/Query"
@@ -38,7 +39,8 @@
       "ui_page": null,
       "tests": {
         "integration": "tests/GreenAi.Tests/Http/HttpIntegrationTests.cs",
-        "unit": "tests/GreenAi.Tests/Features/System/Ping/PingHandlerTests.cs"
+        "unit": "tests/GreenAi.Tests/Features/System/Ping/PingHandlerTests.cs",
+        "e2e": null
       },
       "auth": "none",
       "pipeline_markers": []
@@ -66,7 +68,8 @@
       "ui_page": "Features/Auth/Login/LoginPage.razor",
       "tests": {
         "integration": "tests/GreenAi.Tests/Http/HttpIntegrationTests.cs",
-        "unit": "tests/GreenAi.Tests/Features/Auth/LoginHandlerTests.cs"
+        "unit": "tests/GreenAi.Tests/Features/Auth/LoginHandlerTests.cs",
+        "e2e": "tests/GreenAi.E2E/CustomerAdminE2ETests.cs"
       },
       "auth": "none",
       "pipeline_markers": []
@@ -91,7 +94,8 @@
       "ui_page": null,
       "tests": {
         "integration": "tests/GreenAi.Tests/Http/HttpIntegrationTests.cs",
-        "unit": "tests/GreenAi.Tests/Features/Auth/SelectCustomerHandlerTests.cs"
+        "unit": "tests/GreenAi.Tests/Features/Auth/SelectCustomerHandlerTests.cs",
+        "e2e": null
       },
       "auth": "authenticated",
       "pipeline_markers": [
@@ -117,7 +121,8 @@
       "ui_page": null,
       "tests": {
         "integration": "tests/GreenAi.Tests/Http/HttpIntegrationTests.cs",
-        "unit": "tests/GreenAi.Tests/Features/Auth/SelectProfileHandlerTests.cs"
+        "unit": "tests/GreenAi.Tests/Features/Auth/SelectProfileHandlerTests.cs",
+        "e2e": null
       },
       "auth": "authenticated",
       "pipeline_markers": [
@@ -144,7 +149,8 @@
       "ui_page": null,
       "tests": {
         "integration": "tests/GreenAi.Tests/Http/HttpIntegrationTests.cs",
-        "unit": "tests/GreenAi.Tests/Features/Auth/RefreshTokenHandlerTests.cs"
+        "unit": "tests/GreenAi.Tests/Features/Auth/RefreshTokenHandlerTests.cs",
+        "e2e": null
       },
       "auth": "none",
       "pipeline_markers": [],
@@ -170,7 +176,8 @@
       "ui_page": null,
       "tests": {
         "integration": "tests/GreenAi.Tests/Http/HttpIntegrationTests.cs",
-        "unit": "tests/GreenAi.Tests/Features/Auth/ChangePasswordHandlerTests.cs"
+        "unit": "tests/GreenAi.Tests/Features/Auth/ChangePasswordHandlerTests.cs",
+        "e2e": null
       },
       "auth": "profile",
       "pipeline_markers": [
@@ -197,7 +204,8 @@
       "ui_page": "Components/Pages/CustomerAdmin/Index.razor (SettingsTab)",
       "tests": {
         "integration": null,
-        "unit": "tests/GreenAi.Tests/Features/CustomerAdmin/GetCustomerSettingsHandlerTests.cs"
+        "unit": "tests/GreenAi.Tests/Features/CustomerAdmin/GetCustomerSettingsHandlerTests.cs",
+        "e2e": "tests/GreenAi.E2E/CustomerAdminE2ETests.cs"
       },
       "auth": "profile",
       "pipeline_markers": [
@@ -226,7 +234,8 @@
       "ui_page": "Components/Pages/CustomerAdmin/Index.razor (UserList tab)",
       "tests": {
         "integration": "tests/GreenAi.Tests/Features/CustomerAdmin/GetUsersHandlerTests.cs",
-        "unit": null
+        "unit": null,
+        "e2e": "tests/GreenAi.E2E/CustomerAdminE2ETests.cs"
       },
       "auth": "profile",
       "pipeline_markers": [
@@ -253,7 +262,8 @@
       "ui_page": "Components/Pages/CustomerAdmin/UserDetail.razor",
       "tests": {
         "integration": null,
-        "unit": "tests/GreenAi.Tests/Features/CustomerAdmin/GetUserDetailsHandlerTests.cs"
+        "unit": "tests/GreenAi.Tests/Features/CustomerAdmin/GetUserDetailsHandlerTests.cs",
+        "e2e": "tests/GreenAi.E2E/DetailPageE2ETests.cs"
       },
       "auth": "profile",
       "pipeline_markers": [
@@ -281,7 +291,8 @@
       "ui_page": "Components/Pages/CustomerAdmin/Index.razor (ProfileList tab)",
       "tests": {
         "integration": "tests/GreenAi.Tests/Features/CustomerAdmin/GetProfilesHandlerTests.cs",
-        "unit": null
+        "unit": null,
+        "e2e": "tests/GreenAi.E2E/CustomerAdminE2ETests.cs"
       },
       "auth": "profile",
       "pipeline_markers": [
@@ -308,7 +319,8 @@
       "ui_page": "Components/Pages/CustomerAdmin/ProfileDetail.razor",
       "tests": {
         "integration": null,
-        "unit": "tests/GreenAi.Tests/Features/CustomerAdmin/GetProfileDetailsHandlerTests.cs"
+        "unit": "tests/GreenAi.Tests/Features/CustomerAdmin/GetProfileDetailsHandlerTests.cs",
+        "e2e": "tests/GreenAi.E2E/DetailPageE2ETests.cs"
       },
       "auth": "profile",
       "pipeline_markers": [
@@ -339,7 +351,8 @@
       "ui_page": null,
       "tests": {
         "integration": "tests/GreenAi.Tests/Http/HttpIntegrationTests.cs",
-        "unit": "tests/GreenAi.Tests/Features/Identity/ChangeUserEmailHandlerTests.cs"
+        "unit": "tests/GreenAi.Tests/Features/Identity/ChangeUserEmailHandlerTests.cs",
+        "e2e": null
       },
       "auth": "profile",
       "pipeline_markers": [
@@ -363,7 +376,8 @@
       "ui_page": null,
       "tests": {
         "integration": "tests/GreenAi.Tests/Http/HttpIntegrationTests.cs",
-        "unit": "tests/GreenAi.Tests/Features/Localization/BatchUpsertLabels/BatchUpsertLabelsHandlerTests.cs"
+        "unit": "tests/GreenAi.Tests/Features/Localization/BatchUpsertLabels/BatchUpsertLabelsHandlerTests.cs",
+        "e2e": null
       },
       "auth": "authenticated",
       "pipeline_markers": [
@@ -386,7 +400,8 @@
       "ui_page": null,
       "tests": {
         "integration": "tests/GreenAi.Tests/Http/HttpIntegrationTests.cs",
-        "unit": "tests/GreenAi.Tests/Features/Api/V1/Auth/Token/GetApiTokenHandlerTests.cs"
+        "unit": "tests/GreenAi.Tests/Features/Api/V1/Auth/Token/GetApiTokenHandlerTests.cs",
+        "e2e": null
       },
       "auth": "none",
       "pipeline_markers": []
@@ -396,10 +411,14 @@
     "every_feature_must_have": [
       "handler",
       "red_threads (min 1)",
-      "auth value"
+      "auth value",
+      "tests.e2e or tests.integration (at least one)"
     ],
     "if_route_exists": [
       "endpoint must not be null"
+    ],
+    "if_endpoint_is_null": [
+      "tests.e2e must not be null (FEATURE-003)"
     ],
     "if_auth_is_profile_or_authenticated": [
       "IRequireAuthentication must be in pipeline_markers"
@@ -407,6 +426,6 @@
     "if_sql_files_has_more_than_1_write": [
       "ExecuteInTransactionAsync note must be present"
     ],
-    "test_coverage_minimum": "integration test required for every feature with a route"
+    "test_coverage_minimum": "integration test required for every feature with a route; e2e required for every Blazor-only feature"
   }
 }

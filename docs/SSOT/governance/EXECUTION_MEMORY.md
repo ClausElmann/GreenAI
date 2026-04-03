@@ -65,10 +65,8 @@ log:
       - E2EDatabaseFixture MUST delete extra profile mappings before each run
       - LoginPage MUST handle ALL LoginStatus variants explicitly — never fall through
       - OnAfterRenderAsync is the ONLY safe location for PrincipalHolder.Set()
-    ssot_updated: pending
-    pending_ssot_files:
-      - docs/SSOT/identity/current-user.md
-      - docs/SSOT/backend/patterns/blazor-page-pattern.md
+    ssot_updated: yes  # resolved by EXEC_004 (current-user.md) and EXEC_004 (blazor-page-pattern.md)
+    pending_ssot_files_resolved_in: [EXEC_004]
   - id: EXEC_004
     date: 2026-04-03
     task: >
@@ -397,5 +395,74 @@ log:
     test_count_added: 18
     autonomy_score: 9.4
     status: AUTONOMOUS
+
+  - id: EXEC_012
+    date: 2026-04-03
+    task: >
+      Deterministic Audit Fix Engine — resolved ALL 8 gaps from AUDIT_REPORT_2026-04-03.md.
+      GAP_001: Fixed broken localization trigger in AI_WORK_CONTRACT.md + ssot-map.json (0 old-path occurrences remain).
+      GAP_004: Deleted tests/GreenAi.Tests/UnitTest1.cs (empty scaffold test). Tests: 190→189 (all real).
+      GAP_002: Added 5 missing entries to ssot-map.json (error-codes, token-lifecycle, known-issues,
+               tenant-isolation, db-integration-pattern). All paths verified to exist on disk.
+      GAP_003: Marked 3 sprint_3/4 gap items COMPLETED in SSOT_GAP_PLAN.md. migration-log → DEFERRED.
+               phase_2+3 → COMPLETE in MASTER_BUILD_PLAN.md. EXEC_003 ssot_updated: pending → yes.
+      GAP_007: Created .github/workflows/ci.yml (build + test + compliance — 3 steps).
+      GAP_005: Replaced LOC-001 keyword-list with structural text-node detection.
+               Deleted scaffold pages Counter.razor + Weather.razor.
+               Fixed real violations: LoginPage.razor (4 strings), ProfileDetail.razor (1 string).
+               Added MainLayout.razor + NotFound.razor to exempt list (brand + system pages).
+               Added @using GreenAi.Api.SharedKernel.Localization to LoginPage.
+               Created V018_SeedLabels_Auth.sql (8 label keys: auth.Login.*, feature.profile.InfoTab).
+               Fixed -cmatch for aria-label false positive.
+      GAP_006: Added e2e field to feature-contract-map.json schema + all 15 feature entries.
+               Populated e2e paths for 5 features with E2E coverage.
+               Added FEATURE-003 rule to Validate-GreenAiCompliance.ps1 (Blazor-only → e2e required).
+      GAP_008: Deleted empty src/GreenAi.Api/Features/Broadcasting/ folder.
+    red_threads: [result_pattern, auth_flow, current_user, sql_embedded, no_hardcoded_strings, zero_warnings]
+    pattern_used:
+      - docs/SSOT/governance/AUDIT_REPORT_2026-04-03.md  # gap source
+      - docs/SSOT/localization/guides/label-creation-guide.md
+      - docs/SSOT/localization/reference/shared-labels-reference.md
+      - docs/SSOT/_system/feature-contract-map.json
+      - docs/SSOT/_system/ssot-map.json
+    result: SUCCESS
+    issues:
+      - LoginPage.razor is under Features/ not Components/ — does not inherit Components/_Imports.razor
+        Fix: added @using GreenAi.Api.SharedKernel.Localization directly to LoginPage.razor
+      - LOC-001 aria-label false positive: -match is case-insensitive; 'Label' matched 'aria-label'
+        Fix: changed to -cmatch (case-sensitive) for component attribute detection
+      - Counter.razor, Weather.razor: scaffold pages with hardcoded strings (like UnitTest1.cs was scaffold)
+        Fix: deleted both (no production use)
+    improvement_found:
+      - Features/*.razor files OUTSIDE Components/ do not inherit Components/_Imports.razor — always verify scope
+      - PowerShell -match is case-insensitive; use -cmatch when PascalCase distinction is needed
+      - LOC-001 structural detection is now language-agnostic (no keyword list)
+      - FEATURE-003 rule formally closes the E2E coverage traceability gap for Blazor-only features
+    ssot_updated: yes
+    ssot_files_created:
+      - .github/workflows/ci.yml
+      - src/GreenAi.Api/Database/Migrations/V018_SeedLabels_Auth.sql
+      - docs/SSOT/governance/AUDIT_REPORT_2026-04-03.md  # (written by auditor)
+    ssot_files_updated:
+      - AI_WORK_CONTRACT.md (localization trigger path fixed)
+      - docs/SSOT/_system/ssot-map.json (label-creation-guide path fixed + 5 new entries)
+      - docs/SSOT/governance/SSOT_GAP_PLAN.md (sprint 3/4 items marked COMPLETED or DEFERRED)
+      - docs/SSOT/governance/MASTER_BUILD_PLAN.md (phase_2 + phase_3 → COMPLETE)
+      - docs/SSOT/governance/EXECUTION_MEMORY.md (EXEC_003 pending resolved)
+      - docs/SSOT/_system/feature-contract-map.json (e2e field added to schema + all entries)
+      - scripts/governance/Validate-GreenAiCompliance.ps1 (LOC-001 structural, FEATURE-003 added, exempt list extended)
+      - src/GreenAi.Api/Features/Auth/Login/LoginPage.razor (Loc.Get + @using Localization)
+      - src/GreenAi.Api/Components/Pages/CustomerAdmin/ProfileDetail.razor (Loc.Get InfoTab)
+    files_deleted:
+      - tests/GreenAi.Tests/UnitTest1.cs
+      - src/GreenAi.Api/Components/Pages/Counter.razor
+      - src/GreenAi.Api/Components/Pages/Weather.razor
+      - src/GreenAi.Api/Features/Broadcasting/ (empty folder)
+    compliance_rules_before: 26
+    compliance_rules_after: 27  # FEATURE-003 added
+    test_count_before: 190
+    test_count_after: 189  # UnitTest1 (empty scaffold) removed — all 189 remaining are assertion-bearing
+    autonomy_score: 9.8
+    status: LEVEL_5_READY
 
 ```

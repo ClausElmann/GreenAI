@@ -43,7 +43,7 @@ phases:
       - docs/SSOT/governance/RED_THREAD_REGISTRY.md → [result_pattern, vertical_slice]
       - src/GreenAi.Api/SharedKernel/Results/Result.cs
       - src/GreenAi.Api/SharedKernel/Results/ResultExtensions.cs
-    status: PARTIAL  # pipeline-behaviors.md still missing
+    status: COMPLETE  # all produces files exist: pipeline-behaviors.md confirmed 2026-04-03
 
   - id: phase_3_data_layer
     purpose: Dapper + SQL patterns — required by all handlers
@@ -54,7 +54,7 @@ phases:
     ssot_required:
       - docs/SSOT/database/patterns/sql-conventions.md
       - docs/SSOT/governance/RED_THREAD_REGISTRY.md → [sql_embedded]
-    status: PARTIAL  # transaction-pattern.md created 2026-04-03; error-codes.md still missing
+    status: COMPLETE  # transaction-pattern.md + error-codes.md both confirmed 2026-04-03
 
   - id: phase_4_testing
     purpose: E2E + integration patterns — required for slice validation

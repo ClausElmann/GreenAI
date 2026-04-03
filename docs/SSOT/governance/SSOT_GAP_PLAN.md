@@ -149,6 +149,7 @@ ssot_gaps:
 
       - file: docs/SSOT/backend/conventions/error-codes.md
         type: reference
+        status: COMPLETED_2026-04-03
         reason: Error code catalog grows. Single reference prevents drift.
         required_for: [handler authoring]
         red_threads: [error_codes]
@@ -175,18 +176,21 @@ ssot_gaps:
 
       - file: docs/SSOT/database/reference/migration-log.md
         type: reference
+        status: DEFERRED  # informational only — not blocking any feature
         reason: V001–VXXX log is informational.
         required_for: []
         red_threads: []
 
       - file: docs/SSOT/identity/token-lifecycle.md
         type: flow
+        status: COMPLETED_2026-04-03
         reason: Refresh token rotation undocumented.
         required_for: [refresh_token_feature]
         red_threads: [auth_flow]
 
       - file: docs/SSOT/testing/known-issues.md
         type: reference
+        status: COMPLETED_2026-04-03
         reason: Accumulates known traps over time.
         required_for: []
         red_threads: []

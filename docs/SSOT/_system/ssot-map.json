@@ -354,12 +354,52 @@
       "enforcement": "APPEND entry after every completed task"
     },
     "label-creation-guide": {
-      "path": "docs/SSOT/localization/label-creation-guide.md",
+      "path": "docs/SSOT/localization/guides/label-creation-guide.md",
       "type": "guide",
       "red_threads": [],
       "triggers": ["label", "lokalisering", "tekst", "ILocalizationService", "shared.*"],
       "applies_to": ["Components/**/*.razor", "Features/**/*.cs"],
       "enforcement": "never hardcode strings — use @Loc.Get(...)"
+    },
+    "error-codes": {
+      "path": "docs/SSOT/backend/conventions/error-codes.md",
+      "type": "reference",
+      "red_threads": ["error_codes", "result_pattern"],
+      "triggers": ["error code", "error kode", "fejlkode", "error catalog", "ResultExtensions", "VALIDATION_ERROR", "UNAUTHORIZED"],
+      "applies_to": ["SharedKernel/Results/ResultExtensions.cs", "Features/**/Handler.cs"],
+      "enforcement": "Validate-GreenAiCompliance.ps1 RESULT-001 + ResultExtensionsTests"
+    },
+    "token-lifecycle": {
+      "path": "docs/SSOT/identity/token-lifecycle.md",
+      "type": "flow",
+      "red_threads": ["auth_flow"],
+      "triggers": ["refresh token", "token rotation", "token lifecycle", "SaveRefreshToken", "RevokeRefreshToken", "token expiry"],
+      "applies_to": ["Features/Auth/RefreshToken/**"],
+      "enforcement": "ExecuteInTransactionAsync — token rotation is atomic"
+    },
+    "known-issues": {
+      "path": "docs/SSOT/testing/known-issues.md",
+      "type": "reference",
+      "red_threads": [],
+      "triggers": ["known issue", "known trap", "common mistake", "KI-", "test trap", "WebApplicationFactory scoped", "UseStatusCodePages"],
+      "applies_to": ["tests/**"],
+      "enforcement": "read before writing any new test infrastructure"
+    },
+    "tenant-isolation": {
+      "path": "docs/SSOT/identity/tenant-isolation.md",
+      "type": "pattern",
+      "red_threads": ["tenant_isolation"],
+      "triggers": ["tenant", "tenant isolation", "CustomerId filter", "multi-tenant", "WHERE CustomerId", "cross-tenant"],
+      "applies_to": ["Features/**/*.sql", "Features/**/Handler.cs"],
+      "enforcement": "Validate-GreenAiCompliance.ps1 SQL-002 (tenant tables without @CustomerId)"
+    },
+    "db-integration-pattern": {
+      "path": "docs/SSOT/testing/patterns/db-integration-pattern.md",
+      "type": "pattern",
+      "red_threads": [],
+      "triggers": ["db integration test", "database test", "integration test DB", "DatabaseFixture", "SQL integration"],
+      "applies_to": ["tests/GreenAi.Tests/**/*Tests.cs"],
+      "enforcement": "DatabaseFixture + Respawn per test"
     }
   },
 
