@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration;
 
 namespace GreenAi.Tests.Http;
 
@@ -9,6 +10,9 @@ namespace GreenAi.Tests.Http;
 /// Configuration:
 /// - Uses ASPNETCORE_ENVIRONMENT=Development so appsettings.Development.json
 ///   is loaded (correct connection string + JWT settings).
+/// - Testing:SkipStatusCodePages=true disables UseStatusCodePagesWithReExecute,
+///   which would otherwise intercept 401/405 and re-execute to a Blazor page,
+///   causing 400 responses instead of the expected status codes.
 /// - DatabaseMigrator.Run() is called during startup (idempotent — safe).
 /// - DapperPlusSetup.Initialize() is called during startup (idempotent).
 ///
@@ -26,5 +30,12 @@ public sealed class GreenAiWebApplicationFactory : WebApplicationFactory<Program
         // Use Development environment so appsettings.Development.json is loaded.
         // This ensures the local DB connection string and dev JWT key are used.
         builder.UseEnvironment("Development");
+
+        // Disable UseStatusCodePagesWithReExecute in tests — it would intercept
+        // 401/405 responses and re-execute to Blazor's /not-found page, which
+        // cannot render properly in the in-memory test host and returns 400 instead.
+        builder.ConfigureAppConfiguration(config =>
+            config.AddInMemoryCollection(
+                new Dictionary<string, string?> { ["Testing:SkipStatusCodePages"] = "true" }));
     }
 }

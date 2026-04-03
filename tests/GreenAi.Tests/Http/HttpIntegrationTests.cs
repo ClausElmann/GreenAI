@@ -114,8 +114,8 @@ public sealed class HttpIntegrationTests : IClassFixture<GreenAiWebApplicationFa
         var userId = await _builder.InsertUserAsync(new() { Email = "http-bad-login@test.local", PasswordHash = hash, PasswordSalt = salt });
         await _builder.InsertUserCustomerMembershipAsync(userId, customerId);
 
-        // Act
-        var response = await PostJsonAsync("/api/auth/login", new { Email = "http-bad-login@test.local", Password = "wrong" });
+        // Act — password must be ≥6 chars (LoginValidator) to pass validation and reach the handler
+        var response = await PostJsonAsync("/api/auth/login", new { Email = "http-bad-login@test.local", Password = "wrong!" });
 
         // Assert
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
@@ -311,6 +311,9 @@ public sealed class HttpIntegrationTests : IClassFixture<GreenAiWebApplicationFa
         var userId = await _builder.InsertUserAsync(new() { Email = "bu-http@test.local", PasswordHash = hash, PasswordSalt = salt });
         await _builder.InsertUserCustomerMembershipAsync(userId, customerId);
         var profileId = await _builder.InsertProfileAsync(customerId, userId, "BU Profile");
+
+        // BatchUpsertLabels requires SuperAdmin role — assign before creating the token
+        await _builder.AssignUserRoleAsync(userId, "SuperAdmin");
 
         var token = TestJwtHelper.CreateFullToken(userId, customerId, new ProfileId(profileId), "bu-http@test.local");
 

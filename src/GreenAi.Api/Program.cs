@@ -151,7 +151,10 @@ try
         app.UseHsts();
     }
 
-    app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
+    // Skip in WebApplicationFactory test host to prevent Blazor rendering interference.
+    // Production: always active. Tests: disabled via Testing:SkipStatusCodePages=true.
+    if (!app.Configuration.GetValue<bool>("Testing:SkipStatusCodePages"))
+        app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
     app.UseHttpsRedirection();
     app.UseAuthentication();
     app.UseAuthorization();

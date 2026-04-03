@@ -151,3 +151,43 @@ ensure it picks up these values. The `TestJwtHelper` in
 `tests/GreenAi.Tests/Http/TestJwtHelper.cs` encapsulates token generation.
 
 **See:** `tests/GreenAi.Tests/Http/GreenAiWebApplicationFactory.cs`
+
+---
+
+## KI-006 — UseStatusCodePagesWithReExecute converts 401/405 to 400 in test host
+
+**Symptom:** HTTP integration tests that send requests with no Bearer token (expecting
+`401 Unauthorized`) or use wrong HTTP methods (expecting `405 Method Not Allowed`) receive
+`400 BadRequest` instead.
+
+**Root cause:** `UseStatusCodePagesWithReExecute("/not-found")` in `Program.cs` intercepts
+error responses with empty bodies. When no JWT token is present and an endpoint uses
+`.RequireAuthorization()`, the JWT Bearer middleware emits a `401` challenge with an empty
+body. The middleware intercepts this, re-executes the request as GET `/not-found`, and
+Blazor tries to prerender the NotFound page. In the in-memory `WebApplicationFactory`
+test host, Blazor prerendering throws an exception (interactive circuit infrastructure
+is not available), which results in a `400 BadRequest` response.
+
+The same problem occurs for `405 Method Not Allowed` (e.g., POST to a GET-only endpoint)
+whose response body is also empty.
+
+**Correct fix:** `GreenAiWebApplicationFactory` sets `Testing:SkipStatusCodePages=true`
+via `ConfigureAppConfiguration`. `Program.cs` checks this flag and skips the middleware:
+
+```csharp
+// In Program.cs — already implemented:
+if (!app.Configuration.GetValue<bool>("Testing:SkipStatusCodePages"))
+    app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
+```
+
+```csharp
+// In GreenAiWebApplicationFactory — already implemented:
+builder.ConfigureAppConfiguration(config =>
+    config.AddInMemoryCollection(
+        new Dictionary<string, string?> { ["Testing:SkipStatusCodePages"] = "true" }));
+```
+
+**Production impact:** Zero — `Testing:SkipStatusCodePages` is never set in production.
+
+**See:** `tests/GreenAi.Tests/Http/GreenAiWebApplicationFactory.cs`,
+          `src/GreenAi.Api/Program.cs`
