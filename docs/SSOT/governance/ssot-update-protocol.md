@@ -1,14 +1,5 @@
 # ssot-update-protocol
 
-```yaml
-id: ssot_update_protocol
-type: protocol
-ssot_source: docs/SSOT/governance/ssot-update-protocol.md
-red_threads: []
-applies_to: ["docs/SSOT/**"]
-enforcement: trigger table defines mandatory update conditions — 10 triggers
-```
-
 > **Canonical:** This is the SSOT for when and how SSOT files must be updated.
 > **Red thread:** All SSOT drift prevention — derived from RED_THREAD_REGISTRY.md
 

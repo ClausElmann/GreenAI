@@ -1,14 +1,5 @@
 # transaction-pattern
 
-```yaml
-id: transaction_pattern
-type: pattern
-ssot_source: docs/SSOT/database/patterns/transaction-pattern.md
-red_threads: [sql_embedded]
-applies_to: ["Features/**/Handler.cs", "Features/**/Repository.cs"]
-enforcement: NEVER nest — single _activeTransaction field guards against nesting
-```
-
 > **Canonical:** SSOT for atomic multi-step database operations in GreenAi.
 > **Code source:** `src/GreenAi.Api/SharedKernel/Db/DbSession.cs`
 > **Interface:** `src/GreenAi.Api/SharedKernel/Db/IDbSession.cs`

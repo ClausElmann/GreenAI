@@ -1,14 +1,5 @@
 # respawn-guide
 
-```yaml
-id: respawn_guide
-type: guide
-ssot_source: docs/SSOT/testing/guides/respawn-guide.md
-red_threads: []
-applies_to: ["tests/GreenAi.Tests/DatabaseFixture.cs"]
-enforcement: SchemaVersions + UserRoles + ProfileRoles always in TablesToIgnore
-```
-
 > **Canonical:** SSOT for Respawn setup, TablesToIgnore rules, and seed data restoration in GreenAi tests.
 > **Code sources:**
 > - `tests/GreenAi.Tests/DatabaseFixture.cs` (unit/integration fixture)
