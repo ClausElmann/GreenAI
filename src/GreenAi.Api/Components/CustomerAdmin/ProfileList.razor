@@ -1,0 +1,70 @@
+@using GreenAi.Api.Features.CustomerAdmin.GetProfiles
+@inject NavigationManager Nav
+@inject ISnackbar Snackbar
+@inject IDialogService Dialog
+
+<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-3">
+    <MudText Typo="Typo.subtitle1">@Profiles.Count profil(er)</MudText>
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary"
+               StartIcon="@Icons.Material.Filled.Add"
+               Size="Size.Small"
+               OnClick="CreateProfile">
+        Opret profil
+    </MudButton>
+</MudStack>
+
+<MudTable Items="Profiles" Dense="true" Hover="true" data-testid="profile-table">
+    <HeaderContent>
+        <MudTh>Navn</MudTh>
+        <MudTh>Status</MudTh>
+        <MudTh></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Navn">
+            <MudLink Href="@("/customer-admin/profiles/" + context.Id)">@context.Name</MudLink>
+        </MudTd>
+        <MudTd DataLabel="Status">
+            <MudChip T="string"
+                     Size="Size.Small"
+                     Color="@(context.IsActive ? Color.Success : Color.Default)">
+                @(context.IsActive ? "Aktiv" : "Inaktiv")
+            </MudChip>
+        </MudTd>
+        <MudTd>
+            <MudStack Row="true" Spacing="0">
+                <MudIconButton Icon="@Icons.Material.Filled.OpenInNew"
+                               Size="Size.Small"
+                               OnClick="@(() => Nav.NavigateTo("/customer-admin/profiles/" + context.Id))" />
+                <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                               Size="Size.Small"
+                               Color="Color.Error"
+                               OnClick="() => ConfirmDeleteAsync(context)" />
+            </MudStack>
+        </MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText Typo="Typo.body2" Color="Color.Secondary">Ingen profiler.</MudText>
+    </NoRecordsContent>
+</MudTable>
+
+@code {
+    [Parameter, EditorRequired] public List<ProfileRow> Profiles { get; set; } = null!;
+    [Parameter] public EventCallback<int> OnDelete { get; set; }
+
+    private void CreateProfile() => Snackbar.Add("Opret profil — ikke implementeret endnu.", Severity.Info);
+
+    private async Task ConfirmDeleteAsync(ProfileRow profile)
+    {
+        var confirmed = await Dialog.ShowMessageBox(
+            "Slet profil",
+            $"Er du sikker på, du vil slette {profile.Name}?",
+            yesText: "Slet", cancelText: "Annuller");
+
+        if (confirmed == true)
+        {
+            await OnDelete.InvokeAsync(profile.Id);
+            Snackbar.Add($"{profile.Name} slettet.", Severity.Success);
+        }
+    }
+}

@@ -1,0 +1,99 @@
+@page "/customer-admin"
+@using GreenAi.Api.Features.CustomerAdmin.GetCustomerSettings
+@using GreenAi.Api.Features.CustomerAdmin.GetUsers
+@using GreenAi.Api.Features.CustomerAdmin.GetProfiles
+@using GreenAi.Api.SharedKernel.Auth
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IMediator Mediator
+@inject NavigationManager Nav
+@inject BlazorPrincipalHolder PrincipalHolder
+
+<PageTitle>Kundestyre — GreenAi</PageTitle>
+
+<MudText Typo="Typo.h5" Class="mb-4" data-testid="customer-admin-heading">Kundestyre</MudText>
+
+@if (_loading)
+{
+    <MudProgressCircular Indeterminate="true" Class="mt-8" />
+}
+else
+{
+    <MudTabs Elevation="1" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pt-4">
+        <MudTabPanel Text="Indstillinger" Icon="@Icons.Material.Filled.Settings">
+            <SettingsTab CustomerId="_customerId" CustomerName="_customerName" />
+        </MudTabPanel>
+
+        <MudTabPanel Text="Brugere" Icon="@Icons.Material.Filled.People">
+            <UserList Users="_users" OnDelete="DeleteUserAsync" />
+        </MudTabPanel>
+
+        <MudTabPanel Text="Profiler" Icon="@Icons.Material.Filled.AccountTree">
+            <ProfileList Profiles="_profiles" OnDelete="DeleteProfileAsync" />
+        </MudTabPanel>
+    </MudTabs>
+}
+
+@code {
+    [CascadingParameter] private Task<AuthenticationState> AuthStateTask { get; set; } = null!;
+
+    private bool _loading = true;
+    private int _customerId;
+    private string _customerName = string.Empty;
+    private List<UserRow> _users = [];
+    private List<ProfileRow> _profiles = [];
+
+    // OnAfterRenderAsync — NOT OnInitializedAsync — because Blazor prerenders components on
+    // the server before the circuit (WebSocket) is established. During prerender, JS/localStorage
+    // is unavailable, so GreenAiAuthenticationStateProvider always returns Unauthenticated.
+    // OnAfterRenderAsync only runs in the interactive circuit where localStorage IS readable.
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        var authState = await AuthStateTask;
+
+        if (authState.User.Identity?.IsAuthenticated != true)
+        {
+            Nav.NavigateTo("/login");
+            return;
+        }
+
+        PrincipalHolder.Set(authState.User);
+
+        var settingsResult = await Mediator.Send(new GetCustomerSettingsQuery());
+
+        // No customer claim — redirect to customer selection
+        if (!settingsResult.IsSuccess && settingsResult.Error?.Code == "NO_CUSTOMER")
+        {
+            Nav.NavigateTo("/select-customer");
+            return;
+        }
+
+        var usersResult    = await Mediator.Send(new GetUsersQuery());
+        var profilesResult = await Mediator.Send(new GetProfilesQuery());
+
+        if (settingsResult.IsSuccess)
+        {
+            _customerId   = settingsResult.Value!.Id;
+            _customerName = settingsResult.Value.Name;
+        }
+
+        if (usersResult.IsSuccess)    _users    = usersResult.Value!;
+        if (profilesResult.IsSuccess) _profiles = profilesResult.Value!;
+
+        _loading = false;
+        StateHasChanged();
+    }
+
+    private Task DeleteUserAsync(int id)
+    {
+        _users.RemoveAll(u => u.Id == id);
+        return Task.CompletedTask;
+    }
+
+    private Task DeleteProfileAsync(int id)
+    {
+        _profiles.RemoveAll(p => p.Id == id);
+        return Task.CompletedTask;
+    }
+}

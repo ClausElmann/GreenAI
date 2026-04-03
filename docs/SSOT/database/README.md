@@ -14,7 +14,7 @@
 |------|-------|
 | [migration-pattern.md](patterns/migration-pattern.md) | DbUp V0XX naming, file placement, rollback strategy |
 | [sql-conventions.md](patterns/sql-conventions.md) | Naming, column types, tenant isolation rules |
-| [dapper-pattern.md](patterns/dapper-pattern.md) | Dapper + SqlLoader, parameterized queries |
+| [dapper-patterns.md](patterns/dapper-patterns.md) | SqlLoader.Load<T>, IDbSession methods, repository vs direct decision |
 
 ### Architecture
 

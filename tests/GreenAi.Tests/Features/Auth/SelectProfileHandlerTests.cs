@@ -28,8 +28,11 @@ public sealed class SelectProfileHandlerTests
         return user;
     }
 
-    private static SelectProfileHandler CreateHandler(ISelectProfileRepository repository, ICurrentUser? currentUser = null)
-        => new(repository, CreateJwtService(), currentUser ?? CreateCurrentUser());
+    private static SelectProfileHandler CreateHandler(
+        ISelectProfileRepository repository,
+        ICurrentUser? currentUser = null,
+        IRefreshTokenWriter? tokenWriter = null)
+        => new(repository, CreateJwtService(), currentUser ?? CreateCurrentUser(), tokenWriter ?? Substitute.For<IRefreshTokenWriter>());
 
     // ===================================================================
     // Auto-resolve — single profile
@@ -41,8 +44,6 @@ public sealed class SelectProfileHandlerTests
         var repository = Substitute.For<ISelectProfileRepository>();
         repository.GetAvailableProfilesAsync(new UserId(1), new CustomerId(10))
             .Returns((IReadOnlyCollection<ProfileRecord>)[new ProfileRecord(ProfileId: 5, DisplayName: "Main")]);
-        repository.SaveRefreshTokenAsync(Arg.Any<UserId>(), Arg.Any<CustomerId>(), Arg.Any<ProfileId>(), Arg.Any<string>(), Arg.Any<DateTimeOffset>(), Arg.Any<int>())
-            .Returns(Task.CompletedTask);
 
         var result = await CreateHandler(repository).Handle(new SelectProfileCommand(null), TestContext.Current.CancellationToken);
 
@@ -56,15 +57,14 @@ public sealed class SelectProfileHandlerTests
     {
         // RULE: ProfileId(0) must never be issued. Handler must pass the real Profiles.Id.
         var repository = Substitute.For<ISelectProfileRepository>();
+        var tokenWriter = Substitute.For<IRefreshTokenWriter>();
         var currentUser = CreateCurrentUser(userId: 1, customerId: 10, languageId: 2);
         repository.GetAvailableProfilesAsync(new UserId(1), new CustomerId(10))
             .Returns((IReadOnlyCollection<ProfileRecord>)[new ProfileRecord(ProfileId: 7, DisplayName: "Profile A")]);
-        repository.SaveRefreshTokenAsync(Arg.Any<UserId>(), Arg.Any<CustomerId>(), Arg.Any<ProfileId>(), Arg.Any<string>(), Arg.Any<DateTimeOffset>(), Arg.Any<int>())
-            .Returns(Task.CompletedTask);
 
-        await CreateHandler(repository, currentUser).Handle(new SelectProfileCommand(null), TestContext.Current.CancellationToken);
+        await CreateHandler(repository, currentUser, tokenWriter).Handle(new SelectProfileCommand(null), TestContext.Current.CancellationToken);
 
-        await repository.Received(1).SaveRefreshTokenAsync(
+        await tokenWriter.Received(1).SaveAsync(
             new UserId(1),
             new CustomerId(10),
             new ProfileId(7),  // must be the real profile id — never 0
@@ -81,18 +81,17 @@ public sealed class SelectProfileHandlerTests
     public async Task Handle_ValidExplicitProfileId_ReturnsToken()
     {
         var repository = Substitute.For<ISelectProfileRepository>();
+        var tokenWriter = Substitute.For<IRefreshTokenWriter>();
         repository.GetAvailableProfilesAsync(new UserId(1), new CustomerId(10))
             .Returns((IReadOnlyCollection<ProfileRecord>)[
                 new ProfileRecord(ProfileId: 1, DisplayName: "Alpha"),
                 new ProfileRecord(ProfileId: 2, DisplayName: "Beta")]);
-        repository.SaveRefreshTokenAsync(Arg.Any<UserId>(), Arg.Any<CustomerId>(), Arg.Any<ProfileId>(), Arg.Any<string>(), Arg.Any<DateTimeOffset>(), Arg.Any<int>())
-            .Returns(Task.CompletedTask);
 
-        var result = await CreateHandler(repository).Handle(new SelectProfileCommand(2), TestContext.Current.CancellationToken);
+        var result = await CreateHandler(repository, tokenWriter: tokenWriter).Handle(new SelectProfileCommand(2), TestContext.Current.CancellationToken);
 
         Assert.True(result.IsSuccess);
         Assert.NotEmpty(result.Value!.AccessToken);
-        await repository.Received(1).SaveRefreshTokenAsync(
+        await tokenWriter.Received(1).SaveAsync(
             Arg.Any<UserId>(),
             Arg.Any<CustomerId>(),
             new ProfileId(2),
@@ -109,17 +108,18 @@ public sealed class SelectProfileHandlerTests
     public async Task Handle_MultipleProfilesNoSelection_ReturnsRequiresProfileSelection()
     {
         var repository = Substitute.For<ISelectProfileRepository>();
+        var tokenWriter = Substitute.For<IRefreshTokenWriter>();
         repository.GetAvailableProfilesAsync(new UserId(1), new CustomerId(10))
             .Returns((IReadOnlyCollection<ProfileRecord>)[
                 new ProfileRecord(ProfileId: 1, DisplayName: "Alpha"),
                 new ProfileRecord(ProfileId: 2, DisplayName: "Beta")]);
 
-        var result = await CreateHandler(repository).Handle(new SelectProfileCommand(null), TestContext.Current.CancellationToken);
+        var result = await CreateHandler(repository, tokenWriter: tokenWriter).Handle(new SelectProfileCommand(null), TestContext.Current.CancellationToken);
 
         Assert.True(result.IsSuccess);
         Assert.True(result.Value!.NeedsProfileSelection);
         Assert.Equal(2, result.Value.AvailableProfiles!.Count);
-        await repository.DidNotReceive().SaveRefreshTokenAsync(Arg.Any<UserId>(), Arg.Any<CustomerId>(), Arg.Any<ProfileId>(), Arg.Any<string>(), Arg.Any<DateTimeOffset>(), Arg.Any<int>());
+        await tokenWriter.DidNotReceive().SaveAsync(Arg.Any<UserId>(), Arg.Any<CustomerId>(), Arg.Any<ProfileId>(), Arg.Any<string>(), Arg.Any<DateTimeOffset>(), Arg.Any<int>());
     }
 
     // ===================================================================
@@ -144,12 +144,13 @@ public sealed class SelectProfileHandlerTests
     public async Task Handle_InaccessibleProfileId_DoesNotSaveRefreshToken()
     {
         var repository = Substitute.For<ISelectProfileRepository>();
+        var tokenWriter = Substitute.For<IRefreshTokenWriter>();
         repository.GetAvailableProfilesAsync(Arg.Any<UserId>(), Arg.Any<CustomerId>())
             .Returns((IReadOnlyCollection<ProfileRecord>)[new ProfileRecord(ProfileId: 5, DisplayName: "Only Profile")]);
 
-        await CreateHandler(repository).Handle(new SelectProfileCommand(999), TestContext.Current.CancellationToken);
+        await CreateHandler(repository, tokenWriter: tokenWriter).Handle(new SelectProfileCommand(999), TestContext.Current.CancellationToken);
 
-        await repository.DidNotReceive().SaveRefreshTokenAsync(Arg.Any<UserId>(), Arg.Any<CustomerId>(), Arg.Any<ProfileId>(), Arg.Any<string>(), Arg.Any<DateTimeOffset>(), Arg.Any<int>());
+        await tokenWriter.DidNotReceive().SaveAsync(Arg.Any<UserId>(), Arg.Any<CustomerId>(), Arg.Any<ProfileId>(), Arg.Any<string>(), Arg.Any<DateTimeOffset>(), Arg.Any<int>());
     }
 
     [Fact]
@@ -173,8 +174,6 @@ public sealed class SelectProfileHandlerTests
         var currentUser = CreateCurrentUser(userId: 42, customerId: 77);
         repository.GetAvailableProfilesAsync(new UserId(42), new CustomerId(77))
             .Returns((IReadOnlyCollection<ProfileRecord>)[new ProfileRecord(ProfileId: 3, DisplayName: "Specific Profile")]);
-        repository.SaveRefreshTokenAsync(Arg.Any<UserId>(), Arg.Any<CustomerId>(), Arg.Any<ProfileId>(), Arg.Any<string>(), Arg.Any<DateTimeOffset>(), Arg.Any<int>())
-            .Returns(Task.CompletedTask);
 
         await CreateHandler(repository, currentUser).Handle(new SelectProfileCommand(null), TestContext.Current.CancellationToken);
 

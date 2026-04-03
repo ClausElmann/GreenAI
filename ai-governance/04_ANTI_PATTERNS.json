@@ -1,4 +1,8 @@
 {
+  "_deprecated": "2026-04-03",
+  "_canonical_source": "docs/SSOT/governance/RED_THREAD_REGISTRY.md (violation_action fields) + docs/SSOT/governance/ENFORCEMENT_PROTOCOL.md (forbidden list)",
+  "_action": "DO NOT EDIT — update canonical source instead. See docs/SSOT/governance/GOVERNANCE_MAP.md",
+
   "forbidden_patterns": [
     {
       "id": "repository_pattern",

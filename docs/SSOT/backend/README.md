@@ -14,6 +14,8 @@
 |------|-------|
 | [endpoint-pattern.md](patterns/endpoint-pattern.md) | Minimal API endpoint registration (`Map(app)`) |
 | [handler-pattern.md](patterns/handler-pattern.md) | MediatR handler + Result<T> |
+| [result-pattern.md](patterns/result-pattern.md) | Result<T>, Error, error code catalog, ToHttpResult() |
+| [blazor-page-pattern.md](patterns/blazor-page-pattern.md) | OnAfterRenderAsync + PrincipalHolder + StateHasChanged |
 | [validator-pattern.md](patterns/validator-pattern.md) | FluentValidation + pipeline |
 | [sql-pattern.md](patterns/sql-pattern.md) | SqlLoader + embedded `.sql` files |
 

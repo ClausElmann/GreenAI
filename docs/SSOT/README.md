@@ -13,6 +13,7 @@
 | [localization/](localization/README.md)| Labels table, ILocalizationService, shared.* keys             |
 | [identity/](identity/README.md)        | Custom JWT auth, ICurrentUser, tenant isolation, permissions  |
 | [testing/](testing/README.md)          | xUnit v3, DatabaseFixture, Respawn, NSubstitute patterns      |
+| [governance/](governance/README.md)    | Build plan, red threads, execution protocol, self-optimization|
 | [_system/](_system/ssot-standards.md) | SSOT standards, file size rules, placement decision tree      |
 
 ---
@@ -37,4 +38,4 @@ Before creating any `.md` file:
 
 ---
 
-**Last Updated:** 2026-04-02
+**Last Updated:** 2026-04-03

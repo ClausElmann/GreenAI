@@ -9,7 +9,6 @@ public interface IGetApiTokenRepository
     Task<ApiTokenUserRecord?> FindUserAsync(string email, int customerId, int profileId);
     Task RecordFailedLoginAsync(UserId userId);
     Task ResetFailedLoginAsync(UserId userId);
-    Task SaveRefreshTokenAsync(UserId userId, CustomerId customerId, ProfileId profileId, string token, DateTimeOffset expiresAt, int languageId);
 }
 
 public sealed class GetApiTokenRepository : IGetApiTokenRepository
@@ -32,11 +31,6 @@ public sealed class GetApiTokenRepository : IGetApiTokenRepository
         => _db.ExecuteAsync(
             SqlLoader.Load<GetApiTokenRepository>("ResetFailedLogin.sql"),
             new { UserId = userId.Value });
-
-    public Task SaveRefreshTokenAsync(UserId userId, CustomerId customerId, ProfileId profileId, string token, DateTimeOffset expiresAt, int languageId)
-        => _db.ExecuteAsync(
-            SqlLoader.Load<GetApiTokenRepository>("SaveRefreshToken.sql"),
-            new { UserId = userId.Value, CustomerId = customerId.Value, ProfileId = profileId.Value, Token = token, ExpiresAt = expiresAt, LanguageId = languageId });
 }
 
 public sealed record ApiTokenUserRecord(

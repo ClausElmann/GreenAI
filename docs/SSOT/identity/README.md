@@ -10,7 +10,8 @@
 
 | File | Topic |
 |------|-------|
-| [auth-flow.md](architecture/auth-flow.md) | Login → customer selection → profile selection → JWT |
+| [auth-flow.md](auth-flow.md) | Login → customer selection → profile selection → JWT |
+| [current-user.md](current-user.md) | ICurrentUser, BlazorPrincipalHolder, DI registration, Blazor usage contract |
 | [tenant-isolation.md](tenant-isolation.md) | CustomerId rules, pre-auth exceptions |
 | [permissions.md](patterns/permissions.md) | IPermissionService, role checks, SuperAdmin |
 | [jwt-claims.md](patterns/jwt-claims.md) | Claim names (GreenAiClaims), token content |
@@ -93,4 +94,4 @@ IPermissionService  // DoesUserHaveRoleAsync, DoesProfileHaveRoleAsync, IsUserSu
 
 ---
 
-**Last Updated:** 2026-04-02
+**Last Updated:** 2026-04-03

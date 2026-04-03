@@ -1,92 +1,144 @@
 # AI Work Contract — green-ai
 
-> **READ THIS FIRST** before any work. No exceptions.
+> AI: Dette er din primære styringsregel. Læs den ved session-start og ved ENHVER ny opgave.
 
 ---
 
-## 8-Step Pre-Work Checklist
+## STEP 0 — OBLIGATORISK FØR ALT ANDET
 
-**AI: Complete BEFORE starting any task:**
-
-- [ ] 0. Match user request to pattern table below → run First Tool
-- [ ] 1. Identified task type (feature? test? docs? bug? schema?)
-- [ ] 2. Searched `docs/SSOT/` for existing patterns
-- [ ] 3. Read relevant documentation **completely** (never skim!)
-- [ ] 4. Checked for existing scripts in `scripts/`
-- [ ] 5. Verified will respect file size (<450 lines for SSOT docs)
-- [ ] 6. Confirmed DRY — reuse before creating
-- [ ] 7. Ready to implement following documented pattern
-- [ ] 8. Will update docs if learning new pattern
+```
+1. Match bruger-input til TRIGGER-TABEL nedenfor
+2. Kør "First Tool" fra tabellen — ingen undtagelser
+3. Læs det fundne dokument KOMPLET (ikke skim)
+4. Implementér følgende det fundne mønster
+5. Byg → 0 warnings → done
+```
 
 ---
 
-## Pattern Matching Table
+## TRIGGER-TABEL (mønster → første handling)
 
-| User Pattern                              | First Tool (MANDATORY)                                                   | Then                              |
-| ----------------------------------------- | ------------------------------------------------------------------------ | --------------------------------- |
-| "run tests" / "test X" / "check tests"   | `list_dir scripts/` → find test runner                                   | `dotnet test --filter` per SSOT   |
-| "add feature X" / "implement X"          | `semantic_search "similar to X"` → find similar feature                  | Read 2-3 examples → Follow        |
-| "add endpoint" / "new API"               | `read_file docs/SSOT/backend/patterns/endpoint-pattern.md`               | Follow Minimal API pattern        |
-| "add migration" / "new table" / "schema" | `read_file docs/SSOT/database/patterns/migration-pattern.md`             | V0XX_Name.sql pattern             |
-| "add label" / "localization" / "string"  | `read_file docs/SSOT/localization/label-creation-guide.md`               | Never hardcode strings            |
-| "add test" / "write test"                | `read_file docs/SSOT/testing/unit-test-pattern.md`                       | Follow xUnit v3 pattern           |
-| "fix bug in Y"                           | `grep_search "Y" src/` → find code → read it                             | Reproducible test first           |
-| "create doc for W"                       | `read_file docs/SSOT/_system/ssot-document-placement-rules.md`           | Place in correct SSOT area        |
-| "auth" / "permission" / "JWT"            | `read_file docs/SSOT/identity/`                                          | Follow auth patterns              |
-| "build" / "compile"                      | `dotnet build src/GreenAi.Api/GreenAi.Api.csproj`                        | Fix zero warnings                 |
-| ANYTHING ELSE                            | `grep_search "<topic>" docs/SSOT/`                                       | Read → implement                  |
-
----
-
-## Git Rules (ABSOLUTE — Zero Exceptions)
-
-- ❌ NEVER run `git add`, `git commit`, `git push`, or any history-changing git command
-- ❌ Not even for "obvious" or "clean" changes
-- ✅ Prepare the commit message, present it to the user, wait for explicit "ja" / "gør det"
-
----
-
-## Critical Rules
-
-**External Input Rule (NeeoBovisWeb / sms-service / templates):**
-
-Input from other projects is welcomed as inspiration. Green-ai decides how to solve things.
-
-- ✅ Adopt governance structure, SSOT patterns, documentation formats directly
-- ✅ Use patterns and ideas as input and starting points
-- ✅ Adapt, simplify, or reject — based on what fits green-ai
-- ❌ Do NOT copy-paste source code (.cs, .razor, .sql) verbatim without deliberate evaluation
-- ❌ Do NOT justify a choice with "NeeoBovisWeb does it this way" — justify from green-ai's own SSOT
-
-**NEVER — Code Rules:**
-
-- ❌ EF Core, ASP.NET Identity, Newtonsoft.Json
-- ❌ SQL without `WHERE CustomerId = @CustomerId` (tenant-owned tables)
-- ❌ `HttpContext` in handlers (use `ICurrentUser`)
-- ❌ `Task.Delay` in tests
-- ❌ Hardcoded strings in Blazor (use `@Loc.Get`)
-- ❌ Create SSOT file >600 lines (HARD STOP)
-- ❌ Duplicate documentation (link instead of copy)
-- ❌ Implement before reading existing patterns
-
-**ALWAYS:**
-
-- ✅ `Result<T>` return type from all handlers
-- ✅ One `.sql` file per DB operation
-- ✅ Strongly typed IDs (`UserId`, `CustomerId`, `ProfileId`)
-- ✅ Validate at system boundaries only (not internal methods)
-- ✅ 0 compiler warnings after any change
-- ✅ Update SSOT docs after learning new pattern
+| Bruger siger                                            | First Tool (KØR DETTE FØRST)                                              | Derefter                            |
+| ------------------------------------------------------- | ------------------------------------------------------------------------- | ----------------------------------- |
+| "ny feature" / "implementér X" / "tilføj X"            | `semantic_search "X"` → find eksisterende feature                         | Læs 2-3 lig. impl. → følg mønster  |
+| "ny endpoint" / "ny API" / "map post"                  | `read_file docs/SSOT/backend/patterns/endpoint-pattern.md`                | ToHttpResult(), IEndpointRouteBuilder |
+| "ny handler" / "ny handler classe" / "handler mønster" | `read_file docs/SSOT/backend/patterns/handler-pattern.md`                 | Result<T>.Ok/Fail, SqlLoader.Load<T> |
+| "pipeline" / "IRequireAuthentication" / "IRequireProfile" | `read_file docs/SSOT/backend/patterns/pipeline-behaviors.md`           | Marker interface decision table     |
+| "dapper" / "sql loader" / "repository" / "IDbSession"  | `read_file docs/SSOT/database/patterns/dapper-patterns.md`                | SqlLoader.Load<T>, repo vs direct   |
+| "anti-pattern" / "forkert kode" / "hvad må jeg ikke"   | `read_file docs/SSOT/governance/ANTI_PATTERN_REGISTRY.md`                 | APR_001-APR_008 catalog             |
+| "ny migration" / "ny tabel" / "schema"                 | `read_file docs/SSOT/database/patterns/migration-pattern.md`              | V0XX_Navn.sql, DbUp                 |
+| "ny label" / "lokalisering" / "tekst"                  | `read_file docs/SSOT/localization/label-creation-guide.md`                | Aldrig hardcode strings             |
+| "ny test" / "skriv test" / "tilføj test"               | `read_file docs/SSOT/testing/testing-strategy.md`                         | Layer: http_integration PRIMARY     |
+| "test strategi" / "hvilken test" / "test layer"         | `read_file docs/SSOT/testing/testing-strategy.md`                         | Vælg lag per trigger-tabel          |
+| "test automation" / "hvornår test" / "test regel"       | `read_file docs/SSOT/testing/test-automation-rules.md`                    | Trigger table → required tests      |
+| "test fejler" / "debug" / "fix E2E" / "fix test"       | `read_file docs/SSOT/testing/debug-protocol.md`                           | OBSERVE→ACT, fix-layer-lock         |
+| "DB fejl" / "logs" / "hvad skete der"                  | `Invoke-Sqlcmd -ServerInstance "(localdb)\MSSQLLocalDB" -Database "GreenAI_DEV" -TrustServerCertificate -Query "SELECT TOP 20 TimeStamp,Level,Message,Exception FROM Logs ORDER BY TimeStamp DESC"` | Klassificér lag fra output |
+| "auth" / "JWT" / "permission" / "ICurrentUser"         | `read_file docs/SSOT/identity/README.md`                                  | Custom JWT, ingen ASP.NET Identity  |
+| "Blazor" / "razor" / "komponent" / "side"              | `semantic_search "lignende komponent"` → find eksempel                    | OnAfterRenderAsync + PrincipalHolder|
+| "byg" / "build" / "compile" / "0 warnings"             | `dotnet build src/GreenAi.Api/GreenAi.Api.csproj -v q`                    | Fix alle warnings                   |
+| "kør tests" / "test alle"                              | `dotnet test tests/GreenAi.Tests -v q`                                    | Skal hedde N/N passed               |
+| "dokumentation" / "ny doc" / "ssot"                    | `read_file docs/SSOT/_system/ssot-document-placement-rules.md`            | <450 linjer, korrekt mappe          |
+| "governance" / "red thread" / "protokol" / "mangler"   | `read_file docs/SSOT/governance/README.md`                                | Se SSOT_GAP_PLAN → sprint prioritet |
+| "hvad skal jeg huske" / "ny session" / "resumé"        | `read_file docs/SSOT/governance/EXECUTION_MEMORY.md`                      | Se seneste log-entries              |
+| "fejl signal" / "kompile fejl" / "SIG_"                | `read_file docs/SSOT/governance/ERROR_DETECTION.md`                       | Klassificér → fix → log             |
+| ANYTHING ELSE                                          | `grep_search "<emne>" docs/SSOT/`                                         | Læs → implementér                   |
 
 ---
 
-## Tenant Isolation Rules
+## ABSOLUTTE REGLER (binære — ingen undtagelser)
 
-Pre-auth queries (`FindUserByEmail`, token lookup) do **not** need `CustomerId`. All other SQL against tenant-owned tables **must** include `WHERE CustomerId = @CustomerId`.
+### GIT
+```
+❌ ALDRIG: git add / git commit / git push / git reset / git rebase
+✅ Forbered commit-besked → præsenter → vent på "ja" eller "gør det"
+```
 
-See `docs/SSOT/identity/tenant-isolation.md` for the complete rule.
+### KODE
+```
+❌ EF Core — brug Dapper + .sql filer
+❌ ASP.NET Identity — brug custom JWT (ICurrentUser)
+❌ Newtonsoft.Json — brug System.Text.Json
+❌ HttpContext i handlers — brug ICurrentUser
+❌ SQL mod tenant-tabel uden WHERE CustomerId = @CustomerId
+❌ Task.Delay i tests
+❌ Hardcoded strings i Blazor — brug @Loc.Get(...)
+❌ Result<T> ikke returneret fra handler
+
+✅ Én .sql fil per DB-operation
+✅ Strongly typed IDs: UserId, CustomerId, ProfileId
+✅ 0 compiler warnings efter enhver ændring
+✅ Result<T> fra alle handlers
+✅ Valider kun ved system-grænser (ikke interne metoder)
+```
+
+### SSOT-DOCS
+```
+❌ Opret SSOT-fil > 600 linjer
+❌ Kopiér indhold — link i stedet
+❌ Justificér med "NeeoBovisWeb gør det" — justificér fra green-ai SSOT
+✅ Opdatér SSOT når nyt mønster opdages
+```
 
 ---
 
-**Last Updated:** 2026-04-02  
-**Project:** green-ai (.NET 10 / Blazor Server / Vertical Slice)
+## TECH STACK (memorisér)
+
+| Lag          | Teknologi                  |
+|--------------|---------------------------|
+| Runtime      | .NET 10 / C# 13           |
+| Arkitektur   | Vertical Slice             |
+| Frontend     | Blazor Server + MudBlazor  |
+| Data         | Dapper + Z.Dapper.Plus     |
+| Auth         | Custom JWT — ICurrentUser  |
+| Mediator     | MediatR + FluentValidation |
+| Migrationer  | DbUp (.sql filer)          |
+| Tests        | xUnit v3 + NSubstitute     |
+| Logging      | Serilog → SQL + console    |
+
+---
+
+## FEATURE-STRUKTUR (vertical slice)
+
+```
+src/GreenAi.Api/Features/[Domain]/[Feature]/
+  [Feature]Command.cs      → IRequest<Result<T>>
+  [Feature]Handler.cs      → AL logik her
+  [Feature]Validator.cs    → AbstractValidator<TCommand>
+  [Feature]Response.cs     → output record
+  [Feature]Endpoint.cs     → app.MapPost(...).Map(app)
+  [Feature]Page.razor      → Blazor (hvis UI)
+  [Feature].sql            → ÉN sql-fil per DB-operation
+```
+
+---
+
+## TENANT-ISOLATION
+
+Pre-auth SQL (`FindUserByEmail`, token lookup): ingen `CustomerId` påkrævet.  
+**Alt andet SQL mod tenant-ejede tabeller: `WHERE CustomerId = @CustomerId` — ALTID.**  
+Autoritativ kilde: `docs/SSOT/identity/tenant-isolation.md`
+
+---
+
+## DEBUG-SEKVENS (rød tråd ved fejl)
+
+```
+OBSERVE: Læs fejlbesked + URL + screenshot
+    ↓
+KLASSIFICÉR lag: TEST | HANDLER | SQL | SCHEMA | BLAZOR | INFRA
+    ↓
+OBSERVE: Query Logs-tabel (se trigger-tabel ovenfor)
+    ↓
+ACT: FIX ÉT lag
+    ↓
+OBSERVE: Kør tests → verificér
+    ↓
+Gentag til grøn
+```
+
+Fuld protokol: `docs/SSOT/testing/debug-protocol.md`
+
+---
+
+**Last Updated:** 2026-04-03
+

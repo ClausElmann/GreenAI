@@ -1,7 +1,27 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Forside — GreenAi</PageTitle>
 
-<h1>Hello, world!</h1>
+<MudText Typo="Typo.h5" Class="mb-6">Forside</MudText>
 
-Welcome to your new app.
+<MudGrid>
+    <MudItem xs="12" sm="6" md="4">
+        <MudPaper Elevation="2" Class="pa-6">
+            <MudStack Spacing="3">
+                <MudIcon Icon="@Icons.Material.Filled.BusinessCenter"
+                         Size="Size.Large"
+                         Color="Color.Primary" />
+                <MudText Typo="Typo.h6">Kundestyre</MudText>
+                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                    Administrer brugere, profiler og indstillinger for din kunde.
+                </MudText>
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Href="/customer-admin"
+                           FullWidth="true">
+                    Åbn
+                </MudButton>
+            </MudStack>
+        </MudPaper>
+    </MudItem>
+</MudGrid>

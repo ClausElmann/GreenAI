@@ -1,4 +1,5 @@
 using GreenAi.Api.SharedKernel.Auth;
+using GreenAi.Api.SharedKernel.Db;
 using GreenAi.Api.SharedKernel.Ids;
 using GreenAi.Api.SharedKernel.Results;
 using MediatR;
@@ -9,11 +10,15 @@ public sealed class RefreshTokenHandler : IRequestHandler<RefreshTokenCommand, R
 {
     private readonly IRefreshTokenRepository _repository;
     private readonly JwtTokenService _jwt;
+    private readonly IRefreshTokenWriter _tokenWriter;
+    private readonly IDbSession _db;
 
-    public RefreshTokenHandler(IRefreshTokenRepository repository, JwtTokenService jwt)
+    public RefreshTokenHandler(IRefreshTokenRepository repository, JwtTokenService jwt, IRefreshTokenWriter tokenWriter, IDbSession db)
     {
-        _repository = repository;
-        _jwt = jwt;
+        _repository  = repository;
+        _jwt         = jwt;
+        _tokenWriter = tokenWriter;
+        _db          = db;
     }
 
     public async Task<Result<RefreshTokenResponse>> Handle(RefreshTokenCommand request, CancellationToken ct)
@@ -22,8 +27,7 @@ public sealed class RefreshTokenHandler : IRequestHandler<RefreshTokenCommand, R
         if (record is null)
             return Result<RefreshTokenResponse>.Fail("INVALID_REFRESH_TOKEN", "Refresh token is invalid or expired");
 
-        // Single-use: revoke the used token immediately
-        await _repository.RevokeTokenAsync(record.Id);
+        // Single-use: revoke the used token immediately — handled atomically below.
 
         // ProfileId is read from the stored token — it carries the resolved profile from the
         // original login/select-profile flow.
@@ -44,14 +48,20 @@ public sealed class RefreshTokenHandler : IRequestHandler<RefreshTokenCommand, R
             record.Email,
             record.LanguageId);
 
-        // Issue new refresh token (rotation)
-        await _repository.SaveNewTokenAsync(
-            new UserId(record.UserId),
-            new CustomerId(record.CustomerId),
-            profileId,
-            token.RefreshToken,
-            DateTimeOffset.UtcNow.AddDays(30),
-            record.LanguageId);
+        // Atomic token rotation: revoke old token + issue new token in one transaction.
+        // If SaveAsync fails after RevokeAsync, the rollback restores the old token —
+        // preventing the user from being logged out by a transient write failure.
+        await _db.ExecuteInTransactionAsync(async () =>
+        {
+            await _repository.RevokeTokenAsync(record.Id);
+            await _tokenWriter.SaveAsync(
+                new UserId(record.UserId),
+                new CustomerId(record.CustomerId),
+                profileId,
+                token.RefreshToken,
+                DateTimeOffset.UtcNow.AddDays(30),
+                record.LanguageId);
+        });
 
         return Result<RefreshTokenResponse>.Ok(new RefreshTokenResponse(
             token.AccessToken,

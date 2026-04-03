@@ -1,4 +1,8 @@
 {
+  "_deprecated": "2026-04-03",
+  "_canonical_source": "docs/SSOT/governance/EXECUTION_PROTOCOL.md + docs/SSOT/backend/README.md",
+  "_action": "DO NOT EDIT — update canonical source instead. See docs/SSOT/governance/GOVERNANCE_MAP.md",
+
   "rules": [
     {
       "id": "proactive_improvement_suggestions",

@@ -162,38 +162,6 @@ public sealed class RefreshTokenRepositoryTests : IAsyncLifetime
 
     // ===================================================================
     // SaveNewRefreshToken.sql
-    // RULE: Inserts a new token row — used after rotation to issue
-    //       the replacement token.
-    // ===================================================================
-
-    [Fact]
-    public async Task SaveNewTokenAsync_InsertsTokenAndItIsImmediatelyFindable()
-    {
-        var customerId = await _builder.InsertCustomerAsync();
-        var userId = await _builder.InsertUserAsync(new() { Email = "dave@example.com" });
-        var profileId = new ProfileId(await _builder.InsertProfileAsync(customerId, userId));
-
-        var repo = CreateRepository();
-        await repo.SaveNewTokenAsync(userId, customerId, profileId, "rotated-token", DateTimeOffset.UtcNow.AddDays(30), languageId: 1);
-        var result = await repo.FindValidTokenAsync("rotated-token");
-
-        Assert.NotNull(result);
-        Assert.Equal(userId.Value, result.UserId);
-        Assert.Equal(profileId.Value, result.ProfileId);
-    }
-
-    [Fact]
-    public async Task SaveNewTokenAsync_DoesNotAffectOtherTokensForSameUser()
-    {
-        // TESTING: Rotation adds a NEW row — it does not modify the old token
-        var customerId = await _builder.InsertCustomerAsync();
-        var userId = await _builder.InsertUserAsync();
-        var profileId = new ProfileId(await _builder.InsertProfileAsync(customerId, userId));
-        await _builder.InsertRefreshTokenAsync(customerId, userId, new() { Token = "original-token", ProfileId = profileId.Value });
-
-        await CreateRepository().SaveNewTokenAsync(userId, customerId, profileId, "new-token", DateTimeOffset.UtcNow.AddDays(30), languageId: 1);
-
-        var count = await _builder.CountRefreshTokensByUserIdAsync(userId);
-        Assert.Equal(2, count); // Both tokens must exist (old revoked separately by handler)
-    }
+    // NOTE: SaveNewToken SQL tests removed.
+    // SaveAsync is now tested via SharedKernel/Auth/RefreshTokenWriterTests (Slice 1).
 }

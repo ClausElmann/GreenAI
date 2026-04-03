@@ -1,4 +1,8 @@
 {
+  "_deprecated": "2026-04-03",
+  "_canonical_source": "docs/SSOT/governance/ENFORCEMENT_PROTOCOL.md + docs/SSOT/identity/current-user.md",
+  "_action": "DO NOT EDIT — update canonical source instead. See docs/SSOT/governance/GOVERNANCE_MAP.md",
+
   "validation_rules": [
     {
       "id": "icurrentuser_sole_auth_contract",

@@ -17,9 +17,4 @@ public sealed class SelectProfileRepository : ISelectProfileRepository
             new { UserId = userId.Value, CustomerId = customerId.Value });
         return results.ToList();
     }
-
-    public Task SaveRefreshTokenAsync(UserId userId, CustomerId customerId, ProfileId profileId, string token, DateTimeOffset expiresAt, int languageId)
-        => _db.ExecuteAsync(
-            SqlLoader.Load<SelectProfileRepository>("SaveRefreshToken.sql"),
-            new { UserId = userId.Value, CustomerId = customerId.Value, ProfileId = profileId.Value, Token = token, ExpiresAt = expiresAt, LanguageId = languageId });
 }

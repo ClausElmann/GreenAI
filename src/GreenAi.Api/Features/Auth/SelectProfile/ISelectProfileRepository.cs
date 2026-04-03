@@ -5,7 +5,6 @@ namespace GreenAi.Api.Features.Auth.SelectProfile;
 public interface ISelectProfileRepository
 {
     Task<IReadOnlyCollection<ProfileRecord>> GetAvailableProfilesAsync(UserId userId, CustomerId customerId);
-    Task SaveRefreshTokenAsync(UserId userId, CustomerId customerId, ProfileId profileId, string token, DateTimeOffset expiresAt, int languageId);
 }
 
 /// <summary>

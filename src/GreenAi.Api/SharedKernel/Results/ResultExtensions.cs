@@ -33,6 +33,10 @@ public static class ResultExtensions
 
             // 404 — resource not found
             "PROFILE_NOT_FOUND"      => HttpResults.Problem(result.Error.Message, statusCode: 404),
+            "NOT_FOUND"              => HttpResults.Problem(result.Error.Message, statusCode: 404),
+
+            // 409 — conflict: resource already exists or state prevents the action
+            "EMAIL_TAKEN"            => HttpResults.Problem(result.Error.Message, statusCode: 409),
 
             // 500 — unexpected error (error code not mapped above)
             _                        => HttpResults.Problem(result.Error.Message, statusCode: 500),

@@ -1,0 +1,49 @@
+@using GreenAi.Api.Features.CustomerAdmin.GetCustomerSettings
+@inject ISnackbar Snackbar
+
+<MudForm @ref="_form">
+    <MudGrid>
+        <MudItem xs="12" sm="6">
+            <MudTextField @bind-Value="_name"
+                          Label="Navn"
+                          Variant="Variant.Outlined"
+                          Required="true"
+                          Class="mb-3" />
+        </MudItem>
+        <MudItem xs="12">
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.Save"
+                       Disabled="_saving"
+                       OnClick="SaveAsync">
+                @if (_saving)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                }
+                Gem indstillinger
+            </MudButton>
+        </MudItem>
+    </MudGrid>
+</MudForm>
+
+@code {
+    [Parameter, EditorRequired] public int CustomerId { get; set; }
+    [Parameter, EditorRequired] public string CustomerName { get; set; } = string.Empty;
+
+    private MudForm? _form;
+    private bool _saving;
+    private string _name = string.Empty;
+
+    protected override void OnParametersSet() => _name = CustomerName;
+
+    private async Task SaveAsync()
+    {
+        await _form!.Validate();
+        if (!_form.IsValid) return;
+
+        _saving = true;
+        // TODO: await Mediator.Send(new UpdateCustomerSettingsCommand(CustomerId, _name));
+        _saving = false;
+        Snackbar.Add("Indstillinger gemt.", Severity.Success);
+    }
+}

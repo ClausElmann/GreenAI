@@ -1,3 +1,4 @@
+using GreenAi.Api.SharedKernel.Pipeline;
 using GreenAi.Api.SharedKernel.Results;
 using MediatR;
 
@@ -7,4 +8,4 @@ namespace GreenAi.Api.Features.Localization.BatchUpsertLabels;
 public record LabelEntry(string ResourceName, string ResourceValue, int LanguageId);
 
 public record BatchUpsertLabelsCommand(IReadOnlyList<LabelEntry> Labels)
-    : IRequest<Result<BatchUpsertLabelsResponse>>;
+    : IRequest<Result<BatchUpsertLabelsResponse>>, IRequireAuthentication;

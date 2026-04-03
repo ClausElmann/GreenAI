@@ -10,12 +10,14 @@ public sealed class SelectProfileHandler : IRequestHandler<SelectProfileCommand,
     private readonly ISelectProfileRepository _repository;
     private readonly JwtTokenService _jwt;
     private readonly ICurrentUser _currentUser;
+    private readonly IRefreshTokenWriter _tokenWriter;
 
-    public SelectProfileHandler(ISelectProfileRepository repository, JwtTokenService jwt, ICurrentUser currentUser)
+    public SelectProfileHandler(ISelectProfileRepository repository, JwtTokenService jwt, ICurrentUser currentUser, IRefreshTokenWriter tokenWriter)
     {
-        _repository = repository;
-        _jwt = jwt;
+        _repository  = repository;
+        _jwt         = jwt;
         _currentUser = currentUser;
+        _tokenWriter = tokenWriter;
     }
 
     public async Task<Result<SelectProfileResponse>> Handle(SelectProfileCommand request, CancellationToken ct)
@@ -57,7 +59,7 @@ public sealed class SelectProfileHandler : IRequestHandler<SelectProfileCommand,
 
         var token = _jwt.CreateToken(userId, customerId, profileId, _currentUser.Email, languageId);
 
-        await _repository.SaveRefreshTokenAsync(
+        await _tokenWriter.SaveAsync(
             userId, customerId, profileId, token.RefreshToken, token.ExpiresAt.AddDays(30), languageId);
 
         return Result<SelectProfileResponse>.Ok(

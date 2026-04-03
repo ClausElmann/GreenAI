@@ -27,8 +27,11 @@ public sealed class SelectCustomerHandlerTests
         return user;
     }
 
-    private static SelectCustomerHandler CreateHandler(ISelectCustomerRepository repository, ICurrentUser? currentUser = null)
-        => new(repository, CreateJwtService(), currentUser ?? CreateCurrentUser());
+    private static SelectCustomerHandler CreateHandler(
+        ISelectCustomerRepository repository,
+        ICurrentUser? currentUser = null,
+        IRefreshTokenWriter? tokenWriter = null)
+        => new(repository, CreateJwtService(), currentUser ?? CreateCurrentUser(), tokenWriter ?? Substitute.For<IRefreshTokenWriter>());
 
     /// <summary>Returns a single-profile collection — the standard auto-resolve case.</summary>
     private static IReadOnlyCollection<ProfileRecord> OneProfile(int profileId = 9, string displayName = "Main Profile")
@@ -46,8 +49,6 @@ public sealed class SelectCustomerHandlerTests
             .Returns(new MembershipRecord(CustomerId: 10, LanguageId: 2));
         repository.GetProfilesAsync(new UserId(1), new CustomerId(10))
             .Returns((IReadOnlyCollection<ProfileRecord>)OneProfile());
-        repository.SaveRefreshTokenAsync(Arg.Any<UserId>(), Arg.Any<CustomerId>(), Arg.Any<ProfileId>(), Arg.Any<string>(), Arg.Any<DateTimeOffset>(), Arg.Any<int>())
-            .Returns(Task.CompletedTask);
 
         var result = await CreateHandler(repository).Handle(new SelectCustomerCommand(10), TestContext.Current.CancellationToken);
 
@@ -61,17 +62,16 @@ public sealed class SelectCustomerHandlerTests
     {
         // RULE: ProfileId must be > 0 in the saved token. ProfileId(0) is forbidden from Step 11+.
         var repository = Substitute.For<ISelectCustomerRepository>();
+        var tokenWriter = Substitute.For<IRefreshTokenWriter>();
         var currentUser = CreateCurrentUser(userId: 1, email: "user@example.com");
         repository.FindMembershipAsync(new UserId(1), new CustomerId(10))
             .Returns(new MembershipRecord(CustomerId: 10, LanguageId: 2));
         repository.GetProfilesAsync(new UserId(1), new CustomerId(10))
             .Returns((IReadOnlyCollection<ProfileRecord>)OneProfile(profileId: 9));
-        repository.SaveRefreshTokenAsync(Arg.Any<UserId>(), Arg.Any<CustomerId>(), Arg.Any<ProfileId>(), Arg.Any<string>(), Arg.Any<DateTimeOffset>(), Arg.Any<int>())
-            .Returns(Task.CompletedTask);
 
-        await CreateHandler(repository, currentUser).Handle(new SelectCustomerCommand(10), TestContext.Current.CancellationToken);
+        await CreateHandler(repository, currentUser, tokenWriter).Handle(new SelectCustomerCommand(10), TestContext.Current.CancellationToken);
 
-        await repository.Received(1).SaveRefreshTokenAsync(
+        await tokenWriter.Received(1).SaveAsync(
             new UserId(1),
             new CustomerId(10),
             new ProfileId(9),       // must be the real Profiles.Id — never 0
@@ -90,8 +90,6 @@ public sealed class SelectCustomerHandlerTests
             .Returns(new MembershipRecord(CustomerId: 10, LanguageId: 1));
         repository.GetProfilesAsync(new UserId(42), new CustomerId(10))
             .Returns((IReadOnlyCollection<ProfileRecord>)OneProfile());
-        repository.SaveRefreshTokenAsync(Arg.Any<UserId>(), Arg.Any<CustomerId>(), Arg.Any<ProfileId>(), Arg.Any<string>(), Arg.Any<DateTimeOffset>(), Arg.Any<int>())
-            .Returns(Task.CompletedTask);
 
         await CreateHandler(repository, currentUser).Handle(new SelectCustomerCommand(10), TestContext.Current.CancellationToken);
 
@@ -119,9 +117,6 @@ public sealed class SelectCustomerHandlerTests
         Assert.True(result.IsSuccess);
         Assert.True(result.Value!.NeedsProfileSelection);
         Assert.Equal(2, result.Value.AvailableProfiles!.Count);
-        await repository.DidNotReceive().SaveRefreshTokenAsync(
-            Arg.Any<UserId>(), Arg.Any<CustomerId>(), Arg.Any<ProfileId>(),
-            Arg.Any<string>(), Arg.Any<DateTimeOffset>(), Arg.Any<int>());
     }
 
     // ===================================================================
@@ -175,12 +170,13 @@ public sealed class SelectCustomerHandlerTests
     public async Task Handle_MembershipNotFound_DoesNotSaveRefreshToken()
     {
         var repository = Substitute.For<ISelectCustomerRepository>();
+        var tokenWriter = Substitute.For<IRefreshTokenWriter>();
         repository.FindMembershipAsync(Arg.Any<UserId>(), Arg.Any<CustomerId>())
             .Returns((MembershipRecord?)null);
 
-        await CreateHandler(repository).Handle(new SelectCustomerCommand(99), TestContext.Current.CancellationToken);
+        await CreateHandler(repository, tokenWriter: tokenWriter).Handle(new SelectCustomerCommand(99), TestContext.Current.CancellationToken);
 
-        await repository.DidNotReceive().SaveRefreshTokenAsync(
+        await tokenWriter.DidNotReceive().SaveAsync(
             Arg.Any<UserId>(), Arg.Any<CustomerId>(), Arg.Any<ProfileId>(),
             Arg.Any<string>(), Arg.Any<DateTimeOffset>(), Arg.Any<int>());
     }

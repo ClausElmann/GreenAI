@@ -1,0 +1,117 @@
+@page "/customer-admin/profiles/{ProfileId:int}"
+@using GreenAi.Api.Features.CustomerAdmin.GetProfiles
+@using GreenAi.Api.SharedKernel.Auth
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IMediator Mediator
+@inject ISnackbar Snackbar
+@inject BlazorPrincipalHolder PrincipalHolder
+
+<PageTitle>Profil — GreenAi</PageTitle>
+
+@if (_loading)
+{
+    <MudProgressLinear Indeterminate="true" />
+    return;
+}
+
+@if (_profile is null)
+{
+    <MudAlert Severity="Severity.Warning">Profil ikke fundet (id: @ProfileId).</MudAlert>
+    <MudButton Variant="Variant.Text"
+               StartIcon="@Icons.Material.Filled.ArrowBack"
+               Href="/customer-admin"
+               Class="mt-3">
+        Tilbage til kundestyre
+    </MudButton>
+    return;
+}
+
+<MudBreadcrumbs Items="_breadcrumbs" Class="mb-4 px-0" />
+
+<MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-4" Spacing="2">
+    <MudIcon Icon="@Icons.Material.Filled.AccountTree" Size="Size.Large" Color="Color.Primary" />
+    <div>
+        <MudText Typo="Typo.h5">@_profile.Name</MudText>
+    </div>
+    <MudSpacer />
+    <MudChip T="string"
+             Color="@(_profile.IsActive ? Color.Success : Color.Default)"
+             Size="Size.Small">
+        @(_profile.IsActive ? "Aktiv" : "Inaktiv")
+    </MudChip>
+</MudStack>
+
+<MudTabs Elevation="1" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pt-4">
+
+    <MudTabPanel Text="Info" Icon="@Icons.Material.Filled.Info">
+        <MudForm @ref="_infoForm">
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="_editName"
+                                  Label="Profilnavn"
+                                  Variant="Variant.Outlined"
+                                  Required="true"
+                                  Class="mb-3" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               StartIcon="@Icons.Material.Filled.Save"
+                               OnClick="SaveInfoAsync">
+                        Gem
+                    </MudButton>
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </MudTabPanel>
+
+</MudTabs>
+
+@code {
+    [Parameter] public int ProfileId { get; set; }
+
+    private ProfileRow? _profile;
+    private bool _loading = true;
+    private List<BreadcrumbItem> _breadcrumbs = [];
+
+    private MudForm? _infoForm;
+    private string _editName = string.Empty;
+
+    [CascadingParameter] private Task<AuthenticationState> AuthStateTask { get; set; } = null!;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        var authState = await AuthStateTask;
+
+        if (authState.User.Identity?.IsAuthenticated != true)
+        {
+            // Will be navigated by NavigationManager
+            return;
+        }
+
+        PrincipalHolder.Set(authState.User);
+
+        _loading = true;
+        var result = await Mediator.Send(new GetProfileDetailsQuery(ProfileId));
+        _profile = result.IsSuccess ? result.Value : null;
+        _editName = _profile?.Name ?? string.Empty;
+        _breadcrumbs =
+        [
+            new("Kundestyre", href: "/customer-admin"),
+            new(_profile?.Name ?? $"Profil {ProfileId}", href: null, disabled: true)
+        ];
+        _loading = false;
+        StateHasChanged();
+    }
+
+    private async Task SaveInfoAsync()
+    {
+        if (_infoForm is null) return;
+        await _infoForm.Validate();
+        if (!_infoForm.IsValid) return;
+        // TODO: Mediator.Send(new UpdateProfileCommand(ProfileId, _editName))
+        Snackbar.Add("Info gemt.", Severity.Success);
+    }
+}

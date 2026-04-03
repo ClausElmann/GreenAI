@@ -2,7 +2,7 @@
 
 > Authoritative patterns for all tests: unit, integration (DB), xUnit v3.
 
-**Last Updated:** 2026-04-02
+**Last Updated:** 2026-04-03
 
 ---
 
@@ -10,9 +10,15 @@
 
 | File | Topic |
 |------|-------|
-| [unit-test-pattern.md](patterns/unit-test-pattern.md) | xUnit v3 + NSubstitute, naming, structure |
-| [db-integration-pattern.md](patterns/db-integration-pattern.md) | DatabaseFixture + Respawn, real DB tests |
-| [test-running.md](guides/test-running.md) | `dotnet test --filter` commands |
+| [testing-strategy.md](testing-strategy.md) | Layer priority: http_integration PRIMARY, unit optional, e2e critical flows |
+| [test-automation-rules.md](test-automation-rules.md) | When to write which tests, trigger table, naming, debt registry |
+| [test-execution-protocol.md](test-execution-protocol.md) | Commands, execution order, failure diagnosis, pre-commit gate |
+| [patterns/unit-test-pattern.md](patterns/unit-test-pattern.md) | xUnit v3 + NSubstitute, golden sample: LoginHandlerTests |
+| [patterns/http-integration-test-pattern.md](patterns/http-integration-test-pattern.md) | DatabaseFixture + Respawn, golden sample: LoginRepositoryTests |
+| [patterns/db-integration-pattern.md](patterns/db-integration-pattern.md) | DatabaseFixture + Respawn, real DB tests |
+| [patterns/e2e-test-pattern.md](patterns/e2e-test-pattern.md) | E2ETestBase, WaitOrFailAsync, FailAsync, LoginAsync, seed fixture |
+| [guides/test-running.md](guides/test-running.md) | `dotnet test --filter` commands |
+| [debug-protocol.md](debug-protocol.md) | **Debug-rød-tråd**: Ping-pong, fix-layer-lock, DB log queries, E2E screenshots |
 
 ---
 

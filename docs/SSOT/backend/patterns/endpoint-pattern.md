@@ -1,68 +1,94 @@
-# Endpoint Pattern — green-ai
+# endpoint-pattern
 
-> Minimal API endpoint registration pattern.
+> **Canonical:** This is the SSOT for all Minimal API endpoints in GreenAi.
+> **Golden sample:** `src/GreenAi.Api/Features/Auth/ChangePassword/ChangePasswordEndpoint.cs`
 
-**Last Updated:** 2026-04-02
+```yaml
+id: endpoint_pattern
+type: pattern
+version: 2.0.0
+last_updated: 2026-04-03
+ssot_source: docs/SSOT/backend/patterns/endpoint-pattern.md
+red_threads: [result_pattern]
+```
 
 ---
 
-## File: `[Feature]Endpoint.cs`
+## Endpoint Template
 
 ```csharp
-namespace GreenAi.Api.Features.Customer.CreateCustomer;
+// [Feature]Endpoint.cs
+using GreenAi.Api.SharedKernel.Results;
+using MediatR;
 
-public static class CreateCustomerEndpoint
+namespace GreenAi.Api.Features.[Domain].[Feature];
+
+public static class [Feature]Endpoint
 {
-    public static void Map(WebApplication app)
+    public static void Map(IEndpointRouteBuilder app)
     {
-        app.MapPost("/api/customers", async (
-            CreateCustomerCommand command,
+        app.MapPost("/api/[domain]/[action]", async (
+            [Feature]Command command,
             IMediator mediator,
             CancellationToken ct) =>
         {
             var result = await mediator.Send(command, ct);
-            return result.IsSuccess
-                ? Results.Created($"/api/customers/{result.Value.Id}", result.Value)
-                : Results.BadRequest(result.Error);
+            return result.ToHttpResult();
         })
         .RequireAuthorization()
-        .WithTags("Customers");
+        .WithTags("[Domain]");
     }
 }
 ```
 
+## GET Endpoint (query, no body)
+
+```csharp
+app.MapGet("/api/[domain]/[resource]", async (
+    IMediator mediator,
+    CancellationToken ct) =>
+{
+    var result = await mediator.Send(new [Feature]Query(), ct);
+    return result.ToHttpResult();
+})
+.RequireAuthorization()
+.WithTags("[Domain]");
+```
+
+---
+
 ## Registration in Program.cs
 
 ```csharp
-// Program.cs
-CreateCustomerEndpoint.Map(app);
+[Feature]Endpoint.Map(app);
 ```
 
 ---
 
 ## Rules
 
+```yaml
+MUST:
+  - static class + static void Map(IEndpointRouteBuilder app)
+  - ALWAYS call: return result.ToHttpResult()
+  - No inline status code logic — ALL HTTP mapping is in ResultExtensions.cs
+  - CancellationToken passed to mediator.Send
+  - .RequireAuthorization() on all protected endpoints
+  - .WithTags("Domain") for Swagger grouping
+  - Parameter: IEndpointRouteBuilder (not WebApplication) for testability
+
+MUST_NOT:
+  - Results.Ok(...) / Results.Created(...) / Results.BadRequest(...) inline
+  - result.IsSuccess ternary in endpoint — use result.ToHttpResult() only
+  - Direct DB access in endpoint
+  - Business logic in endpoint — all logic in handler via MediatR
 ```
-✅ static class + static void Map(WebApplication app)
-✅ return Result.IsSuccess → 200/201, else BadRequest(result.Error)
-✅ CancellationToken passed to mediator.Send
-✅ .RequireAuthorization() on all protected endpoints
-✅ .WithTags("Domain") for Swagger grouping
-❌ No logic in endpoint — delegate to handler via MediatR
-❌ No direct DB access in endpoint
-```
 
----
+## HTTP Status Mapping
 
-## HTTP Method → Result Mapping
+All status codes determined by `ResultExtensions.ToHttpResult()`.
+Canonical source: `src/GreenAi.Api/SharedKernel/Results/ResultExtensions.cs`
+Reference: `docs/SSOT/backend/patterns/result-pattern.md` → error_code_catalog
 
-| Operation | Method | Success | Failure |
-|-----------|--------|---------|---------|
-| Create | POST | 201 Created | 400 BadRequest |
-| Read | GET | 200 OK | 404 NotFound |
-| Update | PUT | 200 OK | 400/404 |
-| Delete | DELETE | 204 NoContent | 404 NotFound |
+**Last Updated:** 2026-04-03
 
----
-
-**Last Updated:** 2026-04-02

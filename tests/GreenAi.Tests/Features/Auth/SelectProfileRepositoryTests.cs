@@ -142,58 +142,6 @@ public sealed class SelectProfileRepositoryTests : IAsyncLifetime
         Assert.Single(resultsB);
         Assert.Equal(profileId, resultsB.First().ProfileId);
     }
-
-    // ===================================================================
-    // SaveRefreshToken.sql
-    // RULE: Inserts a UserRefreshToken with ProfileId and LanguageId persisted.
-    //       ProfileId must be a real Profiles.Id (> 0).
-    // ===================================================================
-
-    [Fact]
-    public async Task SaveRefreshTokenAsync_PersistsProfileId()
-    {
-        var customerId = await _builder.InsertCustomerAsync();
-        var userId = await _builder.InsertUserAsync();
-        var rawProfileId = await _builder.InsertProfileAsync(customerId, userId);
-        var profileId = new ProfileId(rawProfileId);
-
-        await CreateRepository().SaveRefreshTokenAsync(userId, customerId, profileId, "sp-token-pid", DateTimeOffset.UtcNow.AddDays(30), languageId: 1);
-
-        await using var conn = new SqlConnection(DatabaseFixture.ConnectionString);
-        var storedProfileId = await conn.ExecuteScalarAsync<int>(
-            "SELECT ProfileId FROM UserRefreshTokens WHERE Token = @Token",
-            new { Token = "sp-token-pid" });
-        Assert.Equal(rawProfileId, storedProfileId);
-        Assert.True(storedProfileId > 0); // stored ProfileId must always be > 0
-    }
-
-    [Fact]
-    public async Task SaveRefreshTokenAsync_PersistsLanguageId()
-    {
-        var customerId = await _builder.InsertCustomerAsync();
-        var userId = await _builder.InsertUserAsync();
-        var profileId = new ProfileId(await _builder.InsertProfileAsync(customerId, userId));
-
-        await CreateRepository().SaveRefreshTokenAsync(userId, customerId, profileId, "sp-token-lang", DateTimeOffset.UtcNow.AddDays(30), languageId: 4);
-
-        await using var conn = new SqlConnection(DatabaseFixture.ConnectionString);
-        var storedLanguageId = await conn.ExecuteScalarAsync<int>(
-            "SELECT LanguageId FROM UserRefreshTokens WHERE Token = @Token",
-            new { Token = "sp-token-lang" });
-        Assert.Equal(4, storedLanguageId);
-    }
-
-    [Fact]
-    public async Task SaveRefreshTokenAsync_TokenIsRetrievableByFindValidToken()
-    {
-        var customerId = await _builder.InsertCustomerAsync();
-        var userId = await _builder.InsertUserAsync();
-        var profileId = new ProfileId(await _builder.InsertProfileAsync(customerId, userId));
-
-        var repo = CreateRepository();
-        await repo.SaveRefreshTokenAsync(userId, customerId, profileId, "sp-findable", DateTimeOffset.UtcNow.AddDays(30), languageId: 1);
-
-        var count = await _builder.CountRefreshTokensByUserIdAsync(userId);
-        Assert.Equal(1, count);
-    }
+    // NOTE: SaveRefreshToken SQL tests removed.
+    // SaveAsync is now tested via SharedKernel/Auth/RefreshTokenWriterTests (Slice 1).
 }

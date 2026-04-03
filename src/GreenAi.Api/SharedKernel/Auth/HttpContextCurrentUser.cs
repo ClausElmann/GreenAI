@@ -7,24 +7,34 @@ namespace GreenAi.Api.SharedKernel.Auth;
 /// ICurrentUser implementation that reads from the authenticated ClaimsPrincipal.
 /// Register as Scoped. Never read HttpContext.User directly outside this class.
 ///
+/// In HTTP API requests (integration tests, API endpoints): reads from IHttpContextAccessor.HttpContext.User.
+/// In Blazor Server circuits (WebSocket): HttpContext is null — falls back to BlazorPrincipalHolder.
+/// Blazor pages must call BlazorPrincipalHolder.Set(authState.User) before any Mediator.Send call.
+///
 /// Properties other than IsAuthenticated throw InvalidOperationException when accessed
 /// without an authenticated principal — use IsAuthenticated to guard access.
 /// </summary>
 public sealed class HttpContextCurrentUser : ICurrentUser
 {
     private readonly IHttpContextAccessor _accessor;
+    private readonly BlazorPrincipalHolder _blazorHolder;
 
-    public HttpContextCurrentUser(IHttpContextAccessor accessor)
+    public HttpContextCurrentUser(IHttpContextAccessor accessor, BlazorPrincipalHolder blazorHolder)
     {
-        _accessor = accessor;
+        _accessor     = accessor;
+        _blazorHolder = blazorHolder;
     }
 
-    private ClaimsPrincipal? Principal => _accessor.HttpContext?.User;
+    // HTTP API requests → HttpContext.User (always available, has Bearer token claims)
+    // Blazor Server circuits → BlazorPrincipalHolder (set by the component before Mediator.Send)
+    private ClaimsPrincipal? Principal =>
+        _accessor.HttpContext?.User ?? _blazorHolder.Current;
 
     /// <summary>Returns an authenticated principal, or throws if no authenticated context is available.</summary>
     private ClaimsPrincipal AuthenticatedPrincipal =>
         Principal ?? throw new InvalidOperationException(
-            "HttpContext is not available. ICurrentUser properties cannot be accessed outside an authenticated HTTP request.");
+            "No ClaimsPrincipal available. In HTTP API context: ensure Authorization header is present. " +
+            "In Blazor Server context: call BlazorPrincipalHolder.Set(authState.User) before Mediator.Send.");
 
     public bool IsAuthenticated =>
         Principal?.Identity?.IsAuthenticated ?? false;

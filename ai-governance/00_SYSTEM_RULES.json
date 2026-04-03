@@ -1,4 +1,8 @@
 {
+  "_deprecated": "2026-04-03",
+  "_canonical_source": "docs/SSOT/governance/RED_THREAD_REGISTRY.md + AI_WORK_CONTRACT.md",
+  "_action": "DO NOT EDIT — update canonical source instead. See docs/SSOT/governance/GOVERNANCE_MAP.md",
+
   "project": "green-ai",
   "runtime": ".NET 10 / C# 13",
   "architecture_style": "vertical_slice",

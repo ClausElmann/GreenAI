@@ -5,7 +5,7 @@ using MediatR;
 
 namespace GreenAi.Api.Features.Api.V1.Auth.Token;
 
-public sealed class GetApiTokenHandler(IGetApiTokenRepository repository, JwtTokenService jwt)
+public sealed class GetApiTokenHandler(IGetApiTokenRepository repository, JwtTokenService jwt, IRefreshTokenWriter tokenWriter)
     : IRequestHandler<GetApiTokenCommand, Result<GetApiTokenResponse>>
 {
     public async Task<Result<GetApiTokenResponse>> Handle(GetApiTokenCommand command, CancellationToken ct)
@@ -35,7 +35,7 @@ public sealed class GetApiTokenHandler(IGetApiTokenRepository repository, JwtTok
 
         var token = jwt.CreateToken(userId, customerId, profileId, user.Email, user.LanguageId);
 
-        await repository.SaveRefreshTokenAsync(
+        await tokenWriter.SaveAsync(
             userId, customerId, profileId,
             token.RefreshToken, token.ExpiresAt.AddDays(30), user.LanguageId);
 

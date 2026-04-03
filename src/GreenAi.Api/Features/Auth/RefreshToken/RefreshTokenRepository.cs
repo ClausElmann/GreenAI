@@ -8,7 +8,6 @@ public interface IRefreshTokenRepository
 {
     Task<RefreshTokenRecord?> FindValidTokenAsync(string token);
     Task RevokeTokenAsync(int tokenId);
-    Task SaveNewTokenAsync(UserId userId, CustomerId customerId, ProfileId profileId, string token, DateTimeOffset expiresAt, int languageId);
 }
 
 public sealed class RefreshTokenRepository : IRefreshTokenRepository
@@ -26,11 +25,6 @@ public sealed class RefreshTokenRepository : IRefreshTokenRepository
         => _db.ExecuteAsync(
             SqlLoader.Load<RefreshTokenRepository>("RevokeRefreshToken.sql"),
             new { TokenId = tokenId, UsedAt = DateTimeOffset.UtcNow });
-
-    public Task SaveNewTokenAsync(UserId userId, CustomerId customerId, ProfileId profileId, string token, DateTimeOffset expiresAt, int languageId)
-        => _db.ExecuteAsync(
-            SqlLoader.Load<RefreshTokenRepository>("SaveNewRefreshToken.sql"),
-            new { UserId = userId.Value, CustomerId = customerId.Value, ProfileId = profileId.Value, Token = token, ExpiresAt = expiresAt, LanguageId = languageId });
 }
 
 public sealed record RefreshTokenRecord(

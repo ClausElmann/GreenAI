@@ -45,9 +45,23 @@ tests/GreenAi.Tests/
 - HttpContext i handlers
 - EF Core (selv til migrering — brug DbUp)
 - ASP.NET Identity
-- Repository pattern / service layer abstraktion
-- Generic base repositories
+- Generic base repositories (shared across features)
 - Implicit tenant-filtrering
+
+## Repository-konvention (Retning A)
+Feature-lokale repositories som tynde SQL-adaptere er **tilladt og foretrukket**.
+De ene formål er at isolere SQL-filindlæsning og Dapper-kald fra handler-logik.
+
+```
+[Feature]Repository.cs      ← interface + impl, Dapper via IDbSession, SqlLoader
+I[Feature]Repository.cs     ← interface-kontrakt (til NSubstitute i tests)
+[Feature].sql               ← én sql-fil per operation (embedded resource)
+```
+
+Forbudt:
+- Generic repository\<T\> på tværs af features
+- Repository med forretningslogik
+- Direkte `IDbSession` i handlers (undtagen admin-only batch-operationer)
 
 ## Governance
 AI-governance regler lever i `analysis-tool/ai-governance/` og er autoriteten for prompt-regler, anti-patterns og stack-analyse.

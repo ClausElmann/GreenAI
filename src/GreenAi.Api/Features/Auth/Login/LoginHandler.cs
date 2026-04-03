@@ -1,5 +1,6 @@
 using GreenAi.Api.Features.Auth.SelectProfile;
 using GreenAi.Api.SharedKernel.Auth;
+using GreenAi.Api.SharedKernel.Db;
 using GreenAi.Api.SharedKernel.Ids;
 using GreenAi.Api.SharedKernel.Results;
 using MediatR;
@@ -10,11 +11,15 @@ public sealed class LoginHandler : IRequestHandler<LoginCommand, Result<LoginRes
 {
     private readonly ILoginRepository _repository;
     private readonly JwtTokenService _jwt;
+    private readonly IRefreshTokenWriter _tokenWriter;
+    private readonly IDbSession _db;
 
-    public LoginHandler(ILoginRepository repository, JwtTokenService jwt)
+    public LoginHandler(ILoginRepository repository, JwtTokenService jwt, IRefreshTokenWriter tokenWriter, IDbSession db)
     {
-        _repository = repository;
-        _jwt = jwt;
+        _repository  = repository;
+        _jwt         = jwt;
+        _tokenWriter = tokenWriter;
+        _db          = db;
     }
 
     public async Task<Result<LoginResponse>> Handle(LoginCommand request, CancellationToken ct)
@@ -33,8 +38,6 @@ public sealed class LoginHandler : IRequestHandler<LoginCommand, Result<LoginRes
         }
 
         // Reset failed login count on success
-        if (user.FailedLoginCount > 0)
-            await _repository.ResetFailedLoginAsync(new UserId(user.Id));
 
         // Post-auth tenant resolution via membership model
         var memberships = (await _repository.GetMembershipsAsync(new UserId(user.Id))).ToList();
@@ -51,20 +54,16 @@ public sealed class LoginHandler : IRequestHandler<LoginCommand, Result<LoginRes
 
         // Profile resolution — ProfileId(0) placeholder is forbidden from this point onward.
         var profiles = await _repository.GetProfilesAsync(new UserId(user.Id), customerId);
+        var resolution = ProfileResolutionResult.Resolve(profiles);
 
-        if (profiles.Count == 0)
+        if (resolution.IsNotFound)
             return Result<LoginResponse>.Fail("PROFILE_NOT_FOUND", "No accessible profiles found for this account.");
 
-        if (profiles.Count > 1)
-        {
-            // Multiple profiles — client must select explicitly via /api/auth/select-profile.
-            // No JWT is issued until a profile is resolved.
-            var summaries = profiles.Select(p => new ProfileSummary(p.ProfileId, p.DisplayName)).ToList();
-            return Result<LoginResponse>.Ok(LoginResponse.RequiresProfileSelection(summaries));
-        }
+        if (resolution.NeedsSelection)
+            return Result<LoginResponse>.Ok(LoginResponse.RequiresProfileSelection(resolution.Summaries));
 
-        // Single profile — auto-resolve. ProfileId > 0 is guaranteed (real Profiles.Id row).
-        var profileId = new ProfileId(profiles.First().ProfileId);
+        // Single profile — auto-resolved. ProfileId > 0 is guaranteed.
+        var profileId = resolution.ResolvedId;
 
         var token = _jwt.CreateToken(
             new UserId(user.Id),
@@ -73,8 +72,15 @@ public sealed class LoginHandler : IRequestHandler<LoginCommand, Result<LoginRes
             user.Email,
             membership.LanguageId);
 
-        await _repository.SaveRefreshTokenAsync(
-            new UserId(user.Id), customerId, profileId, token.RefreshToken, token.ExpiresAt.AddDays(30), membership.LanguageId);
+        // Atomic: reset failure counter + persist refresh token in one transaction.
+        // If either write fails, neither is committed — prevents inconsistent state.
+        await _db.ExecuteInTransactionAsync(async () =>
+        {
+            if (user.FailedLoginCount > 0)
+                await _repository.ResetFailedLoginAsync(new UserId(user.Id));
+            await _tokenWriter.SaveAsync(
+                new UserId(user.Id), customerId, profileId, token.RefreshToken, token.ExpiresAt.AddDays(30), membership.LanguageId);
+        });
 
         return Result<LoginResponse>.Ok(LoginResponse.WithToken(token.AccessToken, token.ExpiresAt, token.RefreshToken));
     }

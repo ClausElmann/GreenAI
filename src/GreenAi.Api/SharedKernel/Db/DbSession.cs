@@ -3,27 +3,73 @@ using Microsoft.Data.SqlClient;
 
 namespace GreenAi.Api.SharedKernel.Db;
 
+/// <summary>
+/// Scoped DB session backed by a lazily-opened SqlConnection.
+///
+/// The connection is NOT opened in the constructor — it is opened on the first
+/// actual database call (Query/Execute). This means:
+///   - Requests that are rejected by pipeline behaviors (auth, validation) before
+///     any handler runs never open a connection at all.
+///   - Connection pool pressure is reduced for short-circuited request paths.
+/// </summary>
 public sealed class DbSession : IDbSession
 {
-    private readonly SqlConnection _connection;
+    private readonly string _connectionString;
+    private SqlConnection? _connection;
+    private System.Data.IDbTransaction? _activeTransaction;
 
     public DbSession(string connectionString)
     {
-        _connection = new SqlConnection(connectionString);
-        _connection.Open();
+        _connectionString = connectionString;
+    }
+
+    private SqlConnection Connection
+    {
+        get
+        {
+            if (_connection is null)
+            {
+                _connection = new SqlConnection(_connectionString);
+                _connection.Open();
+            }
+            return _connection;
+        }
     }
 
     public Task<IEnumerable<T>> QueryAsync<T>(string sql, object? param = null)
-        => _connection.QueryAsync<T>(sql, param);
+        => Connection.QueryAsync<T>(sql, param);
 
     public Task<T?> QuerySingleOrDefaultAsync<T>(string sql, object? param = null)
-        => _connection.QuerySingleOrDefaultAsync<T>(sql, param);
+        => Connection.QuerySingleOrDefaultAsync<T>(sql, param);
 
     public Task<int> ExecuteAsync(string sql, object? param = null)
-        => _connection.ExecuteAsync(sql, param);
+        => Connection.ExecuteAsync(sql, param, transaction: _activeTransaction);
 
-    public System.Data.IDbTransaction BeginTransaction()
-        => _connection.BeginTransaction();
+    /// <inheritdoc />
+    public async Task ExecuteInTransactionAsync(Func<Task> work)
+    {
+        _activeTransaction = Connection.BeginTransaction();
+        try
+        {
+            await work();
+            _activeTransaction.Commit();
+        }
+        catch
+        {
+            _activeTransaction.Rollback();
+            throw;
+        }
+        finally
+        {
+            _activeTransaction.Dispose();
+            _activeTransaction = null;
+        }
+    }
 
-    public void Dispose() => _connection.Dispose();
+    public void Dispose()
+    {
+        _activeTransaction?.Dispose();
+        _connection?.Dispose();
+    }
 }
+

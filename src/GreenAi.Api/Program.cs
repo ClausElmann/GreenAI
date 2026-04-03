@@ -1,7 +1,9 @@
 using GreenAi.Api.Components;
 using GreenAi.Api.Database;
 using GreenAi.Api.Features.Api.V1.Auth.Token;
+using GreenAi.Api.Features.Auth.ChangePassword;
 using GreenAi.Api.Features.Auth.Login;
+using GreenAi.Api.Features.Identity.ChangeUserEmail;
 using GreenAi.Api.Features.Auth.RefreshToken;
 using GreenAi.Api.Features.Auth.SelectCustomer;
 using GreenAi.Api.Features.Auth.SelectProfile;
@@ -69,18 +71,23 @@ try
     builder.Services.AddMudServices();
     builder.Services.AddHttpContextAccessor();
     builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.Section));
+    builder.Services.AddScoped<BlazorPrincipalHolder>();
     builder.Services.AddScoped<ICurrentUser, HttpContextCurrentUser>();
     builder.Services.AddScoped<ITenantContext, CurrentUserTenantContext>();
     builder.Services.AddScoped<JwtTokenService>();
+    builder.Services.AddScoped<IRefreshTokenWriter, RefreshTokenWriter>();
     builder.Services.AddScoped<IPermissionService, PermissionService>();
     builder.Services.AddScoped<ILocalizationRepository, LocalizationRepository>();
     builder.Services.AddScoped<ILocalizationService, LocalizationService>();
     builder.Services.AddScoped<ILocalizationContext, LocalizationContext>();
     builder.Services.AddScoped<ILoginRepository, LoginRepository>();
+    builder.Services.AddScoped<IChangePasswordRepository, ChangePasswordRepository>();
+    builder.Services.AddScoped<IChangeUserEmailRepository, ChangeUserEmailRepository>();
     builder.Services.AddScoped<IGetApiTokenRepository, GetApiTokenRepository>();
     builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
     builder.Services.AddScoped<ISelectCustomerRepository, SelectCustomerRepository>();
     builder.Services.AddScoped<ISelectProfileRepository, SelectProfileRepository>();
+    builder.Services.AddScoped<IBatchUpsertLabelsRepository, BatchUpsertLabelsRepository>();
     builder.Services.AddScoped<AuthenticationStateProvider, GreenAiAuthenticationStateProvider>();
     builder.Services.AddScoped<GreenAiAuthenticationStateProvider>();
     builder.Services.AddCascadingAuthenticationState();
@@ -160,6 +167,8 @@ try
 
     // Feature endpoints
     LoginEndpoint.Map(app);
+    ChangePasswordEndpoint.Map(app);
+    ChangeUserEmailEndpoint.Map(app);
     RefreshTokenEndpoint.Map(app);
     SelectCustomerEndpoint.Map(app);
     SelectProfileEndpoint.Map(app);

@@ -1,0 +1,70 @@
+@using GreenAi.Api.Features.CustomerAdmin.GetUsers
+@inject NavigationManager Nav
+@inject ISnackbar Snackbar
+@inject IDialogService Dialog
+
+<MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-3">
+    <MudText Typo="Typo.subtitle1">@Users.Count bruger(e)</MudText>
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary"
+               StartIcon="@Icons.Material.Filled.PersonAdd"
+               Size="Size.Small"
+               OnClick="CreateUser">
+        Opret bruger
+    </MudButton>
+</MudStack>
+
+<MudTable Items="Users" Dense="true" Hover="true" data-testid="user-table">
+    <HeaderContent>
+        <MudTh>E-mail</MudTh>
+        <MudTh>Status</MudTh>
+        <MudTh></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="E-mail">
+            <MudLink Href="@("/customer-admin/users/" + context.Id)">@context.Email</MudLink>
+        </MudTd>
+        <MudTd DataLabel="Status">
+            <MudChip T="string"
+                     Size="Size.Small"
+                     Color="@(context.IsActive ? Color.Success : Color.Default)">
+                @(context.IsActive ? "Aktiv" : "Inaktiv")
+            </MudChip>
+        </MudTd>
+        <MudTd>
+            <MudStack Row="true" Spacing="0">
+                <MudIconButton Icon="@Icons.Material.Filled.OpenInNew"
+                               Size="Size.Small"
+                               OnClick="@(() => Nav.NavigateTo("/customer-admin/users/" + context.Id))" />
+                <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                               Size="Size.Small"
+                               Color="Color.Error"
+                               OnClick="() => ConfirmDeleteAsync(context)" />
+            </MudStack>
+        </MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText Typo="Typo.body2" Color="Color.Secondary">Ingen brugere.</MudText>
+    </NoRecordsContent>
+</MudTable>
+
+@code {
+    [Parameter, EditorRequired] public List<UserRow> Users { get; set; } = null!;
+    [Parameter] public EventCallback<int> OnDelete { get; set; }
+
+    private void CreateUser() => Snackbar.Add("Opret bruger — ikke implementeret endnu.", Severity.Info);
+
+    private async Task ConfirmDeleteAsync(UserRow user)
+    {
+        var confirmed = await Dialog.ShowMessageBox(
+            "Slet bruger",
+            $"Er du sikker på, du vil slette {user.Email}?",
+            yesText: "Slet", cancelText: "Annuller");
+
+        if (confirmed == true)
+        {
+            await OnDelete.InvokeAsync(user.Id);
+            Snackbar.Add($"{user.Email} slettet.", Severity.Success);
+        }
+    }
+}

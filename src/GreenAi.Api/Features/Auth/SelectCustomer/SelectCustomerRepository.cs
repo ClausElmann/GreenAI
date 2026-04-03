@@ -23,11 +23,6 @@ public sealed class SelectCustomerRepository : ISelectCustomerRepository
             new { UserId = userId.Value, CustomerId = customerId.Value });
         return results.ToList();
     }
-
-    public Task SaveRefreshTokenAsync(UserId userId, CustomerId customerId, ProfileId profileId, string token, DateTimeOffset expiresAt, int languageId)
-        => _db.ExecuteAsync(
-            SqlLoader.Load<SelectCustomerRepository>("SaveRefreshToken.sql"),
-            new { UserId = userId.Value, CustomerId = customerId.Value, ProfileId = profileId.Value, Token = token, ExpiresAt = expiresAt, LanguageId = languageId });
 }
 
 public sealed record MembershipRecord(

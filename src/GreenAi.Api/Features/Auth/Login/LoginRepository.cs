@@ -10,7 +10,6 @@ public interface ILoginRepository
     Task<LoginUserRecord?> FindByEmailAsync(string email);
     Task RecordFailedLoginAsync(UserId userId);
     Task ResetFailedLoginAsync(UserId userId);
-    Task SaveRefreshTokenAsync(UserId userId, CustomerId customerId, ProfileId profileId, string token, DateTimeOffset expiresAt, int languageId);
     Task<IEnumerable<UserMembershipRecord>> GetMembershipsAsync(UserId userId);
     Task<IReadOnlyCollection<ProfileRecord>> GetProfilesAsync(UserId userId, CustomerId customerId);
 }
@@ -35,11 +34,6 @@ public sealed class LoginRepository : ILoginRepository
         => _db.ExecuteAsync(
             SqlLoader.Load<LoginRepository>("ResetFailedLogin.sql"),
             new { UserId = userId.Value });
-
-    public Task SaveRefreshTokenAsync(UserId userId, CustomerId customerId, ProfileId profileId, string token, DateTimeOffset expiresAt, int languageId)
-        => _db.ExecuteAsync(
-            SqlLoader.Load<LoginRepository>("SaveRefreshToken.sql"),
-            new { UserId = userId.Value, CustomerId = customerId.Value, ProfileId = profileId.Value, Token = token, ExpiresAt = expiresAt, LanguageId = languageId });
 
     public Task<IEnumerable<UserMembershipRecord>> GetMembershipsAsync(UserId userId)
         => _db.QueryAsync<UserMembershipRecord>(

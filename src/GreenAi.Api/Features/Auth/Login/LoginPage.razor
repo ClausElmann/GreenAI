@@ -28,6 +28,7 @@
                               Adornment="Adornment.Start"
                               AdornmentIcon="@Icons.Material.Filled.Email"
                               Class="mb-4"
+                              UserAttributes="@(new Dictionary<string, object>{ ["data-testid"] = "login-email" })"
                               Disabled="_loading" />
 
                 <MudTextField @bind-Value="_model.Password"
@@ -38,6 +39,7 @@
                               AdornmentIcon="@(_showPassword ? Icons.Material.Filled.VisibilityOff : Icons.Material.Filled.Visibility)"
                               OnAdornmentClick="() => _showPassword = !_showPassword"
                               Class="mb-2"
+                              UserAttributes="@(new Dictionary<string, object>{ ["data-testid"] = "login-password" })"
                               Disabled="_loading" />
 
                 @if (_errorMessage is not null)
@@ -50,6 +52,7 @@
                            Color="Color.Primary"
                            FullWidth="true"
                            Disabled="_loading"
+                           data-testid="login-submit"
                            Class="mt-2">
                     @if (_loading)
                     {
@@ -91,6 +94,13 @@
             {
                 // TODO: navigate to customer selection page (Step 5 — multi-tenant flow)
                 _errorMessage = "Multiple tenant memberships detected. Customer selection not yet implemented.";
+                return;
+            }
+
+            if (result.Value.NeedsProfileSelection)
+            {
+                // TODO: navigate to profile selection page (Step 6 — multi-profile flow)
+                _errorMessage = "Multiple profiles detected. Profile selection not yet implemented.";
                 return;
             }
 

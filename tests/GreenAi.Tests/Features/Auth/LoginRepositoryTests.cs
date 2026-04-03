@@ -149,23 +149,6 @@ public sealed class LoginRepositoryTests : IAsyncLifetime
         Assert.False(locked);
     }
 
-    // ===================================================================
-    // SaveRefreshToken.sql
-    // RULE: Inserts a new token row linked to the user and customer.
-    // ===================================================================
-
-    [Fact]
-    public async Task SaveRefreshTokenAsync_InsertsTokenRow()
-    {
-        var customerId = await _builder.InsertCustomerAsync();
-        var userId = await _builder.InsertUserAsync();
-        var rawProfileId = await _builder.InsertProfileAsync(customerId, userId);
-        var profileId = new ProfileId(rawProfileId);
-        var expiresAt = DateTimeOffset.UtcNow.AddDays(30);
-
-        await CreateRepository().SaveRefreshTokenAsync(userId, customerId, profileId, "my-token-value", expiresAt, languageId: 1);
-
-        var count = await _builder.CountRefreshTokensByUserIdAsync(userId);
-        Assert.Equal(1, count);
-    }
+    // NOTE: SaveRefreshToken SQL tests removed.
+    // SaveAsync is now tested via SharedKernel/Auth/RefreshTokenWriterTests (Slice 1).
 }
