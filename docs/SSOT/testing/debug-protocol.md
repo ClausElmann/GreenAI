@@ -1,5 +1,14 @@
 # Debug Protocol — green-ai
 
+```yaml
+id: debug_protocol
+type: protocol
+ssot_source: docs/SSOT/testing/debug-protocol.md
+red_threads: []
+applies_to: ["failing tests", "failing builds"]
+enforcement: OBSERVE layer before changing code — never guess root cause
+```
+
 > Autoritativ kilde for al debugging af tests, Blazor, og DB-fejl.  
 > Inspireret af NeeoBovisWeb's Integration Test Debugging Protocol v2 — tilpasset green-ai's stakke.
 

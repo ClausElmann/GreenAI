@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "green-ai UI navigation model — routes, auth requirements, breadcrumbs. Machine-readable. Updated when new pages are added.",
+  "version": "1.0.0",
+  "last_updated": "2026-04-03",
+  "ssot_source": "docs/SSOT/ui/models/ui-navigation-schema.json",
+
+  "auth_requirements": {
+    "authenticated": "ICurrentUser.UserId must be set (BlazorPrincipalHolder.Set() called)",
+    "tenant": "ICurrentUser.CustomerId must be set (JWT claim)",
+    "profile": "ICurrentUser.ProfileId must be set (JWT claim)"
+  },
+
+  "pages": [
+    {
+      "id": "home",
+      "route": "/",
+      "component": "Components/Pages/Home.razor",
+      "auth": "none",
+      "breadcrumb": [],
+      "redirects_to": null
+    },
+    {
+      "id": "login",
+      "route": "/login",
+      "component": "Components/Pages/Auth/LoginPage.razor",
+      "auth": "none",
+      "breadcrumb": [],
+      "redirects_to": null
+    },
+    {
+      "id": "select_customer",
+      "route": "/select-customer",
+      "component": "Components/Pages/Auth/SelectCustomerPage.razor",
+      "auth": "authenticated",
+      "breadcrumb": [],
+      "redirects_to": null
+    },
+    {
+      "id": "select_profile",
+      "route": "/select-profile",
+      "component": "Components/Pages/Auth/SelectProfilePage.razor",
+      "auth": "authenticated",
+      "breadcrumb": [],
+      "redirects_to": null
+    },
+    {
+      "id": "customer_admin",
+      "route": "/customer-admin",
+      "component": "Components/Pages/CustomerAdmin/Index.razor",
+      "auth": "profile",
+      "required_user_roles": [],
+      "required_profile_roles": [],
+      "breadcrumb": [
+        { "text": "Kundestyre", "href": null }
+      ],
+      "query": "GetCustomerSettingsQuery + GetUsersQuery + GetProfilesQuery",
+      "tabs": ["Indstillinger", "Brugere", "Profiler"]
+    },
+    {
+      "id": "customer_admin_user_detail",
+      "route": "/customer-admin/users/{UserId:int}",
+      "component": "Components/Pages/CustomerAdmin/UserDetail.razor",
+      "auth": "profile",
+      "required_user_roles": [],
+      "required_profile_roles": [],
+      "breadcrumb": [
+        { "text": "Kundestyre", "href": "/customer-admin" },
+        { "text": "Bruger", "href": null }
+      ],
+      "query": "GetUserDetailsQuery"
+    },
+    {
+      "id": "customer_admin_profile_detail",
+      "route": "/customer-admin/profiles/{ProfileId:int}",
+      "component": "Components/Pages/CustomerAdmin/ProfileDetail.razor",
+      "auth": "profile",
+      "required_user_roles": [],
+      "required_profile_roles": [],
+      "breadcrumb": [
+        { "text": "Kundestyre", "href": "/customer-admin" },
+        { "text": "Profil", "href": null }
+      ],
+      "query": "GetProfileDetailsQuery"
+    }
+  ],
+
+  "nav_rules": {
+    "unauthenticated": "redirect to /login",
+    "authenticated_no_customer": "redirect to /select-customer",
+    "authenticated_no_profile": "redirect to /select-profile",
+    "fully_authenticated": "allow /customer-admin and sub-pages"
+  }
+}

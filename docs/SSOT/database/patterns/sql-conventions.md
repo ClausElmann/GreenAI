@@ -1,5 +1,14 @@
 # SQL Conventions — green-ai
 
+```yaml
+id: sql_conventions
+type: convention
+ssot_source: docs/SSOT/database/patterns/sql-conventions.md
+red_threads: [sql_embedded, tenant_isolation]
+applies_to: ["**/*.sql"]
+enforcement: Validate-GreenAiCompliance.ps1 SQL-001 + APR-009
+```
+
 > Naming, column types, parameterization, tenant rules.
 
 **Last Updated:** 2026-04-02

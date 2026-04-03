@@ -1,5 +1,14 @@
 # pipeline-behaviors
 
+```yaml
+id: pipeline_behaviors
+type: flow
+ssot_source: docs/SSOT/backend/patterns/pipeline-behaviors.md
+red_threads: [result_pattern, auth_flow]
+applies_to: ["SharedKernel/Pipeline/*.cs"]
+enforcement: marker interface compilation — IRequireAuthentication on command/query
+```
+
 > **Canonical:** This is the SSOT for all MediatR pipeline behaviors in GreenAi.
 > **Code source:** `src/GreenAi.Api/SharedKernel/Pipeline/`
 

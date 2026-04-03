@@ -33,6 +33,9 @@
 | "ny test" / "skriv test" / "tilføj test"               | `read_file docs/SSOT/testing/testing-strategy.md`                         | Layer: http_integration PRIMARY     |
 | "respawn" / "db reset" / "TablesToIgnore" / "fixture"  | `read_file docs/SSOT/testing/guides/respawn-guide.md`                     | Ignored tables catalog, seed rules  |
 | "permission" / "IPermissionService" / "UserRole" / "ProfileRole" | `read_file docs/SSOT/identity/permissions.md`                    | Two systems: UserRoles (global) vs ProfileRoles (operational) |
+| "Blazor komponent" / "reusable component" / "@Parameter"       | `read_file docs/SSOT/ui/patterns/blazor-component-pattern.md`    | Parameters in, EventCallback out, no Mediator injection       |
+| "MudBlazor" / "MudTable" / "MudChip" / "MudAlert"             | `read_file docs/SSOT/ui/patterns/mudblazor-conventions.md`       | Approved components, loading/error contracts, anti-patterns   |
+| "navigation" / "ruter" / "ui model" / "ui-navigation"         | `read_file docs/SSOT/ui/models/ui-navigation-schema.json`        | Route → auth → breadcrumb → query mapping                    |
 | "test strategi" / "hvilken test" / "test layer"         | `read_file docs/SSOT/testing/testing-strategy.md`                         | Vælg lag per trigger-tabel          |
 | "test automation" / "hvornår test" / "test regel"       | `read_file docs/SSOT/testing/test-automation-rules.md`                    | Trigger table → required tests      |
 | "test fejler" / "debug" / "fix E2E" / "fix test"       | `read_file docs/SSOT/testing/debug-protocol.md`                           | OBSERVE→ACT, fix-layer-lock         |
@@ -44,8 +47,8 @@
 | "dokumentation" / "ny doc" / "ssot"                    | `read_file docs/SSOT/_system/ssot-document-placement-rules.md`            | <450 linjer, korrekt mappe          |
 | "governance" / "red thread" / "protokol" / "mangler"   | `read_file docs/SSOT/governance/README.md`                                | Se SSOT_GAP_PLAN → sprint prioritet |
 | "ssot update" / "hvornår opdater ssot" / "ssot drift"  | `read_file docs/SSOT/governance/ssot-update-protocol.md`                  | Trigger table → mandatory actions   |
-| "ai grænser" / "hvad må ai" / "autonomi" / "stop"       | `read_file docs/SSOT/governance/ai-boundaries.md`                         | ALLOWED vs FORBIDDEN vs STOP_AND_ASK |
-| "hvad skal jeg huske" / "ny session" / "resumé"        | `read_file docs/SSOT/governance/EXECUTION_MEMORY.md`                      | Se seneste log-entries              |
+| "ai grænser" / "hvad må ai" / "autonomi" / "stop"       | `read_file docs/SSOT/governance/ai-boundaries.md`                         | ALLOWED vs FORBIDDEN vs STOP_AND_ASK || \"ssot map\" / \"find ssot\" / \"trigger index\" / \"context loader\" | `read_file docs/SSOT/_system/ssot-map.json`                        | trigger → pattern → file path        |
+| \"feature contract\" / \"feature map\" / \"hvilke features\" / \"EXEC_\" | `read_file docs/SSOT/_system/feature-contract-map.json`          | feature → handler → endpoint → tests || "hvad skal jeg huske" / "ny session" / "resumé"        | `read_file docs/SSOT/governance/EXECUTION_MEMORY.md`                      | Se seneste log-entries              |
 | "fejl signal" / "kompile fejl" / "SIG_"                | `read_file docs/SSOT/governance/ERROR_DETECTION.md`                       | Klassificér → fix → log             |
 | ANYTHING ELSE                                          | `grep_search "<emne>" docs/SSOT/`                                         | Læs → implementér                   |
 

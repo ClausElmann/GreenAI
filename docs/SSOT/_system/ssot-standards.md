@@ -1,5 +1,14 @@
 # SSOT Standards — green-ai
 
+```yaml
+id: ssot_standards
+type: convention
+ssot_source: docs/SSOT/_system/ssot-standards.md
+red_threads: []
+applies_to: ["docs/SSOT/**"]
+enforcement: check-file-sizes.ps1 — hard limit 600 lines per file
+```
+
 > Rules for all documentation under `docs/SSOT/`.
 
 ---

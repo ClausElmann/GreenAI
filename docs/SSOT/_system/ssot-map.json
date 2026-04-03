@@ -1,0 +1,423 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "green-ai SSOT map — AI context loader. Maps triggers → SSOT files. Load ONLY the relevant entry for each task.",
+  "version": "1.0.0",
+  "last_updated": "2026-04-03",
+  "ssot_source": "docs/SSOT/_system/ssot-map.json",
+
+  "rule_load_strategy": "Match user intent to 'triggers' array → load only that file's path. Never load all files.",
+
+  "domains": {
+    "backend": {
+      "description": "Minimal API endpoints, MediatR handlers, validators, pipeline behaviors",
+      "patterns": [
+        "handler-pattern",
+        "endpoint-pattern",
+        "validator-pattern",
+        "result-pattern",
+        "pipeline-behaviors",
+        "audit-log-pattern",
+        "blazor-page-pattern"
+      ]
+    },
+    "database": {
+      "description": "DbUp migrations, Dapper SQL, schema conventions, transactions",
+      "patterns": [
+        "dapper-patterns",
+        "migration-pattern",
+        "sql-conventions",
+        "transaction-pattern"
+      ]
+    },
+    "identity": {
+      "description": "Custom JWT auth, ICurrentUser, tenant isolation, permissions",
+      "patterns": [
+        "auth-flow",
+        "current-user",
+        "permissions"
+      ]
+    },
+    "testing": {
+      "description": "xUnit v3, HTTP integration (primary), unit, E2E, Respawn",
+      "patterns": [
+        "testing-strategy",
+        "http-integration-test-pattern",
+        "unit-test-pattern",
+        "e2e-test-pattern",
+        "test-automation-rules",
+        "test-execution-protocol",
+        "debug-protocol",
+        "respawn-guide"
+      ]
+    },
+    "ui": {
+      "description": "Blazor pages/components, MudBlazor conventions, UI navigation model",
+      "patterns": [
+        "blazor-component-pattern",
+        "mudblazor-conventions",
+        "ui-navigation-schema"
+      ]
+    },
+    "governance": {
+      "description": "Execution control, STOP conditions, SSOT update triggers, anti-patterns",
+      "patterns": [
+        "red-thread-registry",
+        "anti-pattern-registry",
+        "ssot-update-protocol",
+        "ai-boundaries",
+        "execution-protocol",
+        "enforcement-protocol",
+        "error-detection",
+        "ssot-gap-plan",
+        "execution-memory"
+      ]
+    },
+    "localization": {
+      "description": "ILocalizationService, Labels table, shared.* keys",
+      "patterns": [
+        "label-creation-guide"
+      ]
+    }
+  },
+
+  "patterns": {
+    "handler-pattern": {
+      "path": "docs/SSOT/backend/patterns/handler-pattern.md",
+      "type": "pattern",
+      "red_threads": ["result_pattern", "auth_flow", "tenant_isolation"],
+      "triggers": ["ny handler", "handler mønster", "IRequest", "Result<T>", "MediatR"],
+      "applies_to": ["Features/**/Handler.cs"],
+      "enforcement": "Validate-GreenAiCompliance.ps1 RESULT-001"
+    },
+    "endpoint-pattern": {
+      "path": "docs/SSOT/backend/patterns/endpoint-pattern.md",
+      "type": "pattern",
+      "red_threads": ["result_pattern"],
+      "triggers": ["ny endpoint", "MapPost", "MapGet", "ToHttpResult", "IEndpointRouteBuilder"],
+      "applies_to": ["Features/**/Endpoint.cs"],
+      "enforcement": "Validate-GreenAiCompliance.ps1 APR-007"
+    },
+    "validator-pattern": {
+      "path": "docs/SSOT/backend/patterns/validator-pattern.md",
+      "type": "pattern",
+      "red_threads": ["result_pattern"],
+      "triggers": ["validator", "AbstractValidator", "FluentValidation", "RuleFor"],
+      "applies_to": ["Features/**/Validator.cs"],
+      "enforcement": "pipeline auto-invocation"
+    },
+    "result-pattern": {
+      "path": "docs/SSOT/backend/patterns/result-pattern.md",
+      "type": "pattern",
+      "red_threads": ["result_pattern", "error_codes"],
+      "triggers": ["Result<T>", "error code", "ToHttpResult", "fejlkode", "HTTP status"],
+      "applies_to": ["SharedKernel/Results/Result.cs", "SharedKernel/Results/ResultExtensions.cs"],
+      "enforcement": "Validate-GreenAiCompliance.ps1 RESULT-001 + ResultExtensionsTests"
+    },
+    "pipeline-behaviors": {
+      "path": "docs/SSOT/backend/patterns/pipeline-behaviors.md",
+      "type": "flow",
+      "red_threads": ["result_pattern", "auth_flow"],
+      "triggers": ["pipeline", "IRequireAuthentication", "IRequireProfile", "behavior", "IPipelineBehavior"],
+      "applies_to": ["SharedKernel/Pipeline/*.cs"],
+      "enforcement": "marker interface compilation"
+    },
+    "audit-log-pattern": {
+      "path": "docs/SSOT/backend/patterns/audit-log-pattern.md",
+      "type": "pattern",
+      "red_threads": ["result_pattern", "sql_embedded", "tenant_isolation"],
+      "triggers": ["audit", "audit log", "AuditLog", "trail", "compliance log"],
+      "applies_to": ["Features/Identity/ChangeUserEmail/InsertAuditEntry.sql"],
+      "enforcement": "ExecuteInTransactionAsync required for audit writes"
+    },
+    "blazor-page-pattern": {
+      "path": "docs/SSOT/backend/patterns/blazor-page-pattern.md",
+      "type": "pattern",
+      "red_threads": ["current_user", "result_pattern"],
+      "triggers": ["Blazor page", "OnAfterRenderAsync", "PrincipalHolder", "AuthenticationState"],
+      "applies_to": ["Components/Pages/**/*.razor"],
+      "enforcement": "lifecycle contract — OnInitializedAsync forbidden for data load"
+    },
+    "dapper-patterns": {
+      "path": "docs/SSOT/database/patterns/dapper-patterns.md",
+      "type": "pattern",
+      "red_threads": ["sql_embedded"],
+      "triggers": ["dapper", "SqlLoader", "QueryAsync", "IDbSession", "repository", "embedded sql"],
+      "applies_to": ["Features/**/Repository.cs", "**/*.sql"],
+      "enforcement": "Validate-GreenAiCompliance.ps1 SQL-001"
+    },
+    "migration-pattern": {
+      "path": "docs/SSOT/database/patterns/migration-pattern.md",
+      "type": "pattern",
+      "red_threads": ["sql_embedded"],
+      "triggers": ["migration", "ny tabel", "schema ændring", "DbUp", "V0XX"],
+      "applies_to": ["Database/Migrations/V*.sql"],
+      "enforcement": "DbUp filename convention V{number}_{Name}.sql"
+    },
+    "sql-conventions": {
+      "path": "docs/SSOT/database/patterns/sql-conventions.md",
+      "type": "convention",
+      "red_threads": ["sql_embedded", "tenant_isolation"],
+      "triggers": ["SQL konvention", "WHERE CustomerId", "tenant isolation", "ROWVERSION", "BIT cast"],
+      "applies_to": ["**/*.sql"],
+      "enforcement": "Validate-GreenAiCompliance.ps1 SQL-001 + APR-009"
+    },
+    "transaction-pattern": {
+      "path": "docs/SSOT/database/patterns/transaction-pattern.md",
+      "type": "pattern",
+      "red_threads": ["sql_embedded"],
+      "triggers": ["transaction", "ExecuteInTransactionAsync", "atomisk", "rollback", "commit"],
+      "applies_to": ["Features/**/Handler.cs", "Features/**/Repository.cs"],
+      "enforcement": "NEVER nest transactions (single _activeTransaction field)"
+    },
+    "auth-flow": {
+      "path": "docs/SSOT/identity/auth-flow.md",
+      "type": "flow",
+      "red_threads": ["auth_flow"],
+      "triggers": ["auth flow", "login flow", "JWT udstedelse", "select-customer", "select-profile"],
+      "applies_to": ["Features/Auth/**/*.cs"],
+      "enforcement": "ProfileId(0) compile-time guard"
+    },
+    "current-user": {
+      "path": "docs/SSOT/identity/current-user.md",
+      "type": "pattern",
+      "red_threads": ["current_user"],
+      "triggers": ["ICurrentUser", "BlazorPrincipalHolder", "UserId", "CustomerId", "ProfileId", "HttpContext"],
+      "applies_to": ["SharedKernel/Auth/ICurrentUser.cs", "Components/Pages/**/*.razor"],
+      "enforcement": "BlazorPrincipalHolder.Set() MUST precede Mediator.Send"
+    },
+    "permissions": {
+      "path": "docs/SSOT/identity/permissions.md",
+      "type": "pattern",
+      "red_threads": ["auth_flow"],
+      "triggers": ["permission", "IPermissionService", "UserRole", "ProfileRole", "DoesUserHaveRole", "DoesProfileHaveRole"],
+      "applies_to": ["SharedKernel/Permissions/*.cs"],
+      "enforcement": "UserRoleNames.* and ProfileRoleNames.* constants — never magic strings"
+    },
+    "testing-strategy": {
+      "path": "docs/SSOT/testing/testing-strategy.md",
+      "type": "strategy",
+      "red_threads": [],
+      "triggers": ["test strategi", "hvilken test", "test lag", "integration vs unit vs e2e"],
+      "applies_to": ["tests/GreenAi.Tests/**"],
+      "enforcement": "HTTP integration = PRIMARY layer per testing-strategy.md"
+    },
+    "http-integration-test-pattern": {
+      "path": "docs/SSOT/testing/patterns/http-integration-test-pattern.md",
+      "type": "pattern",
+      "red_threads": [],
+      "triggers": ["integration test", "HTTP test", "WebApplicationFactory", "DatabaseFixture", "test API"],
+      "applies_to": ["tests/GreenAi.Tests/Features/**/*Tests.cs"],
+      "enforcement": "DatabaseFixture + Respawn per test"
+    },
+    "unit-test-pattern": {
+      "path": "docs/SSOT/testing/patterns/unit-test-pattern.md",
+      "type": "pattern",
+      "red_threads": [],
+      "triggers": ["unit test", "NSubstitute", "handler test", "isoleret test"],
+      "applies_to": ["tests/GreenAi.Tests/Features/**/*HandlerTests.cs"],
+      "enforcement": "NSubstitute — no real DB in unit tests"
+    },
+    "e2e-test-pattern": {
+      "path": "docs/SSOT/testing/patterns/e2e-test-pattern.md",
+      "type": "pattern",
+      "red_threads": [],
+      "triggers": ["E2E test", "browser test", "Playwright", "UI test"],
+      "applies_to": ["tests/GreenAi.E2E/**"],
+      "enforcement": "E2EDatabaseFixture + idempotent seed SQL"
+    },
+    "test-automation-rules": {
+      "path": "docs/SSOT/testing/test-automation-rules.md",
+      "type": "rule",
+      "red_threads": [],
+      "triggers": ["test automation", "hvornår test", "required tests", "test regel"],
+      "applies_to": ["ALL features"],
+      "enforcement": "trigger table: new endpoint → required integration test"
+    },
+    "test-execution-protocol": {
+      "path": "docs/SSOT/testing/test-execution-protocol.md",
+      "type": "protocol",
+      "red_threads": [],
+      "triggers": ["kør tests", "dotnet test", "test execution"],
+      "applies_to": ["CI / developer workflow"],
+      "enforcement": "0 failures before any commit"
+    },
+    "debug-protocol": {
+      "path": "docs/SSOT/testing/debug-protocol.md",
+      "type": "protocol",
+      "red_threads": [],
+      "triggers": ["debug", "test fejler", "fix test", "fix E2E", "OBSERVE→ACT"],
+      "applies_to": ["failing tests"],
+      "enforcement": "OBSERVE layer before changing code"
+    },
+    "respawn-guide": {
+      "path": "docs/SSOT/testing/guides/respawn-guide.md",
+      "type": "guide",
+      "red_threads": [],
+      "triggers": ["Respawn", "TablesToIgnore", "db reset", "fixture", "E2EDatabaseFixture"],
+      "applies_to": ["tests/GreenAi.Tests/DatabaseFixture.cs"],
+      "enforcement": "SchemaVersions + UserRoles + ProfileRoles always in TablesToIgnore"
+    },
+    "blazor-component-pattern": {
+      "path": "docs/SSOT/ui/patterns/blazor-component-pattern.md",
+      "type": "pattern",
+      "red_threads": [],
+      "triggers": ["Blazor komponent", "reusable component", "[Parameter]", "EventCallback", "no mediator"],
+      "applies_to": ["Components/**/*.razor"],
+      "enforcement": "Validate-GreenAiCompliance.ps1 — no IMediator in Components/"
+    },
+    "mudblazor-conventions": {
+      "path": "docs/SSOT/ui/patterns/mudblazor-conventions.md",
+      "type": "convention",
+      "red_threads": [],
+      "triggers": ["MudBlazor", "MudTable", "MudChip", "MudAlert", "MudStack", "MudProgressLinear"],
+      "applies_to": ["Components/**/*.razor", "Components/Pages/**/*.razor"],
+      "enforcement": "Validate-GreenAiCompliance.ps1 — no Bootstrap classes in .razor"
+    },
+    "ui-navigation-schema": {
+      "path": "docs/SSOT/ui/models/ui-navigation-schema.json",
+      "type": "model",
+      "red_threads": ["auth_flow"],
+      "triggers": ["navigation", "ruter", "ui model", "breadcrumb", "route → auth"],
+      "applies_to": ["Components/Pages/**/*.razor", "Program.cs"],
+      "enforcement": "manual update when new page is added"
+    },
+    "red-thread-registry": {
+      "path": "docs/SSOT/governance/RED_THREAD_REGISTRY.md",
+      "type": "registry",
+      "red_threads": [],
+      "triggers": ["red thread", "governance", "protokol", "mangler"],
+      "applies_to": ["ALL code"],
+      "enforcement": "all code must bind to minimum one red thread"
+    },
+    "anti-pattern-registry": {
+      "path": "docs/SSOT/governance/ANTI_PATTERN_REGISTRY.md",
+      "type": "registry",
+      "red_threads": [],
+      "triggers": ["anti-pattern", "forkert kode", "APR", "hvad må jeg ikke"],
+      "applies_to": ["ALL code"],
+      "enforcement": "Validate-GreenAiCompliance.ps1 APR-001 through APR-009"
+    },
+    "ssot-update-protocol": {
+      "path": "docs/SSOT/governance/ssot-update-protocol.md",
+      "type": "protocol",
+      "red_threads": [],
+      "triggers": ["ssot update", "hvornår opdater ssot", "ssot drift"],
+      "applies_to": ["docs/SSOT/**"],
+      "enforcement": "trigger table defines mandatory SSOT update conditions"
+    },
+    "ai-boundaries": {
+      "path": "docs/SSOT/governance/ai-boundaries.md",
+      "type": "rule",
+      "red_threads": [],
+      "triggers": ["ai grænser", "hvad må ai", "autonomi", "stop"],
+      "applies_to": ["AI execution loop"],
+      "enforcement": "STOP_AND_ASK before git operations, schema drops, production mutations"
+    },
+    "execution-protocol": {
+      "path": "docs/SSOT/governance/EXECUTION_PROTOCOL.md",
+      "type": "protocol",
+      "red_threads": [],
+      "triggers": ["execution protocol", "slice", "STOP_001", "STOP kode"],
+      "applies_to": ["AI execution loop"],
+      "enforcement": "STOP conditions defined per code"
+    },
+    "enforcement-protocol": {
+      "path": "docs/SSOT/governance/ENFORCEMENT_PROTOCOL.md",
+      "type": "protocol",
+      "red_threads": [],
+      "triggers": ["enforcement", "compliance", "violation", "validate script"],
+      "applies_to": ["scripts/governance/Validate-GreenAiCompliance.ps1"],
+      "enforcement": "script must exit 0 before any commit"
+    },
+    "error-detection": {
+      "path": "docs/SSOT/governance/ERROR_DETECTION.md",
+      "type": "protocol",
+      "red_threads": [],
+      "triggers": ["fejl signal", "SIG_", "kompile fejl", "classify error"],
+      "applies_to": ["build output", "test output"],
+      "enforcement": "classify → fix → log pattern"
+    },
+    "ssot-gap-plan": {
+      "path": "docs/SSOT/governance/SSOT_GAP_PLAN.md",
+      "type": "plan",
+      "red_threads": [],
+      "triggers": ["gap", "manglende ssot", "sprint prioritet"],
+      "applies_to": ["docs/SSOT/**"],
+      "enforcement": "STOP_001 fires when required file is missing"
+    },
+    "execution-memory": {
+      "path": "docs/SSOT/governance/EXECUTION_MEMORY.md",
+      "type": "log",
+      "red_threads": [],
+      "triggers": ["hvad skal jeg huske", "ny session", "resumé", "EXEC_"],
+      "applies_to": ["AI session continuity"],
+      "enforcement": "APPEND entry after every completed task"
+    },
+    "label-creation-guide": {
+      "path": "docs/SSOT/localization/label-creation-guide.md",
+      "type": "guide",
+      "red_threads": [],
+      "triggers": ["label", "lokalisering", "tekst", "ILocalizationService", "shared.*"],
+      "applies_to": ["Components/**/*.razor", "Features/**/*.cs"],
+      "enforcement": "never hardcode strings — use @Loc.Get(...)"
+    }
+  },
+
+  "trigger_index": {
+    "Result<T>":                  "result-pattern",
+    "ToHttpResult":               "endpoint-pattern",
+    "IRequest":                   "handler-pattern",
+    "IRequireAuthentication":     "pipeline-behaviors",
+    "IRequireProfile":            "pipeline-behaviors",
+    "SqlLoader":                  "dapper-patterns",
+    "IDbSession":                 "dapper-patterns",
+    "ExecuteInTransactionAsync":  "transaction-pattern",
+    "V0XX_":                      "migration-pattern",
+    "ICurrentUser":               "current-user",
+    "BlazorPrincipalHolder":      "current-user",
+    "IPermissionService":         "permissions",
+    "UserRoleNames":              "permissions",
+    "ProfileRoleNames":           "permissions",
+    "OnAfterRenderAsync":         "blazor-page-pattern",
+    "[Parameter]":                "blazor-component-pattern",
+    "EventCallback":              "blazor-component-pattern",
+    "MudTable":                   "mudblazor-conventions",
+    "MudChip":                    "mudblazor-conventions",
+    "DatabaseFixture":            "http-integration-test-pattern",
+    "E2EDatabaseFixture":         "e2e-test-pattern",
+    "Respawn":                    "respawn-guide",
+    "TablesToIgnore":             "respawn-guide",
+    "AuditLog":                   "audit-log-pattern",
+    "APR_":                       "anti-pattern-registry",
+    "STOP_":                      "execution-protocol",
+    "EXEC_":                      "execution-memory"
+  },
+
+  "stop_conditions": {
+    "STOP_001": {
+      "trigger": "Required SSOT file missing for current task",
+      "action": "Create SSOT file first, then resume task",
+      "check": "ssot-gap-plan → sprint_priority"
+    },
+    "STOP_002": {
+      "trigger": "Build produces warnings > 0",
+      "action": "Fix all warnings before proceeding",
+      "check": "dotnet build -v q → 0 Warning(s)"
+    },
+    "STOP_003": {
+      "trigger": "Test count decreases",
+      "action": "HALT — do not commit, investigate immediately",
+      "check": "dotnet test → Passed count must be >= previous"
+    },
+    "STOP_004": {
+      "trigger": "Compliance script exits 1",
+      "action": "Fix violations before any further code changes",
+      "check": "Validate-GreenAiCompliance.ps1 → exit 0"
+    },
+    "STOP_007": {
+      "trigger": "All open SSOT gaps closed, no pending features",
+      "action": "Evaluate: stop or escalate to user",
+      "check": "SSOT_GAP_PLAN.md → 0 items without status: COMPLETED"
+    }
+  }
+}

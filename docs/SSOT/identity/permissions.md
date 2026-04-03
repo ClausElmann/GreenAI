@@ -1,5 +1,14 @@
 # permissions
 
+```yaml
+id: permissions
+type: pattern
+ssot_source: docs/SSOT/identity/permissions.md
+red_threads: [auth_flow]
+applies_to: ["SharedKernel/Permissions/*.cs"]
+enforcement: UserRoleNames.* and ProfileRoleNames.* constants — never magic strings
+```
+
 > **Canonical:** SSOT for GreenAi permission system — IPermissionService, UserRoles, ProfileRoles.
 > **Code sources:**
 > - `src/GreenAi.Api/SharedKernel/Permissions/IPermissionService.cs`

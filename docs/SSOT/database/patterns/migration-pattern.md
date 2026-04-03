@@ -1,5 +1,14 @@
 # Migration Pattern — green-ai
 
+```yaml
+id: migration_pattern
+type: pattern
+ssot_source: docs/SSOT/database/patterns/migration-pattern.md
+red_threads: [sql_embedded]
+applies_to: ["Database/Migrations/V*.sql"]
+enforcement: DbUp filename convention V{number}_{Name}.sql — manual order validation
+```
+
 > DbUp migration file conventions.
 
 **Last Updated:** 2026-04-02

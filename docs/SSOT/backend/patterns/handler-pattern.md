@@ -1,5 +1,14 @@
 # handler-pattern
 
+```yaml
+id: handler_pattern
+type: pattern
+ssot_source: docs/SSOT/backend/patterns/handler-pattern.md
+red_threads: [result_pattern, auth_flow, tenant_isolation]
+applies_to: ["Features/**/Handler.cs"]
+enforcement: Validate-GreenAiCompliance.ps1 HANDLER-002 + RESULT-001
+```
+
 > **Canonical:** This is the SSOT for all MediatR handlers in GreenAi.
 > **Golden samples:** `src/GreenAi.Api/Features/Auth/Login/LoginHandler.cs` (write)
 >                     `src/GreenAi.Api/Features/CustomerAdmin/GetProfiles/GetProfilesHandler.cs` (read)

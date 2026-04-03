@@ -1,5 +1,14 @@
 # endpoint-pattern
 
+```yaml
+id: endpoint_pattern
+type: pattern
+ssot_source: docs/SSOT/backend/patterns/endpoint-pattern.md
+red_threads: [result_pattern]
+applies_to: ["Features/**/Endpoint.cs"]
+enforcement: Validate-GreenAiCompliance.ps1 APR-007
+```
+
 > **Canonical:** This is the SSOT for all Minimal API endpoints in GreenAi.
 > **Golden sample:** `src/GreenAi.Api/Features/Auth/ChangePassword/ChangePasswordEndpoint.cs`
 

@@ -14,6 +14,7 @@
 | [identity/](identity/README.md)        | Custom JWT auth, ICurrentUser, tenant isolation, permissions  |
 | [testing/](testing/README.md)          | xUnit v3, DatabaseFixture, Respawn, NSubstitute patterns      |
 | [governance/](governance/README.md)    | Build plan, red threads, execution protocol, self-optimization|
+| [ui/](ui/README.md)                    | Blazor components, MudBlazor conventions, UI navigation models|
 | [_system/](_system/ssot-standards.md) | SSOT standards, file size rules, placement decision tree      |
 
 ---

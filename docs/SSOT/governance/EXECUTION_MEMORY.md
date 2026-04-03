@@ -273,4 +273,34 @@ log:
         - file: docs/SSOT/testing/known-issues.md
           priority: LOW
 
+  - id: EXEC_009
+    date: 2026-04-03
+    task: >
+      System Design — Self-Updating Documentation System (architect-driven, slice-for-slice).
+      7 answers from ARCHITECT_QUESTIONS.md drove 8 slices.
+      Created ui/ SSOT area, ssot-map.json, feature-contract-map.json, CONTEXT_MODEL.json,
+      UI_MODEL_SCHEMA.json, extended Validate-GreenAiCompliance.ps1 with 5 new rules,
+      added YAML header blocks to 15 SSOT files, fixed 2 live violations found by new rules.
+    red_threads: [result_pattern, auth_flow, current_user, sql_embedded]
+    result: SUCCESS
+    issues:
+      - PingEndpoint.cs used inline Results.Ok() — caught by new APR-007 rule → fixed to ToHttpResult()
+      - Counter.razor used Bootstrap btn class — caught by new UI-002 rule → fixed to MudButton
+    improvement_found:
+      - ssot-map.json enables targeted context loading — AI no longer needs to read all SSOT files
+      - feature-contract-map.json makes every feature discoverable in O(1)
+      - CONTEXT_MODEL.json documents ICurrentUser availability per handler layer
+      - 5 new compliance rules catch patterns previously undiscoverable by static analysis
+    ssot_updated: yes
+    ssot_files_created:
+      - docs/SSOT/ui/README.md + patterns/ + models/
+      - docs/SSOT/_system/ssot-map.json
+      - docs/SSOT/_system/feature-contract-map.json
+      - analysis-tool/docs/CONTEXT_MODEL.json
+      - analysis-tool/docs/UI_MODEL_SCHEMA.json
+    compliance_rules_before: 8
+    compliance_rules_after: 13
+    test_count: 161
+    live_violations_found_and_fixed: 2
+
 ```

@@ -1,5 +1,14 @@
 # Loc Helper — LocalizationContext
 
+```yaml
+id: loc_helper
+type: guide
+ssot_source: docs/SSOT/localization/guides/loc-helper.md
+red_threads: []
+applies_to: ["Components/**/*.razor", "Features/**/*.cs"]
+enforcement: never hardcode strings — use @Loc.Get(...)
+```
+
 > How to use `ILocalizationContext` for sync label access in Blazor components.
 
 **Last Updated:** 2026-04-02

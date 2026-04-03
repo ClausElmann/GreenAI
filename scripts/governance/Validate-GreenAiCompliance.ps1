@@ -180,6 +180,69 @@ if (Test-Path $resultExtensionsPath) {
 }
 
 # ─────────────────────────────────────────────────────────────
+# RULE 9 (APR-007): Endpoints must use .ToHttpResult() — not inline Results.Ok/BadRequest
+# ─────────────────────────────────────────────────────────────
+$endpointFiles = $csFiles | Where-Object { $_.Name -match 'Endpoint\.cs$' }
+foreach ($file in $endpointFiles) {
+    $content = Get-Content $file.FullName
+    for ($i = 0; $i -lt $content.Count; $i++) {
+        if ($content[$i] -match 'Results\.Ok\s*\(|Results\.BadRequest\s*\(|Results\.NotFound\s*\(|Results\.Conflict\s*\(') {
+            Add-Violation "APR-007" $file.FullName ($i + 1) "Inline Results.* in endpoint — use result.ToHttpResult() instead: $($content[$i].Trim())"
+        }
+    }
+}
+
+# ─────────────────────────────────────────────────────────────
+# RULE 10 (APR-005): Handler command/query must not manually check IsAuthenticated
+# Use IRequireAuthentication pipeline marker instead
+# ─────────────────────────────────────────────────────────────
+foreach ($file in $handlerFiles) {
+    $content = Get-Content $file.FullName
+    for ($i = 0; $i -lt $content.Count; $i++) {
+        if ($content[$i] -match 'IsAuthenticated|_currentUser\.UserId\s*==\s*0|UserId\.Value\s*==\s*0') {
+            Add-Violation "APR-005" $file.FullName ($i + 1) "Manual auth check in handler — use IRequireAuthentication marker on Command/Query instead: $($content[$i].Trim())"
+        }
+    }
+}
+
+# ─────────────────────────────────────────────────────────────
+# RULE 11 (UI-001): No IMediator injection in Components/ (only in Pages/)
+# ─────────────────────────────────────────────────────────────
+$componentFiles = $razorFiles | Where-Object { $_.FullName -match '\\Components\\' -and $_.FullName -notmatch '\\Pages\\' }
+foreach ($file in $componentFiles) {
+    $content = Get-Content $file.FullName
+    for ($i = 0; $i -lt $content.Count; $i++) {
+        if ($content[$i] -match '@inject\s+IMediator') {
+            Add-Violation "UI-001" $file.FullName ($i + 1) "IMediator injected in component — only pages should call Mediator.Send. Pass data via [Parameter]: $($content[$i].Trim())"
+        }
+    }
+}
+
+# ─────────────────────────────────────────────────────────────
+# RULE 12 (UI-002): No Bootstrap CSS classes in Razor files (MudBlazor only)
+# ─────────────────────────────────────────────────────────────
+foreach ($file in $razorFiles) {
+    $content = Get-Content $file.FullName
+    for ($i = 0; $i -lt $content.Count; $i++) {
+        if ($content[$i] -match 'class="(btn |container |row |col-|d-flex |justify-content-)') {
+            Add-Violation "UI-002" $file.FullName ($i + 1) "Bootstrap CSS class in Razor — use MudBlazor components instead: $($content[$i].Trim())"
+        }
+    }
+}
+
+# ─────────────────────────────────────────────────────────────
+# RULE 13 (UI-003): MudChip must have T="string" (MudBlazor 8 generic requirement)
+# ─────────────────────────────────────────────────────────────
+foreach ($file in $razorFiles) {
+    $content = Get-Content $file.FullName
+    for ($i = 0; $i -lt $content.Count; $i++) {
+        if ($content[$i] -match '<MudChip\b' -and $content[$i] -notmatch 'T="') {
+            Add-Violation "UI-003" $file.FullName ($i + 1) "MudChip missing T=`"string`" — required in MudBlazor 8 (causes compiler warning): $($content[$i].Trim())"
+        }
+    }
+}
+
+# ─────────────────────────────────────────────────────────────
 # Report
 # ─────────────────────────────────────────────────────────────
 if ($violations.Count -eq 0) {

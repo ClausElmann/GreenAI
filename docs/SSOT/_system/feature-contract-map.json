@@ -1,0 +1,319 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "green-ai feature contract map — every implemented feature with its red threads, handler, endpoint, SQL files, tests, and UI component. Machine-readable. Update when new feature is added.",
+  "version": "1.0.0",
+  "last_updated": "2026-04-03",
+  "ssot_source": "docs/SSOT/_system/feature-contract-map.json",
+
+  "contract_schema": {
+    "id": "unique feature id (snake_case)",
+    "domain": "Auth | CustomerAdmin | Identity | Localization | System | Api",
+    "route": "HTTP method + path",
+    "red_threads": "array of bound red_thread ids from RED_THREAD_REGISTRY.md",
+    "command_or_query": "path to Command.cs or Query.cs",
+    "handler": "path to Handler.cs",
+    "endpoint": "path to Endpoint.cs (null if Blazor-only)",
+    "sql_files": "array of embedded .sql paths",
+    "validator": "path to Validator.cs (null if no validation)",
+    "ui_page": "path to .razor page if feature has UI (null if API-only)",
+    "tests": {
+      "integration": "path to integration test class",
+      "unit": "path to unit test class (null if covered by integration)"
+    },
+    "auth": "none | authenticated | profile",
+    "pipeline_markers": "array of pipeline marker interfaces on Command/Query"
+  },
+
+  "features": [
+    {
+      "id": "system_ping",
+      "domain": "System",
+      "route": "GET /ping",
+      "red_threads": ["result_pattern"],
+      "command_or_query": "Features/System/Ping/PingQuery.cs",
+      "handler": "Features/System/Ping/PingHandler.cs",
+      "endpoint": "Features/System/Ping/PingEndpoint.cs",
+      "sql_files": [],
+      "validator": null,
+      "ui_page": null,
+      "tests": {
+        "integration": null,
+        "unit": null
+      },
+      "auth": "none",
+      "pipeline_markers": []
+    },
+    {
+      "id": "auth_login",
+      "domain": "Auth",
+      "route": "POST /auth/login",
+      "red_threads": ["auth_flow", "result_pattern"],
+      "command_or_query": "Features/Auth/Login/LoginCommand.cs",
+      "handler": "Features/Auth/Login/LoginHandler.cs",
+      "endpoint": "Features/Auth/Login/LoginEndpoint.cs",
+      "sql_files": [
+        "Features/Auth/Login/GetUserByEmail.sql",
+        "Features/Auth/Login/GetCustomerMemberships.sql"
+      ],
+      "validator": "Features/Auth/Login/LoginValidator.cs",
+      "ui_page": "Components/Pages/Auth/LoginPage.razor",
+      "tests": {
+        "integration": "tests/GreenAi.Tests/Features/Auth/LoginTests.cs",
+        "unit": null
+      },
+      "auth": "none",
+      "pipeline_markers": []
+    },
+    {
+      "id": "auth_select_customer",
+      "domain": "Auth",
+      "route": "POST /auth/select-customer",
+      "red_threads": ["auth_flow", "result_pattern"],
+      "command_or_query": "Features/Auth/SelectCustomer/SelectCustomerCommand.cs",
+      "handler": "Features/Auth/SelectCustomer/SelectCustomerHandler.cs",
+      "endpoint": "Features/Auth/SelectCustomer/SelectCustomerEndpoint.cs",
+      "sql_files": [
+        "Features/Auth/SelectCustomer/GetCustomerById.sql",
+        "Features/Auth/SelectCustomer/GetProfilesForCustomer.sql"
+      ],
+      "validator": "Features/Auth/SelectCustomer/SelectCustomerValidator.cs",
+      "ui_page": "Components/Pages/Auth/SelectCustomerPage.razor",
+      "tests": {
+        "integration": "tests/GreenAi.Tests/Features/Auth/SelectCustomerTests.cs",
+        "unit": null
+      },
+      "auth": "authenticated",
+      "pipeline_markers": ["IRequireAuthentication"]
+    },
+    {
+      "id": "auth_select_profile",
+      "domain": "Auth",
+      "route": "POST /auth/select-profile",
+      "red_threads": ["auth_flow", "result_pattern"],
+      "command_or_query": "Features/Auth/SelectProfile/SelectProfileCommand.cs",
+      "handler": "Features/Auth/SelectProfile/SelectProfileHandler.cs",
+      "endpoint": "Features/Auth/SelectProfile/SelectProfileEndpoint.cs",
+      "sql_files": [
+        "Features/Auth/SelectProfile/GetProfileById.sql"
+      ],
+      "validator": "Features/Auth/SelectProfile/SelectProfileValidator.cs",
+      "ui_page": "Components/Pages/Auth/SelectProfilePage.razor",
+      "tests": {
+        "integration": "tests/GreenAi.Tests/Features/Auth/SelectProfileTests.cs",
+        "unit": null
+      },
+      "auth": "authenticated",
+      "pipeline_markers": ["IRequireAuthentication"]
+    },
+    {
+      "id": "auth_refresh_token",
+      "domain": "Auth",
+      "route": "POST /auth/refresh",
+      "red_threads": ["auth_flow", "result_pattern"],
+      "command_or_query": "Features/Auth/RefreshToken/RefreshTokenCommand.cs",
+      "handler": "Features/Auth/RefreshToken/RefreshTokenHandler.cs",
+      "endpoint": "Features/Auth/RefreshToken/RefreshTokenEndpoint.cs",
+      "sql_files": [
+        "Features/Auth/RefreshToken/GetRefreshToken.sql",
+        "Features/Auth/RefreshToken/UpdateRefreshToken.sql"
+      ],
+      "validator": "Features/Auth/RefreshToken/RefreshTokenValidator.cs",
+      "ui_page": null,
+      "tests": {
+        "integration": "tests/GreenAi.Tests/Features/Auth/RefreshTokenTests.cs",
+        "unit": null
+      },
+      "auth": "none",
+      "pipeline_markers": [],
+      "note": "Uses ExecuteInTransactionAsync — token rotation is atomic"
+    },
+    {
+      "id": "auth_change_password",
+      "domain": "Auth",
+      "route": "POST /auth/change-password",
+      "red_threads": ["result_pattern", "auth_flow", "current_user"],
+      "command_or_query": "Features/Auth/ChangePassword/ChangePasswordCommand.cs",
+      "handler": "Features/Auth/ChangePassword/ChangePasswordHandler.cs",
+      "endpoint": "Features/Auth/ChangePassword/ChangePasswordEndpoint.cs",
+      "sql_files": [
+        "Features/Auth/ChangePassword/GetUserPasswordHash.sql",
+        "Features/Auth/ChangePassword/UpdatePasswordHash.sql"
+      ],
+      "validator": "Features/Auth/ChangePassword/ChangePasswordValidator.cs",
+      "ui_page": null,
+      "tests": {
+        "integration": "tests/GreenAi.Tests/Features/Auth/ChangePasswordRepositoryTests.cs",
+        "unit": "tests/GreenAi.Tests/Features/Auth/ChangePasswordHandlerTests.cs"
+      },
+      "auth": "profile",
+      "pipeline_markers": ["IRequireAuthentication"]
+    },
+    {
+      "id": "customer_admin_get_settings",
+      "domain": "CustomerAdmin",
+      "route": "GET /customer-admin/settings",
+      "red_threads": ["result_pattern", "tenant_isolation", "current_user"],
+      "command_or_query": "Features/CustomerAdmin/GetCustomerSettings/GetCustomerSettingsQuery.cs",
+      "handler": "Features/CustomerAdmin/GetCustomerSettings/GetCustomerSettingsHandler.cs",
+      "endpoint": null,
+      "sql_files": [
+        "Features/CustomerAdmin/GetCustomerSettings/GetCustomerSettings.sql"
+      ],
+      "validator": null,
+      "ui_page": "Components/Pages/CustomerAdmin/Index.razor (SettingsTab)",
+      "tests": {
+        "integration": "tests/GreenAi.Tests/Features/CustomerAdmin/GetCustomerSettingsHandlerTests.cs",
+        "unit": null
+      },
+      "auth": "profile",
+      "pipeline_markers": ["IRequireAuthentication"]
+    },
+    {
+      "id": "customer_admin_get_users",
+      "domain": "CustomerAdmin",
+      "route": "GET /customer-admin/users",
+      "red_threads": ["result_pattern", "tenant_isolation", "current_user"],
+      "command_or_query": "Features/CustomerAdmin/GetUsers/GetUsersQuery.cs",
+      "handler": "Features/CustomerAdmin/GetUsers/GetUsersHandler.cs",
+      "endpoint": null,
+      "sql_files": [
+        "Features/CustomerAdmin/GetUsers/GetUsers.sql"
+      ],
+      "validator": null,
+      "ui_page": "Components/Pages/CustomerAdmin/Index.razor (UserList tab)",
+      "tests": {
+        "integration": "tests/GreenAi.Tests/Features/CustomerAdmin/GetUsersHandlerTests.cs",
+        "unit": null
+      },
+      "auth": "profile",
+      "pipeline_markers": ["IRequireAuthentication"]
+    },
+    {
+      "id": "customer_admin_get_user_details",
+      "domain": "CustomerAdmin",
+      "route": "GET /customer-admin/users/{userId}",
+      "red_threads": ["result_pattern", "tenant_isolation", "current_user"],
+      "command_or_query": "Features/CustomerAdmin/GetUsers/GetUserDetailsQuery.cs",
+      "handler": "Features/CustomerAdmin/GetUsers/GetUserDetailsHandler.cs",
+      "endpoint": null,
+      "sql_files": [
+        "Features/CustomerAdmin/GetUsers/GetUserDetails.sql"
+      ],
+      "validator": null,
+      "ui_page": "Components/Pages/CustomerAdmin/UserDetail.razor",
+      "tests": {
+        "integration": "tests/GreenAi.Tests/Features/CustomerAdmin/GetUserDetailsHandlerTests.cs",
+        "unit": null
+      },
+      "auth": "profile",
+      "pipeline_markers": ["IRequireAuthentication"]
+    },
+    {
+      "id": "customer_admin_get_profiles",
+      "domain": "CustomerAdmin",
+      "route": "GET /customer-admin/profiles",
+      "red_threads": ["result_pattern", "tenant_isolation", "current_user"],
+      "command_or_query": "Features/CustomerAdmin/GetProfiles/GetProfilesQuery.cs",
+      "handler": "Features/CustomerAdmin/GetProfiles/GetProfilesHandler.cs",
+      "endpoint": null,
+      "sql_files": [
+        "Features/CustomerAdmin/GetProfiles/GetProfiles.sql"
+      ],
+      "validator": null,
+      "ui_page": "Components/Pages/CustomerAdmin/Index.razor (ProfileList tab)",
+      "tests": {
+        "integration": "tests/GreenAi.Tests/Features/CustomerAdmin/GetProfilesHandlerTests.cs",
+        "unit": null
+      },
+      "auth": "profile",
+      "pipeline_markers": ["IRequireAuthentication"]
+    },
+    {
+      "id": "customer_admin_get_profile_details",
+      "domain": "CustomerAdmin",
+      "route": "GET /customer-admin/profiles/{profileId}",
+      "red_threads": ["result_pattern", "tenant_isolation", "current_user"],
+      "command_or_query": "Features/CustomerAdmin/GetProfiles/GetProfileDetailsQuery.cs",
+      "handler": "Features/CustomerAdmin/GetProfiles/GetProfileDetailsHandler.cs",
+      "endpoint": null,
+      "sql_files": [
+        "Features/CustomerAdmin/GetProfiles/GetProfileById.sql"
+      ],
+      "validator": null,
+      "ui_page": "Components/Pages/CustomerAdmin/ProfileDetail.razor",
+      "tests": {
+        "integration": "tests/GreenAi.Tests/Features/CustomerAdmin/GetProfileDetailsHandlerTests.cs",
+        "unit": null
+      },
+      "auth": "profile",
+      "pipeline_markers": ["IRequireAuthentication"]
+    },
+    {
+      "id": "identity_change_user_email",
+      "domain": "Identity",
+      "route": "POST /identity/change-email",
+      "red_threads": ["result_pattern", "auth_flow", "current_user", "sql_embedded", "tenant_isolation"],
+      "command_or_query": "Features/Identity/ChangeUserEmail/ChangeUserEmailCommand.cs",
+      "handler": "Features/Identity/ChangeUserEmail/ChangeUserEmailHandler.cs",
+      "endpoint": "Features/Identity/ChangeUserEmail/ChangeUserEmailEndpoint.cs",
+      "sql_files": [
+        "Features/Identity/ChangeUserEmail/CheckEmailAvailable.sql",
+        "Features/Identity/ChangeUserEmail/UpdateUserEmail.sql",
+        "Features/Identity/ChangeUserEmail/InsertAuditEntry.sql"
+      ],
+      "validator": "Features/Identity/ChangeUserEmail/ChangeUserEmailValidator.cs",
+      "ui_page": null,
+      "tests": {
+        "integration": "tests/GreenAi.Tests/Features/Identity/ChangeUserEmailRepositoryTests.cs",
+        "unit": "tests/GreenAi.Tests/Features/Identity/ChangeUserEmailHandlerTests.cs"
+      },
+      "auth": "profile",
+      "pipeline_markers": ["IRequireAuthentication"],
+      "note": "Uses ExecuteInTransactionAsync — email update + audit are atomic. EMAIL_TAKEN → 409."
+    },
+    {
+      "id": "localization_batch_upsert_labels",
+      "domain": "Localization",
+      "route": "POST /localization/labels/batch",
+      "red_threads": ["result_pattern"],
+      "command_or_query": "Features/Localization/BatchUpsertLabels/BatchUpsertLabelsCommand.cs",
+      "handler": "Features/Localization/BatchUpsertLabels/BatchUpsertLabelsHandler.cs",
+      "endpoint": "Features/Localization/BatchUpsertLabels/BatchUpsertLabelsEndpoint.cs",
+      "sql_files": [],
+      "validator": null,
+      "ui_page": null,
+      "tests": {
+        "integration": null,
+        "unit": null
+      },
+      "auth": "none",
+      "pipeline_markers": []
+    },
+    {
+      "id": "api_v1_get_token",
+      "domain": "Api",
+      "route": "POST /api/v1/auth/token",
+      "red_threads": ["auth_flow", "result_pattern"],
+      "command_or_query": "Features/Api/V1/Auth/Token/GetApiTokenCommand.cs",
+      "handler": "Features/Api/V1/Auth/Token/GetApiTokenHandler.cs",
+      "endpoint": "Features/Api/V1/Auth/Token/GetApiTokenEndpoint.cs",
+      "sql_files": [],
+      "validator": null,
+      "ui_page": null,
+      "tests": {
+        "integration": null,
+        "unit": null
+      },
+      "auth": "none",
+      "pipeline_markers": []
+    }
+  ],
+
+  "validation_rules": {
+    "every_feature_must_have": ["handler", "red_threads (min 1)", "auth value"],
+    "if_route_exists": ["endpoint must not be null"],
+    "if_auth_is_profile_or_authenticated": ["IRequireAuthentication must be in pipeline_markers"],
+    "if_sql_files_has_more_than_1_write": ["ExecuteInTransactionAsync note must be present"],
+    "test_coverage_minimum": "integration test required for every feature with a route"
+  }
+}

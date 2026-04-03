@@ -1,5 +1,14 @@
 # ai-boundaries
 
+```yaml
+id: ai_boundaries
+type: rule
+ssot_source: docs/SSOT/governance/ai-boundaries.md
+red_threads: []
+applies_to: ["AI execution loop"]
+enforcement: STOP_AND_ASK before git operations, schema drops, production mutations
+```
+
 > **Canonical:** Defines what AI agents are permitted to do autonomously vs. what requires human confirmation.
 > **Red thread:** governance — derived from AI_WORK_CONTRACT.md ABSOLUTTE REGLER
 

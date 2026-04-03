@@ -1,5 +1,14 @@
 # SSOT Document Placement Rules — green-ai
 
+```yaml
+id: ssot_document_placement_rules
+type: protocol
+ssot_source: docs/SSOT/_system/ssot-document-placement-rules.md
+red_threads: []
+applies_to: ["docs/SSOT/**"]
+enforcement: read before creating ANY new .md file in docs/SSOT/
+```
+
 > **AI: Read this BEFORE creating any `.md` file.**
 
 ---

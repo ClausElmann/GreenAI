@@ -1,5 +1,14 @@
 # dapper-patterns
 
+```yaml
+id: dapper_patterns
+type: pattern
+ssot_source: docs/SSOT/database/patterns/dapper-patterns.md
+red_threads: [sql_embedded]
+applies_to: ["Features/**/Repository.cs", "**/*.sql"]
+enforcement: Validate-GreenAiCompliance.ps1 SQL-001
+```
+
 > **Canonical:** This is the SSOT for all database access patterns in GreenAi.
 > **Code source:** `src/GreenAi.Api/SharedKernel/Db/`
 
