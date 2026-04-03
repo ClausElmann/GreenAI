@@ -23,7 +23,7 @@
                 {
                     <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
                 }
-                @Loc.Get("settings.SaveButton")
+                @Loc.Get("shared.SaveButton")
             </MudButton>
         </MudItem>
     </MudGrid>
@@ -47,6 +47,6 @@
         _saving = true;
         // TODO: await Mediator.Send(new UpdateCustomerSettingsCommand(CustomerId, _name));
         _saving = false;
-        Snackbar.Add(Loc.Get("settings.SavedMessage"), Severity.Success);
+        Snackbar.Add(Loc.Get("feature.settings.SavedMessage"), Severity.Success);
     }
 }

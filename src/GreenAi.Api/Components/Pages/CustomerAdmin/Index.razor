@@ -3,14 +3,16 @@
 @using GreenAi.Api.Features.CustomerAdmin.GetUsers
 @using GreenAi.Api.Features.CustomerAdmin.GetProfiles
 @using GreenAi.Api.SharedKernel.Auth
+@using GreenAi.Api.SharedKernel.Localization
 @using Microsoft.AspNetCore.Components.Authorization
 @inject IMediator Mediator
 @inject NavigationManager Nav
 @inject BlazorPrincipalHolder PrincipalHolder
+@inject ILocalizationContext Loc
 
-<PageTitle>Kundestyre — GreenAi</PageTitle>
+<PageTitle>@Loc.Get("nav.CustomerAdmin") — GreenAi</PageTitle>
 
-<MudText Typo="Typo.h5" Class="mb-4" data-testid="customer-admin-heading">Kundestyre</MudText>
+<MudText Typo="Typo.h5" Class="mb-4" data-testid="customer-admin-heading">@Loc.Get("nav.CustomerAdmin")</MudText>
 
 @if (_loading)
 {
@@ -19,15 +21,15 @@
 else
 {
     <MudTabs Elevation="1" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pt-4">
-        <MudTabPanel Text="Indstillinger" Icon="@Icons.Material.Filled.Settings">
+        <MudTabPanel Text="@Loc.Get("feature.customerAdmin.TabSettings")" Icon="@Icons.Material.Filled.Settings">
             <SettingsTab CustomerId="_customerId" CustomerName="_customerName" />
         </MudTabPanel>
 
-        <MudTabPanel Text="Brugere" Icon="@Icons.Material.Filled.People">
+        <MudTabPanel Text="@Loc.Get("feature.customerAdmin.TabUsers")" Icon="@Icons.Material.Filled.People">
             <UserList Users="_users" OnDelete="DeleteUserAsync" />
         </MudTabPanel>
 
-        <MudTabPanel Text="Profiler" Icon="@Icons.Material.Filled.AccountTree">
+        <MudTabPanel Text="@Loc.Get("feature.customerAdmin.TabProfiles")" Icon="@Icons.Material.Filled.AccountTree">
             <ProfileList Profiles="_profiles" OnDelete="DeleteProfileAsync" />
         </MudTabPanel>
     </MudTabs>

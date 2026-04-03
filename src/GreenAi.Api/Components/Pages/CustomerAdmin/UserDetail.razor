@@ -2,12 +2,14 @@
 @using GreenAi.Api.Features.CustomerAdmin.GetUsers
 @using GreenAi.Api.SharedKernel.Auth
 @using GreenAi.Api.SharedKernel.Ids
+@using GreenAi.Api.SharedKernel.Localization
 @using Microsoft.AspNetCore.Components.Authorization
 @inject IMediator Mediator
 @inject NavigationManager Nav
 @inject BlazorPrincipalHolder PrincipalHolder
+@inject ILocalizationContext Loc
 
-<PageTitle>Bruger — GreenAi</PageTitle>
+<PageTitle>@Loc.Get("nav.CustomerAdmin") — GreenAi</PageTitle>
 
 @if (_loading)
 {
@@ -17,13 +19,13 @@
 
 @if (_user is null)
 {
-    <MudAlert Severity="Severity.Warning">Bruger ikke fundet (id: @UserId).</MudAlert>
+    <MudAlert Severity="Severity.Warning">@string.Format(Loc.Get("feature.user.NotFound"), UserId)</MudAlert>
     <MudButton Variant="Variant.Text"
                StartIcon="@Icons.Material.Filled.ArrowBack"
                Href="/customer-admin"
                Class="mt-3"
                data-testid="back-to-customer-admin">
-        Tilbage til kundestyre
+        @Loc.Get("shared.BackToCustomerAdmin")
     </MudButton>
     return;
 }
@@ -39,24 +41,24 @@
     <MudChip T="string"
              Color="@(_user.IsActive ? Color.Success : Color.Default)"
              Size="Size.Small">
-        @(_user.IsActive ? "Aktiv" : "Inaktiv")
+        @(_user.IsActive ? Loc.Get("shared.Active") : Loc.Get("shared.Inactive"))
     </MudChip>
 </MudStack>
 
 <MudTabs Elevation="1" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pt-4">
-    <MudTabPanel Text="Profiler" Icon="@Icons.Material.Filled.AccountTree">
+    <MudTabPanel Text="@Loc.Get("feature.user.TabProfiles")" Icon="@Icons.Material.Filled.AccountTree">
         @if (_user.Profiles.Count == 0)
         {
-            <MudText Typo="Typo.body2" Color="Color.Secondary">Ingen profiler tildelt.</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">@Loc.Get("feature.user.NoProfilesAssigned")</MudText>
         }
         else
         {
             <MudTable Items="_user.Profiles" Dense="true" Hover="true">
                 <HeaderContent>
-                    <MudTh>Profil</MudTh>
+                    <MudTh>@Loc.Get("feature.user.ColumnProfile")</MudTh>
                 </HeaderContent>
                 <RowTemplate>
-                    <MudTd DataLabel="Profil">
+                    <MudTd DataLabel="@Loc.Get("feature.user.ColumnProfile")">
                         <MudLink Href="@("/customer-admin/profiles/" + context.ProfileId)">
                             @context.ProfileName
                         </MudLink>
@@ -66,21 +68,21 @@
         }
     </MudTabPanel>
 
-    <MudTabPanel Text="Roller" Icon="@Icons.Material.Filled.Security">
+    <MudTabPanel Text="@Loc.Get("feature.user.TabRoles")" Icon="@Icons.Material.Filled.Security">
         @if (_user.Roles.Count == 0)
         {
-            <MudText Typo="Typo.body2" Color="Color.Secondary">Ingen roller tildelt.</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">@Loc.Get("feature.user.NoRolesAssigned")</MudText>
         }
         else
         {
             <MudTable Items="_user.Roles" Dense="true" Hover="true">
                 <HeaderContent>
-                    <MudTh>Rolle</MudTh>
-                    <MudTh>Profil</MudTh>
+                    <MudTh>@Loc.Get("feature.user.ColumnRole")</MudTh>
+                    <MudTh>@Loc.Get("feature.user.ColumnProfile")</MudTh>
                 </HeaderContent>
                 <RowTemplate>
-                    <MudTd DataLabel="Rolle">@context.Role</MudTd>
-                    <MudTd DataLabel="Profil">@context.ProfileName</MudTd>
+                    <MudTd DataLabel="@Loc.Get("feature.user.ColumnRole")">@context.Role</MudTd>
+                    <MudTd DataLabel="@Loc.Get("feature.user.ColumnProfile")">@context.ProfileName</MudTd>
                 </RowTemplate>
             </MudTable>
         }
@@ -114,8 +116,8 @@
         _user = result.IsSuccess ? result.Value : null;
         _breadcrumbs =
         [
-            new("Kundestyre", href: "/customer-admin"),
-            new(_user?.Email ?? $"Bruger {UserId}", href: null, disabled: true)
+            new(Loc.Get("nav.CustomerAdmin"), href: "/customer-admin"),
+            new(_user?.Email ?? string.Format(Loc.Get("feature.user.BreadcrumbDefault"), UserId), href: null, disabled: true)
         ];
         _loading = false;
         StateHasChanged();

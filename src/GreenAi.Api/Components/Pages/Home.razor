@@ -1,8 +1,10 @@
-﻿@page "/"
+@page "/"
+@using GreenAi.Api.SharedKernel.Localization
+@inject ILocalizationContext Loc
 
-<PageTitle>Forside — GreenAi</PageTitle>
+<PageTitle>@Loc.Get("nav.Home") — GreenAi</PageTitle>
 
-<MudText Typo="Typo.h5" Class="mb-6">Forside</MudText>
+<MudText Typo="Typo.h5" Class="mb-6">@Loc.Get("nav.Home")</MudText>
 
 <MudGrid>
     <MudItem xs="12" sm="6" md="4">
@@ -11,16 +13,16 @@
                 <MudIcon Icon="@Icons.Material.Filled.BusinessCenter"
                          Size="Size.Large"
                          Color="Color.Primary" />
-                <MudText Typo="Typo.h6">Kundestyre</MudText>
+                <MudText Typo="Typo.h6">@Loc.Get("nav.CustomerAdmin")</MudText>
                 <MudText Typo="Typo.body2" Color="Color.Secondary">
-                    Administrer brugere, profiler og indstillinger for din kunde.
+                    @Loc.Get("page.home.CustomerAdminDescription")
                 </MudText>
                 <MudButton Variant="Variant.Filled"
                            Color="Color.Primary"
                            Href="/customer-admin"
                            FullWidth="true"
                            data-testid="go-to-customer-admin">
-                    Åbn
+                    @Loc.Get("shared.OpenButton")
                 </MudButton>
             </MudStack>
         </MudPaper>

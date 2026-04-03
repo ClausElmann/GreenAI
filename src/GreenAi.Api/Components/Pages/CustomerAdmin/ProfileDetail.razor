@@ -2,12 +2,14 @@
 @using GreenAi.Api.Features.CustomerAdmin.GetProfiles
 @using GreenAi.Api.SharedKernel.Auth
 @using GreenAi.Api.SharedKernel.Ids
+@using GreenAi.Api.SharedKernel.Localization
 @using Microsoft.AspNetCore.Components.Authorization
 @inject IMediator Mediator
 @inject ISnackbar Snackbar
 @inject BlazorPrincipalHolder PrincipalHolder
+@inject ILocalizationContext Loc
 
-<PageTitle>Profil — GreenAi</PageTitle>
+<PageTitle>@Loc.Get("nav.CustomerAdmin") — GreenAi</PageTitle>
 
 @if (_loading)
 {
@@ -17,13 +19,13 @@
 
 @if (_profile is null)
 {
-    <MudAlert Severity="Severity.Warning">Profil ikke fundet (id: @ProfileId).</MudAlert>
+    <MudAlert Severity="Severity.Warning">@string.Format(Loc.Get("feature.profile.NotFound"), ProfileId)</MudAlert>
     <MudButton Variant="Variant.Text"
                StartIcon="@Icons.Material.Filled.ArrowBack"
                Href="/customer-admin"
                Class="mt-3"
                data-testid="back-to-customer-admin">
-        Tilbage til kundestyre
+        @Loc.Get("shared.BackToCustomerAdmin")
     </MudButton>
     return;
 }
@@ -39,7 +41,7 @@
     <MudChip T="string"
              Color="@(_profile.IsActive ? Color.Success : Color.Default)"
              Size="Size.Small">
-        @(_profile.IsActive ? "Aktiv" : "Inaktiv")
+        @(_profile.IsActive ? Loc.Get("shared.Active") : Loc.Get("shared.Inactive"))
     </MudChip>
 </MudStack>
 
@@ -50,7 +52,7 @@
             <MudGrid>
                 <MudItem xs="12" sm="6">
                     <MudTextField @bind-Value="_editName"
-                                  Label="Profilnavn"
+                                  Label="@Loc.Get("feature.profile.NameLabel")"
                                   Variant="Variant.Outlined"
                                   Required="true"
                                   Class="mb-3"
@@ -62,7 +64,7 @@
                                StartIcon="@Icons.Material.Filled.Save"
                                OnClick="SaveInfoAsync"
                                data-testid="profile-save">
-                        Gem
+                        @Loc.Get("shared.SaveButton")
                     </MudButton>
                 </MudItem>
             </MudGrid>
@@ -103,8 +105,8 @@
         _editName = _profile?.Name ?? string.Empty;
         _breadcrumbs =
         [
-            new("Kundestyre", href: "/customer-admin"),
-            new(_profile?.Name ?? $"Profil {ProfileId}", href: null, disabled: true)
+            new(Loc.Get("nav.CustomerAdmin"), href: "/customer-admin"),
+            new(_profile?.Name ?? string.Format(Loc.Get("feature.profile.BreadcrumbDefault"), ProfileId), href: null, disabled: true)
         ];
         _loading = false;
         StateHasChanged();
@@ -116,6 +118,6 @@
         await _infoForm.Validate();
         if (!_infoForm.IsValid) return;
         // TODO: Mediator.Send(new UpdateProfileCommand(ProfileId, _editName))
-        Snackbar.Add("Info gemt.", Severity.Success);
+        Snackbar.Add(Loc.Get("feature.settings.SavedMessage"), Severity.Success);
     }
 }

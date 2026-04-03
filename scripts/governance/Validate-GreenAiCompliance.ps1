@@ -466,7 +466,84 @@ if (Test-Path $uiModelSchemaPath) {
 }
 
 # ─────────────────────────────────────────────────────────────
-# Report
+# RULE GROUP 6 (ID-001): Strongly-typed IDs — no raw int for
+# UserId, CustomerId, ProfileId in Command/Query records.
+# Exception: HTTP boundary types (API token command) where the
+# int comes from JSON deserialization and is wrapped in handler.
+# ─────────────────────────────────────────────────────────────
+$commandQueryFiles = $csFiles | Where-Object { $_.Name -match '(Command|Query)\.cs$' }
+foreach ($file in $commandQueryFiles) {
+    $content = Get-Content $file.FullName -Raw
+    # Detect raw int UserId / CustomerId / ProfileId in record parameter lists
+    if ($content -match 'public\s+(?:sealed\s+)?record\s+\w+\s*\([^)]*\bint\s+(UserId|CustomerId|ProfileId)\b') {
+        # Allow HTTP boundary files: Auth/ commands receive int from JSON binding (handler wraps in typed ID)
+        # Allow Api/V1/ commands that also receive int from JSON
+        if ($file.FullName -notmatch '\\Features\\Auth\\' -and $file.FullName -notmatch '\\Api\\V1\\') {
+            Add-Violation "ID-001" $file.FullName 0 "Raw int for identity value in $($file.Name) — use UserId/CustomerId/ProfileId strongly-typed struct (SharedKernel/Ids/StrongIds.cs)"
+        }
+    }
+}
+
+# ─────────────────────────────────────────────────────────────
+# RULE GROUP 7 (LOC-001): No hardcoded strings in Blazor files.
+# Strings in markup or code blocks must use @Loc.Get("key").
+# Exemptions: CSS class names, attribute values (Accept, type=...),
+#   href values, log messages, comments, framework-generated files.
+# ─────────────────────────────────────────────────────────────
+$exemptRazorFiles = @("Error.razor", "ReconnectModal.razor", "_Imports.razor",
+                      "App.razor", "Routes.razor", "NavMenu.razor")
+$locRazorFiles = $razorFiles | Where-Object {
+    $exemptRazorFiles -notcontains $_.Name -and
+    $_.FullName -notmatch '\\Components\\Pages\\Error\.razor'
+}
+foreach ($file in $locRazorFiles) {
+    $content = Get-Content $file.FullName
+    for ($i = 0; $i -lt $content.Count; $i++) {
+        $line = $content[$i]
+        # Skip comments and pure Razor code-only lines
+        if ($line -match '^\s*@\*|^\s*//') { continue }
+        # Skip lines that are purely data-testid / CSS identifier attributes (no visible text)
+        if ($line -match '^\s*data-testid=|^\s*class=|^\s*id=|^\s*href=') { continue }
+        # Detect Danish/English visible text literally in markup (between > and <)
+        if ($line -match '>\s*(Gem|Slet|Annuller|Opret|Ingen |Kundestyre|Forside|Status|Aktiv|Inaktiv|Bruger|Profil|Indstillinger|Gemt)\b' -and
+            $line -notmatch 'Loc\.Get\(' -and
+            $line -notmatch 'data-testid') {
+            Add-Violation "LOC-001" $file.FullName ($i + 1) "Hardcoded UI string — use @Loc.Get(`"key`") instead: $($line.Trim())"
+        }
+        # Detect C# string literals with DA words NOT using Loc.Get
+        # Exclude: data-testid values, href/NavigateTo paths, comment lines
+        if ($line -match '"(Gem|Slet|Annuller|Opret|Ingen |Kundestyre|Forside|Aktiv|Inaktiv|Bruger|Profil|Indstillinger|Gemt)' -and
+            $line -notmatch 'Loc\.Get\(' -and
+            $line -notmatch '\/\/' -and
+            $line -notmatch 'data-testid' -and
+            $line -notmatch 'NavigateTo\(' -and
+            $line -notmatch '^\s*@page') {
+            Add-Violation "LOC-001" $file.FullName ($i + 1) "Hardcoded string literal in Blazor — use @Loc.Get(`"key`") instead: $($line.Trim())"
+        }
+    }
+}
+
+# ─────────────────────────────────────────────────────────────
+# RULE GROUP 8 (FEATURE-002): sql_files in feature-contract-map.json
+# must match files that actually exist on disk.
+# ─────────────────────────────────────────────────────────────
+if (Test-Path $featureContractMapPath) {
+    $featureMap2 = Get-Content $featureContractMapPath -Raw | ConvertFrom-Json
+    $featureSrcRoot2 = Join-Path $repoRoot "src\GreenAi.Api"
+
+    foreach ($feature in $featureMap2.features) {
+        foreach ($sqlPath in $feature.sql_files) {
+            if ($sqlPath) {
+                $absPath = Join-Path $featureSrcRoot2 $sqlPath.Replace('/', '\')
+                if (-not (Test-Path $absPath)) {
+                    Add-Violation "FEATURE-002" $absPath 0 "sql_files entry '$sqlPath' for feature '$($feature.id)' does not exist on disk — update feature-contract-map.json"
+                }
+            }
+        }
+    }
+}
+
+
 # ─────────────────────────────────────────────────────────────
 if ($violations.Count -eq 0) {
     Write-Host "VALIDATION PASSED — SYSTEM AUTONOMY VERIFIED" -ForegroundColor Green

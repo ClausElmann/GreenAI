@@ -12,7 +12,7 @@
                Size="Size.Small"
                OnClick="CreateProfile"
                data-testid="create-profile">
-        @Loc.Get("profile.CreateButton")
+        @Loc.Get("feature.profile.CreateButton")
     </MudButton>
 </MudStack>
 
@@ -46,7 +46,7 @@
         </MudTd>
     </RowTemplate>
     <NoRecordsContent>
-        <MudText Typo="Typo.body2" Color="Color.Secondary">@Loc.Get("profile.NoRecords")</MudText>
+        <MudText Typo="Typo.body2" Color="Color.Secondary">@Loc.Get("feature.profile.NoRecords")</MudText>
     </NoRecordsContent>
 </MudTable>
 
@@ -54,13 +54,13 @@
     [Parameter, EditorRequired] public List<ProfileRow> Profiles { get; set; } = null!;
     [Parameter] public EventCallback<int> OnDelete { get; set; }
 
-    private void CreateProfile() => Snackbar.Add(Loc.Get("profile.CreateNotImplemented"), Severity.Info);
+    private void CreateProfile() => Snackbar.Add(Loc.Get("feature.profile.CreateNotImplemented"), Severity.Info);
 
     private async Task ConfirmDeleteAsync(ProfileRow profile)
     {
         var confirmed = await Dialog.ShowMessageBox(
-            Loc.Get("profile.DeleteTitle"),
-            Loc.Get("shared.DeleteConfirmMessage", profile.Name),
+            Loc.Get("feature.profile.DeleteTitle"),
+            Loc.Get("shared.DeleteConfirmFormat", profile.Name),
             yesText: Loc.Get("shared.DeleteButton"), cancelText: Loc.Get("shared.CancelButton"));
 
         if (confirmed == true)
