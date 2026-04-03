@@ -161,4 +161,116 @@ log:
     test_count_after: 137
     test_count_added: 13
 
+  - id: EXEC_007
+    date: 2026-04-03
+    task: >
+      Autonomous system test — ChangeUserEmail feature implementation.
+      Proved STOP_001 fire-and-resolve mechanism. Pre-checks detected:
+        1. audit-log-pattern.md missing → STOP_001 fired
+        2. AuditLog table missing (V001–V015 have no audit migration)
+        3. EMAIL_TAKEN error code missing from ResultExtensions.cs
+      Resolved all 3 gaps (Slice 0), then implemented full ChangeUserEmail feature (Slice 1) and tests.
+    red_threads: [result_pattern, sql_embedded, auth_flow, current_user, tenant_isolation, zero_warnings]
+    pattern_used:
+      - docs/SSOT/backend/patterns/handler-pattern.md v2.0
+      - docs/SSOT/backend/patterns/endpoint-pattern.md v2.0
+      - docs/SSOT/backend/patterns/validator-pattern.md
+      - docs/SSOT/backend/patterns/audit-log-pattern.md  # created this task
+      - docs/SSOT/database/patterns/dapper-patterns.md
+      - docs/SSOT/backend/patterns/pipeline-behaviors.md
+    result: SUCCESS
+    issues:
+      - UpdateUserEmail.sql incorrectly included SET RowVersion = NEWID() →
+        SqlException "Cannot update a timestamp column." at runtime →
+        Fixed: RowVersion (ROWVERSION type) is auto-managed by SQL Server, never updated manually →
+        APR_009 added to ANTI_PATTERN_REGISTRY
+    improvement_found:
+      - ROWVERSION column must NEVER be in SET clause — SQL Server manages it automatically
+      - audit-log-pattern.md enforces transaction atomicity requirement: both ops commit or rollback
+      - EMAIL_TAKEN → 409 Conflict is the correct HTTP status (not 400 or 500)
+    ssot_updated: yes
+    ssot_files_created:
+      - docs/SSOT/backend/patterns/audit-log-pattern.md
+      - src/GreenAi.Api/Database/Migrations/V016_AuditLog.sql
+    ssot_files_patched:
+      - src/GreenAi.Api/SharedKernel/Results/ResultExtensions.cs (EMAIL_TAKEN 409, NOT_FOUND 404)
+      - docs/SSOT/backend/patterns/result-pattern.md (error_code_catalog updated)
+      - docs/SSOT/governance/SSOT_GAP_PLAN.md (audit-log entries added, marked COMPLETED)
+      - docs/SSOT/governance/ANTI_PATTERN_REGISTRY.md (APR_009: RowVersion in SET clause)
+    feature_files_created:
+      - src/GreenAi.Api/Features/Identity/ChangeUserEmail/ChangeUserEmailCommand.cs
+      - src/GreenAi.Api/Features/Identity/ChangeUserEmail/ChangeUserEmailValidator.cs
+      - src/GreenAi.Api/Features/Identity/ChangeUserEmail/ChangeUserEmailResponse.cs
+      - src/GreenAi.Api/Features/Identity/ChangeUserEmail/ChangeUserEmailRepository.cs
+      - src/GreenAi.Api/Features/Identity/ChangeUserEmail/ChangeUserEmailHandler.cs
+      - src/GreenAi.Api/Features/Identity/ChangeUserEmail/ChangeUserEmailEndpoint.cs
+      - src/GreenAi.Api/Features/Identity/ChangeUserEmail/CheckEmailAvailable.sql
+      - src/GreenAi.Api/Features/Identity/ChangeUserEmail/UpdateUserEmail.sql
+      - src/GreenAi.Api/Features/Identity/ChangeUserEmail/InsertAuditEntry.sql
+      - tests/GreenAi.Tests/Features/Identity/ChangeUserEmailRepositoryTests.cs (5 tests)
+      - tests/GreenAi.Tests/Features/Identity/ChangeUserEmailHandlerTests.cs (4 tests)
+    test_count_before: 137
+    test_count_after: 161
+    test_count_added: 24
+    test_files_created:
+      - tests/GreenAi.Tests/Features/Identity/ChangeUserEmailRepositoryTests.cs (5 tests)
+      - tests/GreenAi.Tests/Features/Identity/ChangeUserEmailHandlerTests.cs (4 tests)
+      - tests/GreenAi.Tests/SharedKernel/Results/ResultExtensionsTests.cs (14 tests — error code catalog)
+
+    learning_enforcer_output:
+      bugs_found_by_new_rules:
+        - GetCustomerSettingsHandler: NO_CUSTOMER + CUSTOMER_NOT_FOUND → both unregistered → silent HTTP 500
+        - GetUserDetailsHandler: NO_CUSTOMER + USER_NOT_FOUND → both unregistered → silent HTTP 500
+        - GetCustomerSettingsHandler + GetUserDetailsHandler: APR_005 manual auth check → fixed
+      rules_added_to_validate_script:
+        - SQL-001: RowVersion in SET clause (detects APR_009 statically in .sql files)
+        - RESULT-001: Result<T>.Fail() with error code not in ResultExtensions.cs
+      ssot_updated:
+        - dapper-patterns.md: RowVersion anti-pattern section added
+        - AI_WORK_CONTRACT.md: "audit" trigger row added
+        - ANTI_PATTERN_REGISTRY.md: APR_009 added
+      test_enforcements:
+        - ResultExtensionsTests: 14 tests — one per registered error code — prevents silent 500 regressions
+
+  - id: EXEC_008
+    date: 2026-04-03
+    task: >
+      Autonomous System Runner — continuously closed all open SSOT gaps (5 slices),
+      verified build+tests after each slice.
+    red_threads: []
+    pattern_used:
+      - docs/SSOT/governance/SSOT_GAP_PLAN.md
+      - docs/SSOT/governance/ai-boundaries.md
+    result: SUCCESS
+    issues: []
+    improvement_found:
+      - dapper-patterns.md and pipeline-behaviors.md already existed but lacked status: COMPLETED in SSOT_GAP_PLAN
+      - 5-slice autonomous loop rule is correct: produces 5 SSOT files with zero regressions
+    ssot_updated: yes
+    ssot_files_created:
+      - docs/SSOT/governance/ssot-update-protocol.md    (SLICE_A)
+      - docs/SSOT/governance/ai-boundaries.md           (SLICE_B)
+      - docs/SSOT/database/patterns/transaction-pattern.md  (SLICE_C)
+      - docs/SSOT/testing/guides/respawn-guide.md       (SLICE_D)
+      - docs/SSOT/identity/permissions.md               (SLICE_E)
+    ssot_files_patched:
+      - docs/SSOT/governance/SSOT_GAP_PLAN.md (GAP_001–GAP_005 + dapper-patterns + pipeline-behaviors → COMPLETED)
+      - docs/SSOT/governance/MASTER_BUILD_PLAN.md (phase_5 → COMPLETE)
+      - AI_WORK_CONTRACT.md (5 new trigger rows added)
+    test_count_before: 161
+    test_count_after: 161
+    test_count_added: 0
+    open_gaps_remaining:
+      sprint_3:
+        - file: docs/SSOT/backend/conventions/error-codes.md
+          priority: GOOD_TO_HAVE
+          status: OPEN
+      sprint_4:
+        - file: docs/SSOT/database/reference/migration-log.md
+          priority: LOW
+        - file: docs/SSOT/identity/token-lifecycle.md
+          priority: LOW
+        - file: docs/SSOT/testing/known-issues.md
+          priority: LOW
+
 ```

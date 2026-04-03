@@ -1,12 +1,12 @@
-using Dapper;
 using GreenAi.Api.SharedKernel.Auth;
 using GreenAi.Api.SharedKernel.Db;
+using GreenAi.Api.SharedKernel.Pipeline;
 using GreenAi.Api.SharedKernel.Results;
 using MediatR;
 
 namespace GreenAi.Api.Features.CustomerAdmin.GetUsers;
 
-public record GetUserDetailsQuery(int UserId) : IRequest<Result<UserDetailsResult>>;
+public record GetUserDetailsQuery(int UserId) : IRequest<Result<UserDetailsResult>>, IRequireAuthentication;
 
 public record UserDetailsResult(
     int Id,
@@ -20,9 +20,6 @@ public sealed class GetUserDetailsHandler(IDbSession db, ICurrentUser user)
 {
     public async Task<Result<UserDetailsResult>> Handle(GetUserDetailsQuery request, CancellationToken ct)
     {
-        if (!user.IsAuthenticated || !HasCustomerId())
-            return Result<UserDetailsResult>.Fail("NO_CUSTOMER", "No customer selected.");
-
         var userSql     = SqlLoader.Load<GetUsersHandler>("GetUsersForCustomer.sql");
         var profilesSql = SqlLoader.Load<GetUsersHandler>("GetUserProfileAssignments.sql");
         var rolesSql    = SqlLoader.Load<GetUsersHandler>("GetUserRoleAssignments.sql");
@@ -32,7 +29,7 @@ public sealed class GetUserDetailsHandler(IDbSession db, ICurrentUser user)
         var userRow  = allUsers.FirstOrDefault(u => u.Id == request.UserId);
 
         if (userRow is null)
-            return Result<UserDetailsResult>.Fail("USER_NOT_FOUND", $"User {request.UserId} not found in this customer.");
+            return Result<UserDetailsResult>.Fail("NOT_FOUND", $"User {request.UserId} not found in this customer.");
 
         var profiles = (await db.QueryAsync<UserProfileRow>(profilesSql,
             new { UserId = request.UserId, CustomerId = user.CustomerId.Value })).ToList();
@@ -42,11 +39,5 @@ public sealed class GetUserDetailsHandler(IDbSession db, ICurrentUser user)
 
         return Result<UserDetailsResult>.Ok(new UserDetailsResult(
             userRow.Id, userRow.Email, userRow.IsActive, profiles, roles));
-    }
-
-    private bool HasCustomerId()
-    {
-        try { _ = user.CustomerId; return true; }
-        catch (InvalidOperationException) { return false; }
     }
 }

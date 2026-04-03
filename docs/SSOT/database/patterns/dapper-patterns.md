@@ -162,6 +162,18 @@ anti_patterns:
     example: "var user = await db...; return Result.Ok(user);"  // user could be null
     why_wrong: null dereference at caller
     fix: check null → return Result.Fail("NOT_FOUND", ...) before using value
+
+  - detect: RowVersion column in SET clause of UPDATE statement
+    example: "SET Email = @Email, RowVersion = NEWID()"
+    why_wrong: >
+      ROWVERSION (SQL Server TIMESTAMP) is a system-managed concurrency token.
+      SQL Server increments it automatically on every row write.
+      Writing to it is a compile-time SQL error: "Cannot update a timestamp column."
+      This error only surfaces at runtime — the build will not catch it.
+    fix: omit RowVersion from SET clause entirely
+    valid_use: WHERE clause comparison for optimistic concurrency — OK to READ, forbidden to WRITE
+    validated_by: Validate-GreenAiCompliance.ps1 → SQL-001 (scans .sql files)
+    confirmed: APR_009 in docs/SSOT/governance/ANTI_PATTERN_REGISTRY.md
 ```
 
 **Last Updated:** 2026-04-03

@@ -25,10 +25,14 @@
 | "ny handler" / "ny handler classe" / "handler mønster" | `read_file docs/SSOT/backend/patterns/handler-pattern.md`                 | Result<T>.Ok/Fail, SqlLoader.Load<T> |
 | "pipeline" / "IRequireAuthentication" / "IRequireProfile" | `read_file docs/SSOT/backend/patterns/pipeline-behaviors.md`           | Marker interface decision table     |
 | "dapper" / "sql loader" / "repository" / "IDbSession"  | `read_file docs/SSOT/database/patterns/dapper-patterns.md`                | SqlLoader.Load<T>, repo vs direct   |
-| "anti-pattern" / "forkert kode" / "hvad må jeg ikke"   | `read_file docs/SSOT/governance/ANTI_PATTERN_REGISTRY.md`                 | APR_001-APR_008 catalog             |
+| "transaction" / "ExecuteInTransactionAsync" / "atomisk" | `read_file docs/SSOT/database/patterns/transaction-pattern.md`            | When to use, nesting rule, test mock |
+| "audit" / "audit log" / "log handling" / "trail"       | `read_file docs/SSOT/backend/patterns/audit-log-pattern.md`               | V016_AuditLog, ExecuteInTransactionAsync, action_catalog |
+| "anti-pattern" / "forkert kode" / "hvad må jeg ikke"   | `read_file docs/SSOT/governance/ANTI_PATTERN_REGISTRY.md`                 | APR_001-APR_009 catalog             |
 | "ny migration" / "ny tabel" / "schema"                 | `read_file docs/SSOT/database/patterns/migration-pattern.md`              | V0XX_Navn.sql, DbUp                 |
 | "ny label" / "lokalisering" / "tekst"                  | `read_file docs/SSOT/localization/label-creation-guide.md`                | Aldrig hardcode strings             |
 | "ny test" / "skriv test" / "tilføj test"               | `read_file docs/SSOT/testing/testing-strategy.md`                         | Layer: http_integration PRIMARY     |
+| "respawn" / "db reset" / "TablesToIgnore" / "fixture"  | `read_file docs/SSOT/testing/guides/respawn-guide.md`                     | Ignored tables catalog, seed rules  |
+| "permission" / "IPermissionService" / "UserRole" / "ProfileRole" | `read_file docs/SSOT/identity/permissions.md`                    | Two systems: UserRoles (global) vs ProfileRoles (operational) |
 | "test strategi" / "hvilken test" / "test layer"         | `read_file docs/SSOT/testing/testing-strategy.md`                         | Vælg lag per trigger-tabel          |
 | "test automation" / "hvornår test" / "test regel"       | `read_file docs/SSOT/testing/test-automation-rules.md`                    | Trigger table → required tests      |
 | "test fejler" / "debug" / "fix E2E" / "fix test"       | `read_file docs/SSOT/testing/debug-protocol.md`                           | OBSERVE→ACT, fix-layer-lock         |
@@ -39,6 +43,8 @@
 | "kør tests" / "test alle"                              | `dotnet test tests/GreenAi.Tests -v q`                                    | Skal hedde N/N passed               |
 | "dokumentation" / "ny doc" / "ssot"                    | `read_file docs/SSOT/_system/ssot-document-placement-rules.md`            | <450 linjer, korrekt mappe          |
 | "governance" / "red thread" / "protokol" / "mangler"   | `read_file docs/SSOT/governance/README.md`                                | Se SSOT_GAP_PLAN → sprint prioritet |
+| "ssot update" / "hvornår opdater ssot" / "ssot drift"  | `read_file docs/SSOT/governance/ssot-update-protocol.md`                  | Trigger table → mandatory actions   |
+| "ai grænser" / "hvad må ai" / "autonomi" / "stop"       | `read_file docs/SSOT/governance/ai-boundaries.md`                         | ALLOWED vs FORBIDDEN vs STOP_AND_ASK |
 | "hvad skal jeg huske" / "ny session" / "resumé"        | `read_file docs/SSOT/governance/EXECUTION_MEMORY.md`                      | Se seneste log-entries              |
 | "fejl signal" / "kompile fejl" / "SIG_"                | `read_file docs/SSOT/governance/ERROR_DETECTION.md`                       | Klassificér → fix → log             |
 | ANYTHING ELSE                                          | `grep_search "<emne>" docs/SSOT/`                                         | Læs → implementér                   |

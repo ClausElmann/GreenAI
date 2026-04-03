@@ -47,6 +47,7 @@ if (-not (Test-Path $scanPath)) {
 
 $csFiles    = Get-ChildItem -Path $scanPath -Recurse -Filter "*.cs"
 $razorFiles = Get-ChildItem -Path $scanPath -Recurse -Filter "*.razor"
+$sqlFiles   = Get-ChildItem -Path $scanPath -Recurse -Filter "*.sql"
 
 Write-Host ""
 Write-Host "green-ai Compliance Scan" -ForegroundColor Cyan
@@ -54,6 +55,7 @@ Write-Host "========================" -ForegroundColor Cyan
 Write-Host "Scanning: $Path"
 Write-Host ".cs files:    $($csFiles.Count)"
 Write-Host ".razor files: $($razorFiles.Count)"
+Write-Host ".sql files:   $($sqlFiles.Count)"
 Write-Host ""
 
 # ─────────────────────────────────────────────────────────────
@@ -107,9 +109,11 @@ foreach ($file in $csFiles) {
 }
 
 # ─────────────────────────────────────────────────────────────
-# RULE 5: No Task.Delay in test files
+# RULE 5: No Task.Delay in unit/integration test files
+# E2E tests excluded — Playwright timeouts sometimes legitimately use Delay
 # ─────────────────────────────────────────────────────────────
-$testFiles = Get-ChildItem -Path (Join-Path $repoRoot "tests") -Recurse -Filter "*.cs" -ErrorAction SilentlyContinue
+$testFiles = Get-ChildItem -Path (Join-Path $repoRoot "tests") -Recurse -Filter "*.cs" -ErrorAction SilentlyContinue |
+    Where-Object { $_.FullName -notmatch '\\GreenAi\.E2E\\' }
 foreach ($file in $testFiles) {
     $content = Get-Content $file.FullName
     for ($i = 0; $i -lt $content.Count; $i++) {
@@ -127,6 +131,51 @@ foreach ($file in $handlerFiles) {
     # Check Handle method signature — must have Result in return type
     if ($content -match 'public.*Task.*Handle\(' -and $content -notmatch 'Task<Result') {
         Add-Violation "HANDLER-002" $file.FullName 0 "Handler.Handle() does not return Task<Result<T>> — check return type"
+    }
+}
+
+# ─────────────────────────────────────────────────────────────
+# RULE 7 (SQL-001): RowVersion must NOT appear in SET clause
+# CONFIRMED BUG: APR_009 — causes SqlException at runtime
+# ─────────────────────────────────────────────────────────────
+foreach ($file in $sqlFiles) {
+    $content = Get-Content $file.FullName
+    for ($i = 0; $i -lt $content.Count; $i++) {
+        # Match SET ...RowVersion = ... (any value assignment)
+        if ($content[$i] -match '(?i)\bSET\b.*\bRowVersion\s*=' -or
+            $content[$i] -match '(?i),\s*RowVersion\s*=') {
+            Add-Violation "SQL-001" $file.FullName ($i + 1) "RowVersion in SET clause — ROWVERSION is system-managed, cannot be updated: $($content[$i].Trim())"
+        }
+    }
+}
+
+# ─────────────────────────────────────────────────────────────
+# RULE 8 (RESULT-001): Result<T>.Fail() error codes must exist in ResultExtensions.cs
+# Prevents silent 500 from unregistered error codes
+# ─────────────────────────────────────────────────────────────
+$resultExtensionsPath = Join-Path $repoRoot "src\GreenAi.Api\SharedKernel\Results\ResultExtensions.cs"
+if (Test-Path $resultExtensionsPath) {
+    # Extract registered error codes from the switch expression
+    $extContent = Get-Content $resultExtensionsPath -Raw
+    $registeredCodes = [System.Collections.Generic.HashSet[string]]::new()
+    foreach ($match in [regex]::Matches($extContent, '"([A-Z_]+)"\s*=>')) {
+        [void]$registeredCodes.Add($match.Groups[1].Value)
+    }
+
+    foreach ($file in $csFiles) {
+        # Only check handler files
+        if ($file.Name -notmatch 'Handler\.cs$') { continue }
+        $content = Get-Content $file.FullName
+        for ($i = 0; $i -lt $content.Count; $i++) {
+            $line = $content[$i]
+            # Match: Result<T>.Fail("SOME_CODE", ... or Result<SomeThing>.Fail("SOME_CODE",
+            foreach ($match in [regex]::Matches($line, 'Result<[^>]+>\.Fail\s*\(\s*"([A-Z_]+)"')) {
+                $code = $match.Groups[1].Value
+                if (-not $registeredCodes.Contains($code)) {
+                    Add-Violation "RESULT-001" $file.FullName ($i + 1) "Unregistered error code '$code' — add it to ResultExtensions.cs before use (will silently return HTTP 500)"
+                }
+            }
+        }
     }
 }
 

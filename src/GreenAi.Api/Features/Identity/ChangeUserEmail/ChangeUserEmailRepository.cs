@@ -1,4 +1,3 @@
-using Dapper;
 using GreenAi.Api.SharedKernel.Db;
 using GreenAi.Api.SharedKernel.Ids;
 

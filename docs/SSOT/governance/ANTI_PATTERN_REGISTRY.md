@@ -194,3 +194,27 @@ fix:
 ```
 
 **Last Updated:** 2026-04-03
+
+---
+
+### APR_009 — Manually setting `RowVersion` in an UPDATE statement
+
+```yaml
+id: APR_009
+category: dapper_pattern
+confirmed: 2026-04-03
+source: UpdateUserEmail.sql — SET RowVersion = NEWID() caused SqlException at runtime
+detect: >
+  UPDATE sql file contains: RowVersion = @RowVersion OR RowVersion = NEWID()
+why_wrong: >
+  RowVersion (SQL Server ROWVERSION / TIMESTAMP) is an auto-managed concurrency token.
+  SQL Server updates it automatically whenever any column in the row changes.
+  Manually setting it is a compile-time error: "Cannot update a timestamp column."
+fix:
+  omit RowVersion from the SET clause entirely — SQL Server manages it automatically
+  the column is still useful for optimistic concurrency checks in the WHERE clause:
+    WHERE Id = @Id AND RowVersion = @RowVersion   -- OK: read+compare
+    SET RowVersion = NEWID()                      -- FORBIDDEN: write
+proof:
+  src/GreenAi.Api/Database/Migrations/V001_Baseline.sql — RowVersion ROWVERSION NOT NULL
+```

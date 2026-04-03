@@ -54,7 +54,7 @@ phases:
     ssot_required:
       - docs/SSOT/database/patterns/sql-conventions.md
       - docs/SSOT/governance/RED_THREAD_REGISTRY.md → [sql_embedded]
-    status: PARTIAL  # dapper-patterns.md still missing
+    status: PARTIAL  # transaction-pattern.md created 2026-04-03; error-codes.md still missing
 
   - id: phase_4_testing
     purpose: E2E + integration patterns — required for slice validation
@@ -76,7 +76,7 @@ phases:
     ssot_required:
       - AI_WORK_CONTRACT.md
       - docs/SSOT/governance/RED_THREAD_REGISTRY.md
-    status: PARTIAL  # ai-boundaries.md + ssot-update-protocol.md still missing
+    status: COMPLETE  # ai-boundaries.md + ssot-update-protocol.md created 2026-04-03
 
 dependency_order:
   - phase_0_foundation
