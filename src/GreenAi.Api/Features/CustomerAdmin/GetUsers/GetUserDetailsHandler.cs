@@ -1,12 +1,13 @@
 using GreenAi.Api.SharedKernel.Auth;
 using GreenAi.Api.SharedKernel.Db;
+using GreenAi.Api.SharedKernel.Ids;
 using GreenAi.Api.SharedKernel.Pipeline;
 using GreenAi.Api.SharedKernel.Results;
 using MediatR;
 
 namespace GreenAi.Api.Features.CustomerAdmin.GetUsers;
 
-public record GetUserDetailsQuery(int UserId) : IRequest<Result<UserDetailsResult>>, IRequireAuthentication;
+public record GetUserDetailsQuery(UserId UserId) : IRequest<Result<UserDetailsResult>>, IRequireAuthentication, IRequireProfile;
 
 public record UserDetailsResult(
     int Id,
@@ -26,16 +27,16 @@ public sealed class GetUserDetailsHandler(IDbSession db, ICurrentUser user)
 
         // Re-use the list query filtered to the single user via customer scoping, then pick the one we want
         var allUsers = await db.QueryAsync<UserRow>(userSql, new { CustomerId = user.CustomerId.Value });
-        var userRow  = allUsers.FirstOrDefault(u => u.Id == request.UserId);
+        var userRow  = allUsers.FirstOrDefault(u => u.Id == request.UserId.Value);
 
         if (userRow is null)
-            return Result<UserDetailsResult>.Fail("NOT_FOUND", $"User {request.UserId} not found in this customer.");
+            return Result<UserDetailsResult>.Fail("NOT_FOUND", $"User {request.UserId.Value} not found in this customer.");
 
         var profiles = (await db.QueryAsync<UserProfileRow>(profilesSql,
-            new { UserId = request.UserId, CustomerId = user.CustomerId.Value })).ToList();
+            new { UserId = request.UserId.Value, CustomerId = user.CustomerId.Value })).ToList();
 
         var roles = (await db.QueryAsync<UserRoleRow>(rolesSql,
-            new { UserId = request.UserId })).ToList();
+            new { UserId = request.UserId.Value })).ToList();
 
         return Result<UserDetailsResult>.Ok(new UserDetailsResult(
             userRow.Id, userRow.Email, userRow.IsActive, profiles, roles));

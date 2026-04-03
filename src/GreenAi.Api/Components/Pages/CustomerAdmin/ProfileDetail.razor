@@ -1,6 +1,7 @@
 @page "/customer-admin/profiles/{ProfileId:int}"
 @using GreenAi.Api.Features.CustomerAdmin.GetProfiles
 @using GreenAi.Api.SharedKernel.Auth
+@using GreenAi.Api.SharedKernel.Ids
 @using Microsoft.AspNetCore.Components.Authorization
 @inject IMediator Mediator
 @inject ISnackbar Snackbar
@@ -20,7 +21,8 @@
     <MudButton Variant="Variant.Text"
                StartIcon="@Icons.Material.Filled.ArrowBack"
                Href="/customer-admin"
-               Class="mt-3">
+               Class="mt-3"
+               data-testid="back-to-customer-admin">
         Tilbage til kundestyre
     </MudButton>
     return;
@@ -51,13 +53,15 @@
                                   Label="Profilnavn"
                                   Variant="Variant.Outlined"
                                   Required="true"
-                                  Class="mb-3" />
+                                  Class="mb-3"
+                                  UserAttributes="@(new Dictionary<string, object>{ ["data-testid"] = "profile-name" })" />
                 </MudItem>
                 <MudItem xs="12">
                     <MudButton Variant="Variant.Filled"
                                Color="Color.Primary"
                                StartIcon="@Icons.Material.Filled.Save"
-                               OnClick="SaveInfoAsync">
+                               OnClick="SaveInfoAsync"
+                               data-testid="profile-save">
                         Gem
                     </MudButton>
                 </MudItem>
@@ -94,7 +98,7 @@
         PrincipalHolder.Set(authState.User);
 
         _loading = true;
-        var result = await Mediator.Send(new GetProfileDetailsQuery(ProfileId));
+        var result = await Mediator.Send(new GetProfileDetailsQuery(new ProfileId(ProfileId)));
         _profile = result.IsSuccess ? result.Value : null;
         _editName = _profile?.Name ?? string.Empty;
         _breadcrumbs =

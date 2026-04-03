@@ -2,6 +2,7 @@
 @inject NavigationManager Nav
 @inject ISnackbar Snackbar
 @inject IDialogService Dialog
+@inject ILocalizationContext Loc
 
 <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-3">
     <MudText Typo="Typo.subtitle1">@Profiles.Count profil(er)</MudText>
@@ -9,26 +10,27 @@
                Color="Color.Primary"
                StartIcon="@Icons.Material.Filled.Add"
                Size="Size.Small"
-               OnClick="CreateProfile">
-        Opret profil
+               OnClick="CreateProfile"
+               data-testid="create-profile">
+        @Loc.Get("profile.CreateButton")
     </MudButton>
 </MudStack>
 
 <MudTable Items="Profiles" Dense="true" Hover="true" data-testid="profile-table">
     <HeaderContent>
-        <MudTh>Navn</MudTh>
-        <MudTh>Status</MudTh>
+        <MudTh>@Loc.Get("shared.NameLabel")</MudTh>
+        <MudTh>@Loc.Get("shared.StatusLabel")</MudTh>
         <MudTh></MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Navn">
+        <MudTd DataLabel="@Loc.Get("shared.NameLabel")">
             <MudLink Href="@("/customer-admin/profiles/" + context.Id)">@context.Name</MudLink>
         </MudTd>
-        <MudTd DataLabel="Status">
+        <MudTd DataLabel="@Loc.Get("shared.StatusLabel")">
             <MudChip T="string"
                      Size="Size.Small"
                      Color="@(context.IsActive ? Color.Success : Color.Default)">
-                @(context.IsActive ? "Aktiv" : "Inaktiv")
+                @(context.IsActive ? Loc.Get("shared.Active") : Loc.Get("shared.Inactive"))
             </MudChip>
         </MudTd>
         <MudTd>
@@ -44,7 +46,7 @@
         </MudTd>
     </RowTemplate>
     <NoRecordsContent>
-        <MudText Typo="Typo.body2" Color="Color.Secondary">Ingen profiler.</MudText>
+        <MudText Typo="Typo.body2" Color="Color.Secondary">@Loc.Get("profile.NoRecords")</MudText>
     </NoRecordsContent>
 </MudTable>
 
@@ -52,19 +54,19 @@
     [Parameter, EditorRequired] public List<ProfileRow> Profiles { get; set; } = null!;
     [Parameter] public EventCallback<int> OnDelete { get; set; }
 
-    private void CreateProfile() => Snackbar.Add("Opret profil — ikke implementeret endnu.", Severity.Info);
+    private void CreateProfile() => Snackbar.Add(Loc.Get("profile.CreateNotImplemented"), Severity.Info);
 
     private async Task ConfirmDeleteAsync(ProfileRow profile)
     {
         var confirmed = await Dialog.ShowMessageBox(
-            "Slet profil",
-            $"Er du sikker på, du vil slette {profile.Name}?",
-            yesText: "Slet", cancelText: "Annuller");
+            Loc.Get("profile.DeleteTitle"),
+            Loc.Get("shared.DeleteConfirmMessage", profile.Name),
+            yesText: Loc.Get("shared.DeleteButton"), cancelText: Loc.Get("shared.CancelButton"));
 
         if (confirmed == true)
         {
             await OnDelete.InvokeAsync(profile.Id);
-            Snackbar.Add($"{profile.Name} slettet.", Severity.Success);
+            Snackbar.Add(Loc.Get("shared.DeletedMessage", profile.Name), Severity.Success);
         }
     }
 }

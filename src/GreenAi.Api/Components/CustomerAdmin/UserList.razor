@@ -2,6 +2,7 @@
 @inject NavigationManager Nav
 @inject ISnackbar Snackbar
 @inject IDialogService Dialog
+@inject ILocalizationContext Loc
 
 <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-3">
     <MudText Typo="Typo.subtitle1">@Users.Count bruger(e)</MudText>
@@ -9,26 +10,27 @@
                Color="Color.Primary"
                StartIcon="@Icons.Material.Filled.PersonAdd"
                Size="Size.Small"
-               OnClick="CreateUser">
-        Opret bruger
+               OnClick="CreateUser"
+               data-testid="create-user">
+        @Loc.Get("user.CreateButton")
     </MudButton>
 </MudStack>
 
 <MudTable Items="Users" Dense="true" Hover="true" data-testid="user-table">
     <HeaderContent>
-        <MudTh>E-mail</MudTh>
-        <MudTh>Status</MudTh>
+        <MudTh>@Loc.Get("shared.EmailLabel")</MudTh>
+        <MudTh>@Loc.Get("shared.StatusLabel")</MudTh>
         <MudTh></MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="E-mail">
+        <MudTd DataLabel="@Loc.Get("shared.EmailLabel")">
             <MudLink Href="@("/customer-admin/users/" + context.Id)">@context.Email</MudLink>
         </MudTd>
-        <MudTd DataLabel="Status">
+        <MudTd DataLabel="@Loc.Get("shared.StatusLabel")">
             <MudChip T="string"
                      Size="Size.Small"
                      Color="@(context.IsActive ? Color.Success : Color.Default)">
-                @(context.IsActive ? "Aktiv" : "Inaktiv")
+                @(context.IsActive ? Loc.Get("shared.Active") : Loc.Get("shared.Inactive"))
             </MudChip>
         </MudTd>
         <MudTd>
@@ -44,7 +46,7 @@
         </MudTd>
     </RowTemplate>
     <NoRecordsContent>
-        <MudText Typo="Typo.body2" Color="Color.Secondary">Ingen brugere.</MudText>
+        <MudText Typo="Typo.body2" Color="Color.Secondary">@Loc.Get("user.NoRecords")</MudText>
     </NoRecordsContent>
 </MudTable>
 
@@ -52,19 +54,19 @@
     [Parameter, EditorRequired] public List<UserRow> Users { get; set; } = null!;
     [Parameter] public EventCallback<int> OnDelete { get; set; }
 
-    private void CreateUser() => Snackbar.Add("Opret bruger — ikke implementeret endnu.", Severity.Info);
+    private void CreateUser() => Snackbar.Add(Loc.Get("user.CreateNotImplemented"), Severity.Info);
 
     private async Task ConfirmDeleteAsync(UserRow user)
     {
         var confirmed = await Dialog.ShowMessageBox(
-            "Slet bruger",
-            $"Er du sikker på, du vil slette {user.Email}?",
-            yesText: "Slet", cancelText: "Annuller");
+            Loc.Get("user.DeleteTitle"),
+            Loc.Get("shared.DeleteConfirmMessage", user.Email),
+            yesText: Loc.Get("shared.DeleteButton"), cancelText: Loc.Get("shared.CancelButton"));
 
         if (confirmed == true)
         {
             await OnDelete.InvokeAsync(user.Id);
-            Snackbar.Add($"{user.Email} slettet.", Severity.Success);
+            Snackbar.Add(Loc.Get("shared.DeletedMessage", user.Email), Severity.Success);
         }
     }
 }

@@ -303,4 +303,36 @@ log:
     test_count: 161
     live_violations_found_and_fixed: 2
 
+- id: EXEC_010
+  date: 2026-04-06
+  task: >
+    Retrospective Audit Engine — Drift Detection + Correction.
+    Full audit of code vs SSOT vs feature contracts vs enforcement rules.
+    5 violation groups found and corrected. 0 build warnings. 172/172 tests pass.
+    Compliance validator: VALIDATION PASSED — SYSTEM AUTONOMY VERIFIED.
+  red_threads: [auth_flow, result_pattern, strongly_typed_ids, no_hardcoded_strings, tenant_isolation]
+  result: SUCCESS
+  issues:
+    - feature-contract-map.json had 12 wrong sql_file paths across 8 features — all corrected
+    - GetProfileDetailsQuery, GetUserDetailsQuery used raw int instead of typed ProfileId/UserId — fixed
+    - GetApiTokenCommand uses raw int at HTTP boundary — intentional, handler wraps correctly (documented)
+    - IRequireProfile marker existed in pipeline but no feature used it — added to all 7 auth=profile features
+    - ChangePasswordCommand had no IRequireAuthentication — added (map said it should)
+    - GetCustomerSettingsQuery had no IRequireAuthentication — added (map said it should)
+    - BatchUpsertLabelsCommand had IRequireAuthentication but map said auth=none — map corrected to authenticated
+    - Localization system (ILocalizationContext) never wired into UI — wired into MainLayout + 3 components
+    - All hardcoded strings in ProfileList, UserList, SettingsTab, MainLayout → Loc.Get("key") calls
+  improvement_found:
+    - IRequireProfile was a dead security policy — now enforced by 7 features
+    - EnsureLoadedAsync now called once in MainLayout.OnInitializedAsync (for authenticated users)
+    - _Imports.razor now includes SharedKernel.Localization globally
+    - label-creation-guide.md referenced in loc-helper.md but doesn't exist — remains a doc gap
+  ssot_updated: yes
+  ssot_files_updated:
+    - docs/SSOT/_system/feature-contract-map.json (12 sql_file paths, 14 pipeline_markers, 1 auth fix)
+  compliance_rules_before: 20
+  compliance_rules_after: 20
+  test_count: 172
+  live_violations_found_and_fixed: 41
+
 ```

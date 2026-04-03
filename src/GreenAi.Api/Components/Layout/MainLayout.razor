@@ -1,5 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @using Microsoft.AspNetCore.Components.Authorization
+@inject ILocalizationContext Loc
+@inject ICurrentUser CurrentUser
 
 <MudThemeProvider />
 <MudPopoverProvider />
@@ -29,12 +31,12 @@
             <MudNavLink Href="/"
                         Match="NavLinkMatch.All"
                         Icon="@Icons.Material.Filled.Home">
-                Forside
+                @Loc.Get("nav.Home")
             </MudNavLink>
             <MudNavLink Href="/customer-admin"
                         Match="NavLinkMatch.Prefix"
                         Icon="@Icons.Material.Filled.BusinessCenter">
-                Kundestyre
+                @Loc.Get("nav.CustomerAdmin")
             </MudNavLink>
         </MudNavMenu>
     </MudDrawer>
@@ -55,4 +57,10 @@
 @code {
     private bool _drawerOpen = true;
     private void ToggleDrawer() => _drawerOpen = !_drawerOpen;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (CurrentUser.IsAuthenticated)
+            await Loc.EnsureLoadedAsync(CurrentUser.LanguageId);
+    }
 }

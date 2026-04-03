@@ -6,4 +6,4 @@ namespace GreenAi.Api.Features.Identity.ChangeUserEmail;
 
 public sealed record ChangeUserEmailCommand(
     string NewEmail,
-    string ConfirmNewEmail) : IRequest<Result<ChangeUserEmailResponse>>, IRequireAuthentication;
+    string ConfirmNewEmail) : IRequest<Result<ChangeUserEmailResponse>>, IRequireAuthentication, IRequireProfile;

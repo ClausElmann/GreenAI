@@ -6,7 +6,7 @@ using MediatR;
 
 namespace GreenAi.Api.Features.CustomerAdmin.GetCustomerSettings;
 
-public record GetCustomerSettingsQuery : IRequest<Result<CustomerSettingsRow>>, IRequireAuthentication;
+public record GetCustomerSettingsQuery : IRequest<Result<CustomerSettingsRow>>, IRequireAuthentication, IRequireProfile;
 
 public record CustomerSettingsRow(int Id, string Name);
 

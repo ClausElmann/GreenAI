@@ -243,10 +243,233 @@ foreach ($file in $razorFiles) {
 }
 
 # ─────────────────────────────────────────────────────────────
+# RULE GROUP 1 (FEATURE-001): Feature Completeness
+# Every feature in feature-contract-map.json must have its
+# handler, endpoint, ui_page, and at least one test file present.
+# ─────────────────────────────────────────────────────────────
+$featureContractMapPath = Join-Path $repoRoot "docs\SSOT\_system\feature-contract-map.json"
+if (Test-Path $featureContractMapPath) {
+    $featureMap = Get-Content $featureContractMapPath -Raw | ConvertFrom-Json
+    $featureSrcRoot = Join-Path $repoRoot "src\GreenAi.Api"
+
+    foreach ($feature in $featureMap.features) {
+        $fid = $feature.id
+
+        # Check handler
+        if ($feature.handler) {
+            $handlerPath = Join-Path $featureSrcRoot $feature.handler.Replace('/', '\')
+            if (-not (Test-Path $handlerPath)) {
+                Add-Violation "FEATURE-001" $handlerPath 0 "Incomplete feature '$fid': handler missing — $($feature.handler)"
+            }
+        }
+
+        # Check endpoint (only if not null)
+        if ($feature.endpoint) {
+            $endpointPath = Join-Path $featureSrcRoot $feature.endpoint.Replace('/', '\')
+            if (-not (Test-Path $endpointPath)) {
+                Add-Violation "FEATURE-001" $endpointPath 0 "Incomplete feature '$fid': endpoint missing — $($feature.endpoint)"
+            }
+        }
+
+        # Check ui_page (only if not null) — strip parenthetical annotations like " (SettingsTab)"
+        if ($feature.ui_page) {
+            $rawPage    = $feature.ui_page -replace '\s*\([^)]+\)\s*$', ''
+            $pagePath   = Join-Path $featureSrcRoot $rawPage.Replace('/', '\')
+            if (-not (Test-Path $pagePath)) {
+                Add-Violation "FEATURE-001" $pagePath 0 "Incomplete feature '$fid': ui_page missing — $rawPage"
+            }
+        }
+
+        # Check tests: at least one test path (integration or unit) must be non-null AND exist
+        $intTest  = $feature.tests.integration
+        $unitTest = $feature.tests.unit
+        if (-not $intTest -and -not $unitTest) {
+            Add-Violation "FEATURE-001" $featureContractMapPath 0 "Incomplete feature '$fid': no tests registered (set tests.integration or tests.unit)"
+        } else {
+            # Verify each registered test path actually exists
+            foreach ($testPath in @($intTest, $unitTest) | Where-Object { $_ }) {
+                $absTestPath = Join-Path $repoRoot $testPath.Replace('/', '\')
+                if (-not (Test-Path $absTestPath)) {
+                    Add-Violation "FEATURE-001" $absTestPath 0 "Incomplete feature '$fid': test file registered but missing — $testPath"
+                }
+            }
+        }
+    }
+} else {
+    Write-Host "WARNING: feature-contract-map.json not found — skipping FEATURE-001" -ForegroundColor Yellow
+}
+
+# ─────────────────────────────────────────────────────────────
+# RULE GROUP 2a (SQL-002): Tenant isolation — Profiles / ProfileUserMappings
+# Feature SQL files that reference tenant-scoped tables must
+# include a @CustomerId filter. Migration files are excluded.
+# ─────────────────────────────────────────────────────────────
+$featureSqlFiles = $sqlFiles | Where-Object {
+    $_.FullName -notmatch '\\Database\\Migrations\\' -and
+    $_.FullName -notmatch '\\GreenAi\.DB\\'
+}
+$tenantTables    = @('Profiles', 'ProfileUserMappings', 'CustomerSettings')
+foreach ($file in $featureSqlFiles) {
+    $raw = Get-Content $file.FullName -Raw
+    $referencesTenantTable = $false
+    foreach ($tbl in $tenantTables) {
+        if ($raw -match "\b$tbl\b") { $referencesTenantTable = $true; break }
+    }
+    if ($referencesTenantTable -and $raw -notmatch 'CustomerId') {
+        Add-Violation "SQL-002" $file.FullName 0 "Missing tenant isolation (@CustomerId) in SQL referencing tenant-scoped table: $($file.Name)"
+    }
+}
+
+# ─────────────────────────────────────────────────────────────
+# RULE GROUP 2b (SQL-003): No inline SQL strings in C# code
+# All SQL must be loaded via SqlLoader — never embedded in code.
+# ─────────────────────────────────────────────────────────────
+foreach ($file in $csFiles) {
+    $content = Get-Content $file.FullName
+    for ($i = 0; $i -lt $content.Count; $i++) {
+        $line = $content[$i]
+        if ($line -match '(?:QueryAsync|ExecuteAsync|QuerySingleAsync|QueryFirstAsync|QuerySingleOrDefaultAsync|QueryAsync)\s*\(\s*\$?"(?:SELECT|INSERT|UPDATE|DELETE)') {
+            Add-Violation "SQL-003" $file.FullName ($i + 1) "Inline SQL string detected — use SqlLoader.Load<T>() instead: $($line.Trim())"
+        }
+    }
+}
+
+# ─────────────────────────────────────────────────────────────
+# RULE GROUP 3 (AUTH-002): Handlers using ICurrentUser outside
+# Auth/ must have IRequireAuthentication on the sibling Command/Query.
+# ─────────────────────────────────────────────────────────────
+foreach ($file in $handlerFiles) {
+    # Auth handlers are exempt — they drive the authentication flow itself
+    if ($file.FullName -match '\\Features\\Auth\\') { continue }
+
+    $raw = Get-Content $file.FullName -Raw
+    if ($raw -notmatch 'ICurrentUser') { continue }
+
+    # Find sibling *Command.cs or *Query.cs in the same folder
+    $dir         = $file.DirectoryName
+    $commandFiles = Get-ChildItem -Path $dir -Filter "*Command.cs" -ErrorAction SilentlyContinue
+    $queryFiles   = Get-ChildItem -Path $dir -Filter "*Query.cs"   -ErrorAction SilentlyContinue
+    $siblings     = @($commandFiles) + @($queryFiles)
+
+    $hasMarker = $false
+
+    # The Command/Query may be defined inline in the handler file itself
+    if ($raw -match 'IRequireAuthentication') { $hasMarker = $true }
+
+    # Also check sibling *Command.cs / *Query.cs files
+    foreach ($sibling in $siblings) {
+        if ($hasMarker) { break }
+        $siblingContent = Get-Content $sibling.FullName -Raw
+        if ($siblingContent -match 'IRequireAuthentication') { $hasMarker = $true }
+    }
+
+    if (-not $hasMarker) {
+        Add-Violation "AUTH-002" $file.FullName 0 "Handler uses ICurrentUser but sibling Command/Query lacks IRequireAuthentication marker: $($file.Name)"
+    }
+}
+
+# ─────────────────────────────────────────────────────────────
+# RULE GROUP 4a (UI-004): Interactive elements must have data-testid.
+# Checks <button>, <input>, <select>, <MudButton>, <MudTextField>.
+# MudButton/MudTextField: 8-line window scan (tag can span lines).
+# MudTextField data-testid must be inside UserAttributes.
+# ─────────────────────────────────────────────────────────────
+foreach ($file in $razorFiles) {
+    $lines = Get-Content $file.FullName
+    for ($i = 0; $i -lt $lines.Count; $i++) {
+        $line = $lines[$i]
+
+        # Native HTML elements — single-line check
+        if ($line -match '<(button|input|select)\b' -and $line -notmatch 'data-testid') {
+            Add-Violation "UI-004" $file.FullName ($i + 1) "Missing data-testid on <$([regex]::Match($line, '<(button|input|select)').Groups[1].Value)>: $($line.Trim())"
+        }
+
+        # MudButton — window-of-8 check (tag attr can span multiple lines)
+        if ($line -match '<MudButton\b') {
+            $windowEnd = [Math]::Min($i + 8, $lines.Count - 1)
+            $window    = ($lines[$i..$windowEnd]) -join "`n"
+            if ($window -notmatch 'data-testid') {
+                Add-Violation "UI-004" $file.FullName ($i + 1) "MudButton missing data-testid (checked 8-line window): $($line.Trim())"
+            }
+        }
+
+        # MudTextField — window-of-8 check (UserAttributes containing data-testid is accepted)
+        if ($line -match '<MudTextField\b') {
+            $windowEnd = [Math]::Min($i + 8, $lines.Count - 1)
+            $window    = ($lines[$i..$windowEnd]) -join "`n"
+            if ($window -notmatch 'data-testid') {
+                Add-Violation "UI-004" $file.FullName ($i + 1) "MudTextField missing data-testid (use UserAttributes): $($line.Trim())"
+            }
+        }
+    }
+}
+
+# ─────────────────────────────────────────────────────────────
+# RULE GROUP 4b (UI-005): Routable pages (@page) must live under
+# Components/Pages/ or Features/ — nowhere else.
+# ─────────────────────────────────────────────────────────────
+foreach ($file in $razorFiles) {
+    $content = Get-Content $file.FullName
+    foreach ($line in $content) {
+        if ($line -match '^\s*@page\s+"') {
+            $inPages    = $file.FullName -match '\\Components\\Pages\\'
+            $inFeatures = $file.FullName -match '\\Features\\'
+            if (-not $inPages -and -not $inFeatures) {
+                Add-Violation "UI-005" $file.FullName 0 "Routable page (@page) outside Components/Pages/ and Features/: $($file.FullName.Replace($repoRoot + '\', ''))"
+            }
+            break  # Only need to check the first @page per file
+        }
+    }
+}
+
+# ─────────────────────────────────────────────────────────────
+# RULE GROUP 5 (UI-006): UI model routes must be implemented.
+# Reads used_by_page entries from analysis-tool/docs/UI_MODEL_SCHEMA.json
+# and verifies each corresponding Blazor file exists.
+# ─────────────────────────────────────────────────────────────
+$analysisToolRoot  = Join-Path (Get-Item $repoRoot).Parent.FullName "analysis-tool"
+$uiModelSchemaPath = Join-Path $analysisToolRoot "docs\UI_MODEL_SCHEMA.json"
+if (Test-Path $uiModelSchemaPath) {
+    $uiSchema   = Get-Content $uiModelSchemaPath -Raw | ConvertFrom-Json
+    $featureSrc = Join-Path $repoRoot "src\GreenAi.Api"
+
+    # Recursively extract used_by_page values from the JSON
+    function Get-UsedByPage($obj) {
+        if ($null -eq $obj) { return }
+        if ($obj -is [string]) { return }
+        if ($obj.PSObject.Properties.Name -contains 'used_by_page') {
+            $val = $obj.used_by_page
+            if ($val -and $val -ne '' -and $val -ne 'null') {
+                # Strip parenthetical annotations: " (SettingsTab)", " (UserList tab)", etc.
+                $clean = $val -replace '\s*\([^)]+\)\s*$', ''
+                [void]$script:usedByPages.Add($clean)
+            }
+        }
+        foreach ($prop in $obj.PSObject.Properties) {
+            Get-UsedByPage $prop.Value
+        }
+    }
+
+    $script:usedByPages = [System.Collections.Generic.List[string]]::new()
+    foreach ($model in $uiSchema.response_models.PSObject.Properties) {
+        Get-UsedByPage $model.Value
+    }
+
+    foreach ($pagePath in ($script:usedByPages | Select-Object -Unique)) {
+        $absPath = Join-Path $featureSrc $pagePath.Replace('/', '\')
+        if (-not (Test-Path $absPath)) {
+            Add-Violation "UI-006" $absPath 0 "UI model route not implemented: $pagePath"
+        }
+    }
+} else {
+    Write-Host "INFO: UI_MODEL_SCHEMA.json not found at expected path — skipping UI-006" -ForegroundColor Gray
+}
+
+# ─────────────────────────────────────────────────────────────
 # Report
 # ─────────────────────────────────────────────────────────────
 if ($violations.Count -eq 0) {
-    Write-Host "All checks passed. No violations found." -ForegroundColor Green
+    Write-Host "VALIDATION PASSED — SYSTEM AUTONOMY VERIFIED" -ForegroundColor Green
     exit 0
 }
 

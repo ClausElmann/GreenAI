@@ -6,7 +6,7 @@ using MediatR;
 
 namespace GreenAi.Api.Features.CustomerAdmin.GetProfiles;
 
-public record GetProfilesQuery : IRequest<Result<List<ProfileRow>>>, IRequireAuthentication;
+public record GetProfilesQuery : IRequest<Result<List<ProfileRow>>>, IRequireAuthentication, IRequireProfile;
 
 public record ProfileRow(int Id, string Name, bool IsActive);
 

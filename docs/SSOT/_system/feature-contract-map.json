@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "description": "green-ai feature contract map — every implemented feature with its red threads, handler, endpoint, SQL files, tests, and UI component. Machine-readable. Update when new feature is added.",
   "version": "1.0.0",
-  "last_updated": "2026-04-03",
+  "last_updated": "2026-04-06",
   "ssot_source": "docs/SSOT/_system/feature-contract-map.json",
 
   "contract_schema": {
@@ -38,7 +38,7 @@
       "ui_page": null,
       "tests": {
         "integration": null,
-        "unit": null
+        "unit": "tests/GreenAi.Tests/Features/System/Ping/PingHandlerTests.cs"
       },
       "auth": "none",
       "pipeline_markers": []
@@ -52,14 +52,18 @@
       "handler": "Features/Auth/Login/LoginHandler.cs",
       "endpoint": "Features/Auth/Login/LoginEndpoint.cs",
       "sql_files": [
-        "Features/Auth/Login/GetUserByEmail.sql",
-        "Features/Auth/Login/GetCustomerMemberships.sql"
+        "Features/Auth/Login/FindUserByEmail.sql",
+        "Features/Auth/Login/GetUserMemberships.sql",
+        "Features/Auth/Login/GetProfiles.sql",
+        "Features/Auth/Login/RecordFailedLogin.sql",
+        "Features/Auth/Login/ResetFailedLogin.sql",
+        "Features/Auth/Login/SaveRefreshToken.sql"
       ],
       "validator": "Features/Auth/Login/LoginValidator.cs",
-      "ui_page": "Components/Pages/Auth/LoginPage.razor",
+      "ui_page": "Features/Auth/Login/LoginPage.razor",
       "tests": {
-        "integration": "tests/GreenAi.Tests/Features/Auth/LoginTests.cs",
-        "unit": null
+        "integration": "tests/GreenAi.Tests/Features/Auth/LoginRepositoryTests.cs",
+        "unit": "tests/GreenAi.Tests/Features/Auth/LoginHandlerTests.cs"
       },
       "auth": "none",
       "pipeline_markers": []
@@ -73,14 +77,15 @@
       "handler": "Features/Auth/SelectCustomer/SelectCustomerHandler.cs",
       "endpoint": "Features/Auth/SelectCustomer/SelectCustomerEndpoint.cs",
       "sql_files": [
-        "Features/Auth/SelectCustomer/GetCustomerById.sql",
-        "Features/Auth/SelectCustomer/GetProfilesForCustomer.sql"
+        "Features/Auth/SelectCustomer/FindMembership.sql",
+        "Features/Auth/SelectCustomer/GetProfiles.sql",
+        "Features/Auth/SelectCustomer/SaveRefreshToken.sql"
       ],
       "validator": "Features/Auth/SelectCustomer/SelectCustomerValidator.cs",
-      "ui_page": "Components/Pages/Auth/SelectCustomerPage.razor",
+      "ui_page": null,
       "tests": {
-        "integration": "tests/GreenAi.Tests/Features/Auth/SelectCustomerTests.cs",
-        "unit": null
+        "integration": "tests/GreenAi.Tests/Features/Auth/SelectCustomerRepositoryTests.cs",
+        "unit": "tests/GreenAi.Tests/Features/Auth/SelectCustomerHandlerTests.cs"
       },
       "auth": "authenticated",
       "pipeline_markers": ["IRequireAuthentication"]
@@ -94,13 +99,14 @@
       "handler": "Features/Auth/SelectProfile/SelectProfileHandler.cs",
       "endpoint": "Features/Auth/SelectProfile/SelectProfileEndpoint.cs",
       "sql_files": [
-        "Features/Auth/SelectProfile/GetProfileById.sql"
+        "Features/Auth/SelectProfile/GetAvailableProfiles.sql",
+        "Features/Auth/SelectProfile/SaveRefreshToken.sql"
       ],
       "validator": "Features/Auth/SelectProfile/SelectProfileValidator.cs",
-      "ui_page": "Components/Pages/Auth/SelectProfilePage.razor",
+      "ui_page": null,
       "tests": {
-        "integration": "tests/GreenAi.Tests/Features/Auth/SelectProfileTests.cs",
-        "unit": null
+        "integration": "tests/GreenAi.Tests/Features/Auth/SelectProfileRepositoryTests.cs",
+        "unit": "tests/GreenAi.Tests/Features/Auth/SelectProfileHandlerTests.cs"
       },
       "auth": "authenticated",
       "pipeline_markers": ["IRequireAuthentication"]
@@ -114,14 +120,15 @@
       "handler": "Features/Auth/RefreshToken/RefreshTokenHandler.cs",
       "endpoint": "Features/Auth/RefreshToken/RefreshTokenEndpoint.cs",
       "sql_files": [
-        "Features/Auth/RefreshToken/GetRefreshToken.sql",
-        "Features/Auth/RefreshToken/UpdateRefreshToken.sql"
+        "Features/Auth/RefreshToken/FindValidRefreshToken.sql",
+        "Features/Auth/RefreshToken/RevokeRefreshToken.sql",
+        "Features/Auth/RefreshToken/SaveNewRefreshToken.sql"
       ],
       "validator": "Features/Auth/RefreshToken/RefreshTokenValidator.cs",
       "ui_page": null,
       "tests": {
-        "integration": "tests/GreenAi.Tests/Features/Auth/RefreshTokenTests.cs",
-        "unit": null
+        "integration": "tests/GreenAi.Tests/Features/Auth/RefreshTokenRepositoryTests.cs",
+        "unit": "tests/GreenAi.Tests/Features/Auth/RefreshTokenHandlerTests.cs"
       },
       "auth": "none",
       "pipeline_markers": [],
@@ -136,8 +143,8 @@
       "handler": "Features/Auth/ChangePassword/ChangePasswordHandler.cs",
       "endpoint": "Features/Auth/ChangePassword/ChangePasswordEndpoint.cs",
       "sql_files": [
-        "Features/Auth/ChangePassword/GetUserPasswordHash.sql",
-        "Features/Auth/ChangePassword/UpdatePasswordHash.sql"
+        "Features/Auth/ChangePassword/GetUserCredentials.sql",
+        "Features/Auth/ChangePassword/UpdatePassword.sql"
       ],
       "validator": "Features/Auth/ChangePassword/ChangePasswordValidator.cs",
       "ui_page": null,
@@ -146,7 +153,7 @@
         "unit": "tests/GreenAi.Tests/Features/Auth/ChangePasswordHandlerTests.cs"
       },
       "auth": "profile",
-      "pipeline_markers": ["IRequireAuthentication"]
+      "pipeline_markers": ["IRequireAuthentication", "IRequireProfile"]
     },
     {
       "id": "customer_admin_get_settings",
@@ -162,11 +169,11 @@
       "validator": null,
       "ui_page": "Components/Pages/CustomerAdmin/Index.razor (SettingsTab)",
       "tests": {
-        "integration": "tests/GreenAi.Tests/Features/CustomerAdmin/GetCustomerSettingsHandlerTests.cs",
-        "unit": null
+        "integration": null,
+        "unit": "tests/GreenAi.Tests/Features/CustomerAdmin/GetCustomerSettingsHandlerTests.cs"
       },
       "auth": "profile",
-      "pipeline_markers": ["IRequireAuthentication"]
+      "pipeline_markers": ["IRequireAuthentication", "IRequireProfile"]
     },
     {
       "id": "customer_admin_get_users",
@@ -177,7 +184,9 @@
       "handler": "Features/CustomerAdmin/GetUsers/GetUsersHandler.cs",
       "endpoint": null,
       "sql_files": [
-        "Features/CustomerAdmin/GetUsers/GetUsers.sql"
+        "Features/CustomerAdmin/GetUsers/GetUsersForCustomer.sql",
+        "Features/CustomerAdmin/GetUsers/GetUserProfileAssignments.sql",
+        "Features/CustomerAdmin/GetUsers/GetUserRoleAssignments.sql"
       ],
       "validator": null,
       "ui_page": "Components/Pages/CustomerAdmin/Index.razor (UserList tab)",
@@ -186,7 +195,7 @@
         "unit": null
       },
       "auth": "profile",
-      "pipeline_markers": ["IRequireAuthentication"]
+      "pipeline_markers": ["IRequireAuthentication", "IRequireProfile"]
     },
     {
       "id": "customer_admin_get_user_details",
@@ -197,16 +206,16 @@
       "handler": "Features/CustomerAdmin/GetUsers/GetUserDetailsHandler.cs",
       "endpoint": null,
       "sql_files": [
-        "Features/CustomerAdmin/GetUsers/GetUserDetails.sql"
+        "Features/CustomerAdmin/GetUsers/GetUsersForCustomer.sql"
       ],
       "validator": null,
       "ui_page": "Components/Pages/CustomerAdmin/UserDetail.razor",
       "tests": {
-        "integration": "tests/GreenAi.Tests/Features/CustomerAdmin/GetUserDetailsHandlerTests.cs",
-        "unit": null
+        "integration": null,
+        "unit": "tests/GreenAi.Tests/Features/CustomerAdmin/GetUserDetailsHandlerTests.cs"
       },
       "auth": "profile",
-      "pipeline_markers": ["IRequireAuthentication"]
+      "pipeline_markers": ["IRequireAuthentication", "IRequireProfile"]
     },
     {
       "id": "customer_admin_get_profiles",
@@ -217,7 +226,8 @@
       "handler": "Features/CustomerAdmin/GetProfiles/GetProfilesHandler.cs",
       "endpoint": null,
       "sql_files": [
-        "Features/CustomerAdmin/GetProfiles/GetProfiles.sql"
+        "Features/CustomerAdmin/GetProfiles/GetProfilesForCustomer.sql",
+        "Features/CustomerAdmin/GetProfiles/GetProfileById.sql"
       ],
       "validator": null,
       "ui_page": "Components/Pages/CustomerAdmin/Index.razor (ProfileList tab)",
@@ -226,7 +236,7 @@
         "unit": null
       },
       "auth": "profile",
-      "pipeline_markers": ["IRequireAuthentication"]
+      "pipeline_markers": ["IRequireAuthentication", "IRequireProfile"]
     },
     {
       "id": "customer_admin_get_profile_details",
@@ -242,11 +252,11 @@
       "validator": null,
       "ui_page": "Components/Pages/CustomerAdmin/ProfileDetail.razor",
       "tests": {
-        "integration": "tests/GreenAi.Tests/Features/CustomerAdmin/GetProfileDetailsHandlerTests.cs",
-        "unit": null
+        "integration": null,
+        "unit": "tests/GreenAi.Tests/Features/CustomerAdmin/GetProfileDetailsHandlerTests.cs"
       },
       "auth": "profile",
-      "pipeline_markers": ["IRequireAuthentication"]
+      "pipeline_markers": ["IRequireAuthentication", "IRequireProfile"]
     },
     {
       "id": "identity_change_user_email",
@@ -268,7 +278,7 @@
         "unit": "tests/GreenAi.Tests/Features/Identity/ChangeUserEmailHandlerTests.cs"
       },
       "auth": "profile",
-      "pipeline_markers": ["IRequireAuthentication"],
+      "pipeline_markers": ["IRequireAuthentication", "IRequireProfile"],
       "note": "Uses ExecuteInTransactionAsync — email update + audit are atomic. EMAIL_TAKEN → 409."
     },
     {
@@ -284,10 +294,10 @@
       "ui_page": null,
       "tests": {
         "integration": null,
-        "unit": null
+        "unit": "tests/GreenAi.Tests/Features/Localization/BatchUpsertLabels/BatchUpsertLabelsHandlerTests.cs"
       },
-      "auth": "none",
-      "pipeline_markers": []
+      "auth": "authenticated",
+      "pipeline_markers": ["IRequireAuthentication"]
     },
     {
       "id": "api_v1_get_token",
@@ -302,7 +312,7 @@
       "ui_page": null,
       "tests": {
         "integration": null,
-        "unit": null
+        "unit": "tests/GreenAi.Tests/Features/Api/V1/Auth/Token/GetApiTokenHandlerTests.cs"
       },
       "auth": "none",
       "pipeline_markers": []

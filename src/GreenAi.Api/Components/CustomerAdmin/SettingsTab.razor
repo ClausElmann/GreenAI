@@ -1,26 +1,29 @@
 @using GreenAi.Api.Features.CustomerAdmin.GetCustomerSettings
 @inject ISnackbar Snackbar
+@inject ILocalizationContext Loc
 
 <MudForm @ref="_form">
     <MudGrid>
         <MudItem xs="12" sm="6">
             <MudTextField @bind-Value="_name"
-                          Label="Navn"
+                          Label="@Loc.Get("shared.NameLabel")"
                           Variant="Variant.Outlined"
                           Required="true"
-                          Class="mb-3" />
+                          Class="mb-3"
+                          UserAttributes="@(new Dictionary<string, object>{ ["data-testid"] = "settings-customer-name" })" />
         </MudItem>
         <MudItem xs="12">
             <MudButton Variant="Variant.Filled"
                        Color="Color.Primary"
                        StartIcon="@Icons.Material.Filled.Save"
                        Disabled="_saving"
-                       OnClick="SaveAsync">
+                       OnClick="SaveAsync"
+                       data-testid="settings-save">
                 @if (_saving)
                 {
                     <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
                 }
-                Gem indstillinger
+                @Loc.Get("settings.SaveButton")
             </MudButton>
         </MudItem>
     </MudGrid>
@@ -44,6 +47,6 @@
         _saving = true;
         // TODO: await Mediator.Send(new UpdateCustomerSettingsCommand(CustomerId, _name));
         _saving = false;
-        Snackbar.Add("Indstillinger gemt.", Severity.Success);
+        Snackbar.Add(Loc.Get("settings.SavedMessage"), Severity.Success);
     }
 }

@@ -110,7 +110,7 @@ public sealed class GetProfilesHandlerTests : IAsyncLifetime
 
         // Act
         var result = await detailsHandler.Handle(
-            new GetProfileDetailsQuery(profileId),
+            new GetProfileDetailsQuery(new ProfileId(profileId)),
             TestContext.Current.CancellationToken);
 
         // Assert
@@ -127,7 +127,7 @@ public sealed class GetProfilesHandlerTests : IAsyncLifetime
 
         // Act
         var result = await detailsHandler.Handle(
-            new GetProfileDetailsQuery(99999),
+            new GetProfileDetailsQuery(new ProfileId(99999)),
             TestContext.Current.CancellationToken);
 
         // Assert
@@ -148,7 +148,7 @@ public sealed class GetProfilesHandlerTests : IAsyncLifetime
 
         // Act — attempt to read CustomerB's profile as CustomerA
         var result = await detailsHandlerAsA.Handle(
-            new GetProfileDetailsQuery(profileId),
+            new GetProfileDetailsQuery(new ProfileId(profileId)),
             TestContext.Current.CancellationToken);
 
         // Assert — SQL has WHERE CustomerId = @CustomerId → returns null → NOT_FOUND
