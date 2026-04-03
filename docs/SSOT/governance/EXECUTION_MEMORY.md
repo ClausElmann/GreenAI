@@ -304,7 +304,7 @@ log:
     live_violations_found_and_fixed: 2
 
 - id: EXEC_010
-  date: 2026-04-06
+  date: 2026-04-03
   task: >
     Retrospective Audit Engine — Drift Detection + Correction.
     Full audit of code vs SSOT vs feature contracts vs enforcement rules.

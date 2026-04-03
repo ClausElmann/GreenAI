@@ -142,4 +142,37 @@ red_threads:
       - Components/**/*.razor
       - Components/Pages/**/*.razor
     violation_action: REPLACE with @Loc.Get(labelKey)
+
+  - id: require_profile
+    description: >
+      Commands and queries that operate on profile-scoped data must be marked with
+      IRequireProfile. This ensures the pipeline behavior RequireProfileBehavior
+      rejects requests that carry ProfileId = 0 (pre-profile-selection state).
+      Without this marker, a user who has not selected a profile can silently access
+      the handler with ProfileId = 0 in ICurrentUser — producing corrupt data.
+    ssot_source: docs/SSOT/identity/current-user.md
+    code_source:
+      - src/GreenAi.Api/SharedKernel/Pipeline/RequireProfileBehavior.cs
+      - src/GreenAi.Api/SharedKernel/Pipeline/IRequireProfile.cs
+    enforced_in:
+      - Features/**/Command.cs or Query.cs → add `, IRequireProfile` to record declaration
+    features_using_it:
+      - Features/CustomerAdmin/GetCustomerSettings/GetCustomerSettingsQuery.cs
+      - Features/CustomerAdmin/GetUsers/GetUsersQuery.cs
+      - Features/CustomerAdmin/GetUsers/GetUserDetailsQuery.cs
+      - Features/CustomerAdmin/GetProfiles/GetProfilesQuery.cs
+      - Features/CustomerAdmin/GetProfiles/GetProfileDetailsQuery.cs
+      - Features/Auth/ChangePassword/ChangePasswordCommand.cs
+      - Features/Identity/ChangeUserEmail/ChangeUserEmailCommand.cs
+    shape:
+      correct: >
+        public sealed record GetUsersQuery : IRequest<Result<List<UserRow>>>,
+            IRequireAuthentication, IRequireProfile;
+      incorrect: >
+        public sealed record GetUsersQuery : IRequest<Result<List<UserRow>>>,
+            IRequireAuthentication;  // missing IRequireProfile — users list accessible without profile
+    violation_action: >
+      ADD IRequireProfile to the command/query declaration.
+      Check feature-contract-map.json pipeline_markers field to verify registration.
+      Never omit IRequireProfile for features that scope data by CustomerId/ProfileId.
 ```

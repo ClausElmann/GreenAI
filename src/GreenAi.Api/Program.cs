@@ -192,3 +192,6 @@ finally
 }
 
 internal sealed record ClientLogRequest(string Message, string? Source, string? Stack);
+
+// Expose Program to the test assembly so WebApplicationFactory<Program> can reference it
+public partial class Program { }

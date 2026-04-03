@@ -163,8 +163,8 @@ if (Test-Path $resultExtensionsPath) {
     }
 
     foreach ($file in $csFiles) {
-        # Only check handler files
-        if ($file.Name -notmatch 'Handler\.cs$') { continue }
+        # Scan all C# files under Features/ — not just handlers
+        if ($file.FullName -notmatch '\\Features\\') { continue }
         $content = Get-Content $file.FullName
         for ($i = 0; $i -lt $content.Count; $i++) {
             $line = $content[$i]
@@ -540,6 +540,64 @@ if (Test-Path $featureContractMapPath) {
                 }
             }
         }
+    }
+}
+
+
+# ─────────────────────────────────────────────────────────────
+# RULE GROUP 9 (SLICE-001): Every Handler.cs under Features/ must be
+# registered in feature-contract-map.json. Unregistered features
+# bypass the entire audit system.
+# ─────────────────────────────────────────────────────────────
+if (Test-Path $featureContractMapPath) {
+    $featureMapSlice = Get-Content $featureContractMapPath -Raw | ConvertFrom-Json
+    $featureSrcRoot3 = Join-Path $repoRoot "src\GreenAi.Api"
+
+    # Build set of registered handler paths (normalised to backslash)
+    $registeredHandlers = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+    foreach ($feature in $featureMapSlice.features) {
+        if ($feature.handler) {
+            [void]$registeredHandlers.Add($feature.handler.Replace('/', '\'))
+        }
+    }
+
+    # Scan all *Handler.cs files under src/GreenAi.Api/Features/
+    $featuresRoot = Join-Path $featureSrcRoot3 "Features"
+    if (Test-Path $featuresRoot) {
+        Get-ChildItem $featuresRoot -Recurse -Filter "*Handler.cs" | ForEach-Object {
+            # Derive relative path from src/GreenAi.Api (e.g. "Features\Auth\Login\LoginHandler.cs")
+            $relPath = $_.FullName.Substring($featureSrcRoot3.Length).TrimStart('\')
+            $normalised = $relPath.Replace('\', '\')
+            if (-not $registeredHandlers.Contains($normalised)) {
+                Add-Violation "SLICE-001" $_.FullName 0 "Handler '$($_.Name)' is not registered in feature-contract-map.json — add entry to maintain full governance coverage"
+            }
+        }
+    }
+}
+
+# ─────────────────────────────────────────────────────────────
+# RULE GROUP 10 (EXEC-001): EXECUTION_MEMORY.md must have an entry
+# dated within the last 48 hours. Warns when self-improvement loop
+# is stale — does NOT count as a violation (advisory).
+# ─────────────────────────────────────────────────────────────
+$execMemoryPath = Join-Path $repoRoot "docs\SSOT\governance\EXECUTION_MEMORY.md"
+if (Test-Path $execMemoryPath) {
+    $execContent = Get-Content $execMemoryPath -Raw
+    # Extract all "    date: YYYY-MM-DD" entries from the log section
+    $datMatches = [regex]::Matches($execContent, '^\s{4}date:\s+(\d{4}-\d{2}-\d{2})', [System.Text.RegularExpressions.RegexOptions]::Multiline)
+    if ($datMatches.Count -gt 0) {
+        $lastDate = $datMatches | ForEach-Object { $_.Groups[1].Value } | Sort-Object | Select-Object -Last 1
+        try {
+            $lastParsed = [datetime]::ParseExact($lastDate, "yyyy-MM-dd", $null)
+            $ageHours   = ([datetime]::UtcNow - $lastParsed).TotalHours
+            if ($ageHours -gt 48) {
+                Write-Host "WARN [EXEC-001] EXECUTION_MEMORY.md last entry is $([math]::Round($ageHours, 0))h old (last: $lastDate). Update after completing work session." -ForegroundColor Yellow
+            }
+        } catch {
+            Write-Host "WARN [EXEC-001] Could not parse date '$lastDate' in EXECUTION_MEMORY.md" -ForegroundColor Yellow
+        }
+    } else {
+        Write-Host "WARN [EXEC-001] No date entries found in EXECUTION_MEMORY.md log section" -ForegroundColor Yellow
     }
 }
 

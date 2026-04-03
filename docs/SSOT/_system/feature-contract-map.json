@@ -4,7 +4,6 @@
   "version": "1.0.0",
   "last_updated": "2026-04-06",
   "ssot_source": "docs/SSOT/_system/feature-contract-map.json",
-
   "contract_schema": {
     "id": "unique feature id (snake_case)",
     "domain": "Auth | CustomerAdmin | Identity | Localization | System | Api",
@@ -23,13 +22,14 @@
     "auth": "none | authenticated | profile",
     "pipeline_markers": "array of pipeline marker interfaces on Command/Query"
   },
-
   "features": [
     {
       "id": "system_ping",
       "domain": "System",
       "route": "GET /ping",
-      "red_threads": ["result_pattern"],
+      "red_threads": [
+        "result_pattern"
+      ],
       "command_or_query": "Features/System/Ping/PingQuery.cs",
       "handler": "Features/System/Ping/PingHandler.cs",
       "endpoint": "Features/System/Ping/PingEndpoint.cs",
@@ -37,7 +37,7 @@
       "validator": null,
       "ui_page": null,
       "tests": {
-        "integration": null,
+        "integration": "tests/GreenAi.Tests/Http/HttpIntegrationTests.cs",
         "unit": "tests/GreenAi.Tests/Features/System/Ping/PingHandlerTests.cs"
       },
       "auth": "none",
@@ -47,7 +47,10 @@
       "id": "auth_login",
       "domain": "Auth",
       "route": "POST /auth/login",
-      "red_threads": ["auth_flow", "result_pattern"],
+      "red_threads": [
+        "auth_flow",
+        "result_pattern"
+      ],
       "command_or_query": "Features/Auth/Login/LoginCommand.cs",
       "handler": "Features/Auth/Login/LoginHandler.cs",
       "endpoint": "Features/Auth/Login/LoginEndpoint.cs",
@@ -62,7 +65,7 @@
       "validator": "Features/Auth/Login/LoginValidator.cs",
       "ui_page": "Features/Auth/Login/LoginPage.razor",
       "tests": {
-        "integration": "tests/GreenAi.Tests/Features/Auth/LoginRepositoryTests.cs",
+        "integration": "tests/GreenAi.Tests/Http/HttpIntegrationTests.cs",
         "unit": "tests/GreenAi.Tests/Features/Auth/LoginHandlerTests.cs"
       },
       "auth": "none",
@@ -72,7 +75,10 @@
       "id": "auth_select_customer",
       "domain": "Auth",
       "route": "POST /auth/select-customer",
-      "red_threads": ["auth_flow", "result_pattern"],
+      "red_threads": [
+        "auth_flow",
+        "result_pattern"
+      ],
       "command_or_query": "Features/Auth/SelectCustomer/SelectCustomerCommand.cs",
       "handler": "Features/Auth/SelectCustomer/SelectCustomerHandler.cs",
       "endpoint": "Features/Auth/SelectCustomer/SelectCustomerEndpoint.cs",
@@ -84,17 +90,22 @@
       "validator": "Features/Auth/SelectCustomer/SelectCustomerValidator.cs",
       "ui_page": null,
       "tests": {
-        "integration": "tests/GreenAi.Tests/Features/Auth/SelectCustomerRepositoryTests.cs",
+        "integration": "tests/GreenAi.Tests/Http/HttpIntegrationTests.cs",
         "unit": "tests/GreenAi.Tests/Features/Auth/SelectCustomerHandlerTests.cs"
       },
       "auth": "authenticated",
-      "pipeline_markers": ["IRequireAuthentication"]
+      "pipeline_markers": [
+        "IRequireAuthentication"
+      ]
     },
     {
       "id": "auth_select_profile",
       "domain": "Auth",
       "route": "POST /auth/select-profile",
-      "red_threads": ["auth_flow", "result_pattern"],
+      "red_threads": [
+        "auth_flow",
+        "result_pattern"
+      ],
       "command_or_query": "Features/Auth/SelectProfile/SelectProfileCommand.cs",
       "handler": "Features/Auth/SelectProfile/SelectProfileHandler.cs",
       "endpoint": "Features/Auth/SelectProfile/SelectProfileEndpoint.cs",
@@ -105,17 +116,22 @@
       "validator": "Features/Auth/SelectProfile/SelectProfileValidator.cs",
       "ui_page": null,
       "tests": {
-        "integration": "tests/GreenAi.Tests/Features/Auth/SelectProfileRepositoryTests.cs",
+        "integration": "tests/GreenAi.Tests/Http/HttpIntegrationTests.cs",
         "unit": "tests/GreenAi.Tests/Features/Auth/SelectProfileHandlerTests.cs"
       },
       "auth": "authenticated",
-      "pipeline_markers": ["IRequireAuthentication"]
+      "pipeline_markers": [
+        "IRequireAuthentication"
+      ]
     },
     {
       "id": "auth_refresh_token",
       "domain": "Auth",
       "route": "POST /auth/refresh",
-      "red_threads": ["auth_flow", "result_pattern"],
+      "red_threads": [
+        "auth_flow",
+        "result_pattern"
+      ],
       "command_or_query": "Features/Auth/RefreshToken/RefreshTokenCommand.cs",
       "handler": "Features/Auth/RefreshToken/RefreshTokenHandler.cs",
       "endpoint": "Features/Auth/RefreshToken/RefreshTokenEndpoint.cs",
@@ -127,7 +143,7 @@
       "validator": "Features/Auth/RefreshToken/RefreshTokenValidator.cs",
       "ui_page": null,
       "tests": {
-        "integration": "tests/GreenAi.Tests/Features/Auth/RefreshTokenRepositoryTests.cs",
+        "integration": "tests/GreenAi.Tests/Http/HttpIntegrationTests.cs",
         "unit": "tests/GreenAi.Tests/Features/Auth/RefreshTokenHandlerTests.cs"
       },
       "auth": "none",
@@ -138,7 +154,11 @@
       "id": "auth_change_password",
       "domain": "Auth",
       "route": "POST /auth/change-password",
-      "red_threads": ["result_pattern", "auth_flow", "current_user"],
+      "red_threads": [
+        "result_pattern",
+        "auth_flow",
+        "current_user"
+      ],
       "command_or_query": "Features/Auth/ChangePassword/ChangePasswordCommand.cs",
       "handler": "Features/Auth/ChangePassword/ChangePasswordHandler.cs",
       "endpoint": "Features/Auth/ChangePassword/ChangePasswordEndpoint.cs",
@@ -149,17 +169,24 @@
       "validator": "Features/Auth/ChangePassword/ChangePasswordValidator.cs",
       "ui_page": null,
       "tests": {
-        "integration": "tests/GreenAi.Tests/Features/Auth/ChangePasswordRepositoryTests.cs",
+        "integration": "tests/GreenAi.Tests/Http/HttpIntegrationTests.cs",
         "unit": "tests/GreenAi.Tests/Features/Auth/ChangePasswordHandlerTests.cs"
       },
       "auth": "profile",
-      "pipeline_markers": ["IRequireAuthentication", "IRequireProfile"]
+      "pipeline_markers": [
+        "IRequireAuthentication",
+        "IRequireProfile"
+      ]
     },
     {
       "id": "customer_admin_get_settings",
       "domain": "CustomerAdmin",
       "route": "GET /customer-admin/settings",
-      "red_threads": ["result_pattern", "tenant_isolation", "current_user"],
+      "red_threads": [
+        "result_pattern",
+        "tenant_isolation",
+        "current_user"
+      ],
       "command_or_query": "Features/CustomerAdmin/GetCustomerSettings/GetCustomerSettingsQuery.cs",
       "handler": "Features/CustomerAdmin/GetCustomerSettings/GetCustomerSettingsHandler.cs",
       "endpoint": null,
@@ -173,13 +200,20 @@
         "unit": "tests/GreenAi.Tests/Features/CustomerAdmin/GetCustomerSettingsHandlerTests.cs"
       },
       "auth": "profile",
-      "pipeline_markers": ["IRequireAuthentication", "IRequireProfile"]
+      "pipeline_markers": [
+        "IRequireAuthentication",
+        "IRequireProfile"
+      ]
     },
     {
       "id": "customer_admin_get_users",
       "domain": "CustomerAdmin",
       "route": "GET /customer-admin/users",
-      "red_threads": ["result_pattern", "tenant_isolation", "current_user"],
+      "red_threads": [
+        "result_pattern",
+        "tenant_isolation",
+        "current_user"
+      ],
       "command_or_query": "Features/CustomerAdmin/GetUsers/GetUsersQuery.cs",
       "handler": "Features/CustomerAdmin/GetUsers/GetUsersHandler.cs",
       "endpoint": null,
@@ -195,13 +229,20 @@
         "unit": null
       },
       "auth": "profile",
-      "pipeline_markers": ["IRequireAuthentication", "IRequireProfile"]
+      "pipeline_markers": [
+        "IRequireAuthentication",
+        "IRequireProfile"
+      ]
     },
     {
       "id": "customer_admin_get_user_details",
       "domain": "CustomerAdmin",
       "route": "GET /customer-admin/users/{userId}",
-      "red_threads": ["result_pattern", "tenant_isolation", "current_user"],
+      "red_threads": [
+        "result_pattern",
+        "tenant_isolation",
+        "current_user"
+      ],
       "command_or_query": "Features/CustomerAdmin/GetUsers/GetUserDetailsQuery.cs",
       "handler": "Features/CustomerAdmin/GetUsers/GetUserDetailsHandler.cs",
       "endpoint": null,
@@ -215,13 +256,20 @@
         "unit": "tests/GreenAi.Tests/Features/CustomerAdmin/GetUserDetailsHandlerTests.cs"
       },
       "auth": "profile",
-      "pipeline_markers": ["IRequireAuthentication", "IRequireProfile"]
+      "pipeline_markers": [
+        "IRequireAuthentication",
+        "IRequireProfile"
+      ]
     },
     {
       "id": "customer_admin_get_profiles",
       "domain": "CustomerAdmin",
       "route": "GET /customer-admin/profiles",
-      "red_threads": ["result_pattern", "tenant_isolation", "current_user"],
+      "red_threads": [
+        "result_pattern",
+        "tenant_isolation",
+        "current_user"
+      ],
       "command_or_query": "Features/CustomerAdmin/GetProfiles/GetProfilesQuery.cs",
       "handler": "Features/CustomerAdmin/GetProfiles/GetProfilesHandler.cs",
       "endpoint": null,
@@ -236,13 +284,20 @@
         "unit": null
       },
       "auth": "profile",
-      "pipeline_markers": ["IRequireAuthentication", "IRequireProfile"]
+      "pipeline_markers": [
+        "IRequireAuthentication",
+        "IRequireProfile"
+      ]
     },
     {
       "id": "customer_admin_get_profile_details",
       "domain": "CustomerAdmin",
       "route": "GET /customer-admin/profiles/{profileId}",
-      "red_threads": ["result_pattern", "tenant_isolation", "current_user"],
+      "red_threads": [
+        "result_pattern",
+        "tenant_isolation",
+        "current_user"
+      ],
       "command_or_query": "Features/CustomerAdmin/GetProfiles/GetProfileDetailsQuery.cs",
       "handler": "Features/CustomerAdmin/GetProfiles/GetProfileDetailsHandler.cs",
       "endpoint": null,
@@ -256,13 +311,22 @@
         "unit": "tests/GreenAi.Tests/Features/CustomerAdmin/GetProfileDetailsHandlerTests.cs"
       },
       "auth": "profile",
-      "pipeline_markers": ["IRequireAuthentication", "IRequireProfile"]
+      "pipeline_markers": [
+        "IRequireAuthentication",
+        "IRequireProfile"
+      ]
     },
     {
       "id": "identity_change_user_email",
       "domain": "Identity",
       "route": "POST /identity/change-email",
-      "red_threads": ["result_pattern", "auth_flow", "current_user", "sql_embedded", "tenant_isolation"],
+      "red_threads": [
+        "result_pattern",
+        "auth_flow",
+        "current_user",
+        "sql_embedded",
+        "tenant_isolation"
+      ],
       "command_or_query": "Features/Identity/ChangeUserEmail/ChangeUserEmailCommand.cs",
       "handler": "Features/Identity/ChangeUserEmail/ChangeUserEmailHandler.cs",
       "endpoint": "Features/Identity/ChangeUserEmail/ChangeUserEmailEndpoint.cs",
@@ -274,18 +338,23 @@
       "validator": "Features/Identity/ChangeUserEmail/ChangeUserEmailValidator.cs",
       "ui_page": null,
       "tests": {
-        "integration": "tests/GreenAi.Tests/Features/Identity/ChangeUserEmailRepositoryTests.cs",
+        "integration": "tests/GreenAi.Tests/Http/HttpIntegrationTests.cs",
         "unit": "tests/GreenAi.Tests/Features/Identity/ChangeUserEmailHandlerTests.cs"
       },
       "auth": "profile",
-      "pipeline_markers": ["IRequireAuthentication", "IRequireProfile"],
+      "pipeline_markers": [
+        "IRequireAuthentication",
+        "IRequireProfile"
+      ],
       "note": "Uses ExecuteInTransactionAsync — email update + audit are atomic. EMAIL_TAKEN → 409."
     },
     {
       "id": "localization_batch_upsert_labels",
       "domain": "Localization",
       "route": "POST /localization/labels/batch",
-      "red_threads": ["result_pattern"],
+      "red_threads": [
+        "result_pattern"
+      ],
       "command_or_query": "Features/Localization/BatchUpsertLabels/BatchUpsertLabelsCommand.cs",
       "handler": "Features/Localization/BatchUpsertLabels/BatchUpsertLabelsHandler.cs",
       "endpoint": "Features/Localization/BatchUpsertLabels/BatchUpsertLabelsEndpoint.cs",
@@ -293,17 +362,22 @@
       "validator": null,
       "ui_page": null,
       "tests": {
-        "integration": null,
+        "integration": "tests/GreenAi.Tests/Http/HttpIntegrationTests.cs",
         "unit": "tests/GreenAi.Tests/Features/Localization/BatchUpsertLabels/BatchUpsertLabelsHandlerTests.cs"
       },
       "auth": "authenticated",
-      "pipeline_markers": ["IRequireAuthentication"]
+      "pipeline_markers": [
+        "IRequireAuthentication"
+      ]
     },
     {
       "id": "api_v1_get_token",
       "domain": "Api",
       "route": "POST /api/v1/auth/token",
-      "red_threads": ["auth_flow", "result_pattern"],
+      "red_threads": [
+        "auth_flow",
+        "result_pattern"
+      ],
       "command_or_query": "Features/Api/V1/Auth/Token/GetApiTokenCommand.cs",
       "handler": "Features/Api/V1/Auth/Token/GetApiTokenHandler.cs",
       "endpoint": "Features/Api/V1/Auth/Token/GetApiTokenEndpoint.cs",
@@ -311,19 +385,28 @@
       "validator": null,
       "ui_page": null,
       "tests": {
-        "integration": null,
+        "integration": "tests/GreenAi.Tests/Http/HttpIntegrationTests.cs",
         "unit": "tests/GreenAi.Tests/Features/Api/V1/Auth/Token/GetApiTokenHandlerTests.cs"
       },
       "auth": "none",
       "pipeline_markers": []
     }
   ],
-
   "validation_rules": {
-    "every_feature_must_have": ["handler", "red_threads (min 1)", "auth value"],
-    "if_route_exists": ["endpoint must not be null"],
-    "if_auth_is_profile_or_authenticated": ["IRequireAuthentication must be in pipeline_markers"],
-    "if_sql_files_has_more_than_1_write": ["ExecuteInTransactionAsync note must be present"],
+    "every_feature_must_have": [
+      "handler",
+      "red_threads (min 1)",
+      "auth value"
+    ],
+    "if_route_exists": [
+      "endpoint must not be null"
+    ],
+    "if_auth_is_profile_or_authenticated": [
+      "IRequireAuthentication must be in pipeline_markers"
+    ],
+    "if_sql_files_has_more_than_1_write": [
+      "ExecuteInTransactionAsync note must be present"
+    ],
     "test_coverage_minimum": "integration test required for every feature with a route"
   }
 }
