@@ -2,11 +2,11 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "description": "green-ai feature contract map — every implemented feature with its red threads, handler, endpoint, SQL files, tests, and UI component. Machine-readable. Update when new feature is added.",
   "version": "1.0.0",
-  "last_updated": "2026-04-03",
+  "last_updated": "2026-04-04",
   "ssot_source": "docs/SSOT/_system/feature-contract-map.json",
   "contract_schema": {
     "id": "unique feature id (snake_case)",
-    "domain": "Auth | CustomerAdmin | Identity | Localization | System | Api",
+    "domain": "Auth | CustomerAdmin | Identity | Localization | System | Api | UserSelfService | Email | AdminLight | UI",
     "route": "HTTP method + path",
     "red_threads": "array of bound red_thread ids from RED_THREAD_REGISTRY.md",
     "command_or_query": "path to Command.cs or Query.cs",
@@ -405,6 +405,204 @@
       },
       "auth": "none",
       "pipeline_markers": []
+    },
+    {
+      "id": "user_update_profile",
+      "domain": "UserSelfService",
+      "route": "PUT /api/user/update",
+      "phase": "P2-SLICE-001",
+      "status": "not_implemented",
+      "red_threads": [
+        "result_pattern",
+        "current_user",
+        "tenant_isolation"
+      ],
+      "command_or_query": "Features/UserSelfService/UpdateUser/UpdateUserCommand.cs",
+      "handler": "Features/UserSelfService/UpdateUser/UpdateUserHandler.cs",
+      "endpoint": "Features/UserSelfService/UpdateUser/UpdateUserEndpoint.cs",
+      "sql_files": [
+        "Features/UserSelfService/UpdateUser/UpdateUser.sql"
+      ],
+      "validator": "Features/UserSelfService/UpdateUser/UpdateUserValidator.cs",
+      "ui_page": "Features/UserSelfService/UserProfilePage.razor",
+      "tests": {
+        "integration": "tests/GreenAi.Tests/Http/UserSelfService/UserSelfServiceTests.cs",
+        "unit": "tests/GreenAi.Tests/Features/UserSelfService/UpdateUserHandlerTests.cs",
+        "e2e": null
+      },
+      "auth": "authenticated",
+      "pipeline_markers": [
+        "IRequireAuthentication"
+      ]
+    },
+    {
+      "id": "user_password_reset_request",
+      "domain": "UserSelfService",
+      "route": "POST /api/user/password-reset-request",
+      "phase": "P2-SLICE-001",
+      "status": "not_implemented",
+      "red_threads": [
+        "result_pattern"
+      ],
+      "command_or_query": "Features/UserSelfService/PasswordReset/PasswordResetRequestCommand.cs",
+      "handler": "Features/UserSelfService/PasswordReset/PasswordResetRequestHandler.cs",
+      "endpoint": "Features/UserSelfService/PasswordReset/PasswordResetRequestEndpoint.cs",
+      "sql_files": [
+        "Features/UserSelfService/PasswordReset/FindUserByEmail.sql",
+        "Features/UserSelfService/PasswordReset/InsertResetToken.sql"
+      ],
+      "validator": "Features/UserSelfService/PasswordReset/PasswordResetRequestValidator.cs",
+      "ui_page": null,
+      "tests": {
+        "integration": "tests/GreenAi.Tests/Http/UserSelfService/UserSelfServiceTests.cs",
+        "unit": "tests/GreenAi.Tests/Features/UserSelfService/PasswordResetRequestHandlerTests.cs",
+        "e2e": null
+      },
+      "auth": "none",
+      "pipeline_markers": []
+    },
+    {
+      "id": "user_password_reset_confirm",
+      "domain": "UserSelfService",
+      "route": "POST /api/user/password-reset-confirm",
+      "phase": "P2-SLICE-001",
+      "status": "not_implemented",
+      "red_threads": [
+        "result_pattern"
+      ],
+      "command_or_query": "Features/UserSelfService/PasswordReset/PasswordResetConfirmCommand.cs",
+      "handler": "Features/UserSelfService/PasswordReset/PasswordResetConfirmHandler.cs",
+      "endpoint": "Features/UserSelfService/PasswordReset/PasswordResetConfirmEndpoint.cs",
+      "sql_files": [
+        "Features/UserSelfService/PasswordReset/FindResetToken.sql",
+        "Features/UserSelfService/PasswordReset/MarkTokenUsed.sql",
+        "Features/UserSelfService/PasswordReset/UpdatePassword.sql"
+      ],
+      "validator": "Features/UserSelfService/PasswordReset/PasswordResetConfirmValidator.cs",
+      "ui_page": null,
+      "tests": {
+        "integration": "tests/GreenAi.Tests/Http/UserSelfService/UserSelfServiceTests.cs",
+        "unit": "tests/GreenAi.Tests/Features/UserSelfService/PasswordResetConfirmHandlerTests.cs",
+        "e2e": null
+      },
+      "auth": "none",
+      "pipeline_markers": []
+    },
+    {
+      "id": "email_send_template",
+      "domain": "Email",
+      "route": null,
+      "phase": "P2-SLICE-002",
+      "status": "not_implemented",
+      "red_threads": [
+        "result_pattern"
+      ],
+      "command_or_query": null,
+      "handler": null,
+      "endpoint": null,
+      "sql_files": [
+        "SharedKernel/Email/GetEmailTemplate.sql"
+      ],
+      "validator": null,
+      "ui_page": null,
+      "tests": {
+        "integration": null,
+        "unit": "tests/GreenAi.Tests/SharedKernel/Email/EmailServiceTests.cs",
+        "e2e": null
+      },
+      "auth": "none",
+      "pipeline_markers": []
+    },
+    {
+      "id": "admin_create_user",
+      "domain": "AdminLight",
+      "route": "POST /api/admin/users",
+      "phase": "P2-SLICE-003",
+      "status": "not_implemented",
+      "red_threads": [
+        "result_pattern",
+        "tenant_isolation",
+        "current_user"
+      ],
+      "command_or_query": "Features/AdminLight/CreateUser/CreateUserCommand.cs",
+      "handler": "Features/AdminLight/CreateUser/CreateUserHandler.cs",
+      "endpoint": "Features/AdminLight/CreateUser/CreateUserEndpoint.cs",
+      "sql_files": [
+        "Features/AdminLight/CreateUser/InsertUser.sql",
+        "Features/AdminLight/CreateUser/InsertUserCustomerMembership.sql"
+      ],
+      "validator": "Features/AdminLight/CreateUser/CreateUserValidator.cs",
+      "ui_page": "Features/AdminLight/AdminUserListPage.razor",
+      "tests": {
+        "integration": "tests/GreenAi.Tests/Http/AdminLight/AdminLightTests.cs",
+        "unit": "tests/GreenAi.Tests/Features/AdminLight/CreateUserHandlerTests.cs",
+        "e2e": null
+      },
+      "auth": "profile",
+      "pipeline_markers": [
+        "IRequireAuthentication",
+        "IRequireProfile"
+      ]
+    },
+    {
+      "id": "admin_assign_role",
+      "domain": "AdminLight",
+      "route": "POST /api/admin/users/{id}/roles",
+      "phase": "P2-SLICE-003",
+      "status": "not_implemented",
+      "red_threads": [
+        "result_pattern",
+        "tenant_isolation",
+        "current_user"
+      ],
+      "command_or_query": "Features/AdminLight/AssignRole/AssignRoleCommand.cs",
+      "handler": "Features/AdminLight/AssignRole/AssignRoleHandler.cs",
+      "endpoint": "Features/AdminLight/AssignRole/AssignRoleEndpoint.cs",
+      "sql_files": [
+        "Features/AdminLight/AssignRole/InsertUserRoleMapping.sql"
+      ],
+      "validator": null,
+      "ui_page": null,
+      "tests": {
+        "integration": "tests/GreenAi.Tests/Http/AdminLight/AdminLightTests.cs",
+        "unit": "tests/GreenAi.Tests/Features/AdminLight/AssignRoleHandlerTests.cs",
+        "e2e": null
+      },
+      "auth": "profile",
+      "pipeline_markers": [
+        "IRequireAuthentication",
+        "IRequireProfile"
+      ]
+    },
+    {
+      "id": "admin_assign_profile",
+      "domain": "AdminLight",
+      "route": "POST /api/admin/users/{id}/profiles",
+      "phase": "P2-SLICE-003",
+      "status": "not_implemented",
+      "red_threads": [
+        "result_pattern",
+        "tenant_isolation",
+        "current_user"
+      ],
+      "command_or_query": "Features/AdminLight/AssignProfile/AssignProfileCommand.cs",
+      "handler": "Features/AdminLight/AssignProfile/AssignProfileHandler.cs",
+      "endpoint": "Features/AdminLight/AssignProfile/AssignProfileEndpoint.cs",
+      "sql_files": [
+        "Features/AdminLight/AssignProfile/InsertProfileUserMapping.sql"
+      ],
+      "validator": null,
+      "ui_page": null,
+      "tests": {
+        "integration": "tests/GreenAi.Tests/Http/AdminLight/AdminLightTests.cs",
+        "unit": "tests/GreenAi.Tests/Features/AdminLight/AssignProfileHandlerTests.cs",
+        "e2e": null
+      },
+      "auth": "profile",
+      "pipeline_markers": [
+        "IRequireAuthentication",
+        "IRequireProfile"
+      ]
     }
   ],
   "validation_rules": {

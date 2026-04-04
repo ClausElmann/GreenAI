@@ -10,9 +10,8 @@ namespace GreenAi.Tests.Features.Auth;
 /// Integration tests for SelectCustomerRepository — verifies the SQL files, not the handler logic.
 ///
 /// Critical behaviour being tested:
-///   - FindMembership.sql filters on IsActive = 1 and returns LanguageId
-///   - GetProfiles.sql returns profiles for the current user+customer only (tenant isolation)
-///   - SaveRefreshToken.sql persists LanguageId AND ProfileId in UserRefreshTokens
+///   - FindMembership.sql filters on IsActive = 1 and returns LanguageId + DefaultProfileId
+///   - SaveRefreshToken.sql persists LanguageId in UserRefreshTokens
 /// </summary>
 [Collection(DatabaseCollection.Name)]
 public sealed class SelectCustomerRepositoryTests : IAsyncLifetime
@@ -34,9 +33,8 @@ public sealed class SelectCustomerRepositoryTests : IAsyncLifetime
 
     // ===================================================================
     // FindMembership.sql
-    // RULE: Returns the membership row for an active UserCustomerMembership.
-    //       Returns NULL if inactive or not found.
-    //       No profile data — profile resolution is a separate step (GetProfilesAsync).
+    // RULE: Returns the membership row (+ profile COALESCE) for an active
+    //       UserCustomerMembership. Returns NULL if inactive or not found.
     // ===================================================================
 
     [Fact]
@@ -51,6 +49,20 @@ public sealed class SelectCustomerRepositoryTests : IAsyncLifetime
         Assert.NotNull(result);
         Assert.Equal(customerId.Value, result.CustomerId);
         Assert.Equal(2, result.LanguageId);
+    }
+
+    [Fact]
+    public async Task FindMembershipAsync_UserWithNoProfile_ReturnsZeroDefaultProfileId()
+    {
+        // TESTING: COALESCE(p.Id, 0) — no profile row, must return 0
+        var customerId = await _builder.InsertCustomerAsync();
+        var userId = await _builder.InsertUserAsync();
+        await _builder.InsertUserCustomerMembershipAsync(userId, customerId);
+
+        var result = await CreateRepository().FindMembershipAsync(userId, customerId);
+
+        Assert.NotNull(result);
+        Assert.Equal(0, result.DefaultProfileId);
     }
 
     [Fact]
@@ -95,84 +107,35 @@ public sealed class SelectCustomerRepositoryTests : IAsyncLifetime
     }
 
     // ===================================================================
-    // GetProfiles.sql
-    // RULE: Returns accessible profiles for the current user+customer.
-    //       No cross-tenant leakage (WHERE CustomerId = @CustomerId).
+    // SaveRefreshToken.sql
+    // RULE: Inserts a UserRefreshToken row with LanguageId persisted.
     // ===================================================================
 
     [Fact]
-    public async Task GetProfilesAsync_UserWithOneProfile_ReturnsOneRecord()
+    public async Task SaveRefreshTokenAsync_ValidArgs_PersistsLanguageId()
     {
         var customerId = await _builder.InsertCustomerAsync();
-        var userId = await _builder.InsertUserAsync(new() { Email = "profile-user@example.com" });
-        var profileId = await _builder.InsertProfileAsync(customerId, userId, "Primary");
+        var userId = await _builder.InsertUserAsync();
+        var expiresAt = DateTimeOffset.UtcNow.AddDays(30);
 
-        var results = await CreateRepository().GetProfilesAsync(userId, customerId);
+        await CreateRepository().SaveRefreshTokenAsync(userId, customerId, "sc-token", expiresAt, languageId: 3);
 
-        Assert.Single(results);
-        Assert.Equal(profileId, results.First().ProfileId);
-        Assert.True(results.First().ProfileId > 0);
-        Assert.Equal("Primary", results.First().DisplayName);
+        await using var conn = new SqlConnection(DatabaseFixture.ConnectionString);
+        var storedLanguageId = await conn.ExecuteScalarAsync<int>(
+            "SELECT LanguageId FROM UserRefreshTokens WHERE Token = @Token",
+            new { Token = "sc-token" });
+        Assert.Equal(3, storedLanguageId);
     }
 
     [Fact]
-    public async Task GetProfilesAsync_UserWithNoProfiles_ReturnsEmpty()
+    public async Task SaveRefreshTokenAsync_ValidArgs_TokenIsRetrievable()
     {
         var customerId = await _builder.InsertCustomerAsync();
         var userId = await _builder.InsertUserAsync();
 
-        var results = await CreateRepository().GetProfilesAsync(userId, customerId);
+        await CreateRepository().SaveRefreshTokenAsync(userId, customerId, "sc-findable-token", DateTimeOffset.UtcNow.AddDays(30), languageId: 1);
 
-        Assert.Empty(results);
+        var count = await _builder.CountRefreshTokensByUserIdAsync(userId);
+        Assert.Equal(1, count);
     }
-
-    [Fact]
-    public async Task GetProfilesAsync_DoesNotReturnProfilesFromOtherCustomer()
-    {
-        // TENANCY RULE: WHERE CustomerId = @CustomerId must prevent cross-customer profile leakage.
-        var customerA = await _builder.InsertCustomerAsync("Customer A");
-        var customerB = await _builder.InsertCustomerAsync("Customer B");
-        var userId = await _builder.InsertUserAsync(new() { Email = "tenant@example.com" });
-        await _builder.InsertProfileAsync(customerA, userId, "Profile for A");
-
-        var results = await CreateRepository().GetProfilesAsync(userId, customerB);
-
-        Assert.Empty(results);
-    }
-
-    [Fact]
-    public async Task GetProfilesAsync_ProfileExistsButNoMappingForUser_ReturnsEmpty()
-    {
-        // A profile row exists for the customer but the requesting user has no ProfileUserMappings entry.
-        var customerId = await _builder.InsertCustomerAsync();
-        var ownerUser = await _builder.InsertUserAsync(new() { Email = "owner-sc@example.com" });
-        var otherUser = await _builder.InsertUserAsync(new() { Email = "other-sc@example.com" });
-        await _builder.InsertProfileAsync(customerId, ownerUser, "Owner Only Profile");
-
-        var results = await CreateRepository().GetProfilesAsync(otherUser, customerId);
-
-        Assert.Empty(results);
-    }
-
-    [Fact]
-    public async Task GetProfilesAsync_ProfileMappedToMultipleUsers_AllUsersCanAccess()
-    {
-        // Many-to-many: the same profile is accessible by two users.
-        var customerId = await _builder.InsertCustomerAsync();
-        var userA = await _builder.InsertUserAsync(new() { Email = "sc-shared-a@example.com" });
-        var userB = await _builder.InsertUserAsync(new() { Email = "sc-shared-b@example.com" });
-
-        var profileId = await _builder.InsertProfileAsync(customerId, userA, "Shared Profile");
-        await _builder.InsertProfileUserMappingAsync(userB, profileId);
-
-        var resultsA = await CreateRepository().GetProfilesAsync(userA, customerId);
-        var resultsB = await CreateRepository().GetProfilesAsync(userB, customerId);
-
-        Assert.Single(resultsA);
-        Assert.Equal(profileId, resultsA.First().ProfileId);
-        Assert.Single(resultsB);
-        Assert.Equal(profileId, resultsB.First().ProfileId);
-    }
-    // NOTE: SaveRefreshToken SQL tests removed.
-    // SaveAsync is now tested via SharedKernel/Auth/RefreshTokenWriterTests (Slice 1).
 }

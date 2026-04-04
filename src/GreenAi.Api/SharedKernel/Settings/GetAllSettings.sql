@@ -1,0 +1,2 @@
+SELECT ApplicationSettingTypeId, Value
+FROM ApplicationSettings

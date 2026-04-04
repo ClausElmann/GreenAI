@@ -3,12 +3,17 @@ using GreenAi.Api.Database;
 using GreenAi.Api.Features.Api.V1.Auth.Token;
 using GreenAi.Api.Features.Auth.ChangePassword;
 using GreenAi.Api.Features.Auth.Login;
+using GreenAi.Api.Features.Auth.Logout;
+using GreenAi.Api.Features.Auth.Me;
 using GreenAi.Api.Features.Identity.ChangeUserEmail;
 using GreenAi.Api.Features.Auth.RefreshToken;
 using GreenAi.Api.Features.Auth.SelectCustomer;
 using GreenAi.Api.Features.Auth.SelectProfile;
 using GreenAi.Api.Features.Localization.BatchUpsertLabels;
+using GreenAi.Api.Features.Localization.GetLabels;
+using GreenAi.Api.Features.System.Health;
 using GreenAi.Api.Features.System.Ping;
+using GreenAi.Api.SharedKernel.Settings;
 using GreenAi.Api.SharedKernel.Auth;
 using GreenAi.Api.SharedKernel.Db;
 using GreenAi.Api.SharedKernel.Localization;
@@ -88,10 +93,13 @@ try
     builder.Services.AddScoped<ISelectCustomerRepository, SelectCustomerRepository>();
     builder.Services.AddScoped<ISelectProfileRepository, SelectProfileRepository>();
     builder.Services.AddScoped<IBatchUpsertLabelsRepository, BatchUpsertLabelsRepository>();
+    builder.Services.AddScoped<IApplicationSettingService, ApplicationSettingService>();
     builder.Services.AddScoped<AuthenticationStateProvider, GreenAiAuthenticationStateProvider>();
     builder.Services.AddScoped<GreenAiAuthenticationStateProvider>();
     builder.Services.AddCascadingAuthenticationState();
     builder.Services.AddSingleton<CircuitHandler, LoggingCircuitHandler>();
+    builder.Services.AddScoped<ISystemLogger, DefaultSystemLogger>();
+    builder.Services.AddTransient<OutgoingHttpClientLoggingHandler>();
 
     // JWT authentication
     var jwtOptions = builder.Configuration.GetSection(JwtOptions.Section).Get<JwtOptions>()
@@ -145,6 +153,13 @@ try
     // Initialize Dapper.Plus license
     DapperPlusSetup.Initialize();
 
+    // Seed default ApplicationSettings rows (idempotent)
+    using (var scope = app.Services.CreateScope())
+    {
+        var settingService = scope.ServiceProvider.GetRequiredService<IApplicationSettingService>();
+        await settingService.CreateDefaultsAsync();
+    }
+
     if (!app.Environment.IsDevelopment())
     {
         app.UseExceptionHandler("/Error", createScopeForErrors: true);
@@ -158,6 +173,8 @@ try
     app.UseHttpsRedirection();
     app.UseAuthentication();
     app.UseAuthorization();
+    app.UseMiddleware<CurrentUserMiddleware>();
+    app.UseMiddleware<RequestResponseLoggingMiddleware>();
     app.UseAntiforgery();
 
     // INFRASTRUCTURE: client-side JavaScript error ingestion
@@ -170,13 +187,17 @@ try
 
     // Feature endpoints
     LoginEndpoint.Map(app);
+    LogoutEndpoint.Map(app);
+    MeEndpoint.Map(app);
     ChangePasswordEndpoint.Map(app);
     ChangeUserEmailEndpoint.Map(app);
     RefreshTokenEndpoint.Map(app);
     SelectCustomerEndpoint.Map(app);
     SelectProfileEndpoint.Map(app);
     PingEndpoint.Map(app);
+    HealthEndpoint.Map(app);
     BatchUpsertLabelsEndpoint.Map(app);
+    GetLabelsEndpoint.Map(app);
     GetApiTokenEndpoint.Map(app);
 
     app.MapStaticAssets();

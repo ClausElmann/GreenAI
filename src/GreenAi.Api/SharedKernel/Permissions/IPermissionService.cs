@@ -34,4 +34,16 @@ public interface IPermissionService
     /// This is the PRIMARY feature gate for all messaging/operational features.
     /// </summary>
     Task<bool> DoesProfileHaveRoleAsync(ProfileId profileId, string roleName);
+
+    /// <summary>
+    /// Returns true if the user has an active membership for the specified customer.
+    /// Use to verify tenant access before granting scoped operations.
+    /// </summary>
+    Task<bool> CanUserAccessCustomerAsync(UserId userId, CustomerId customerId);
+
+    /// <summary>
+    /// Returns true if the user has access to the specified profile via ProfileUserMappings.
+    /// Use to verify profile access before granting profile-scoped operations.
+    /// </summary>
+    Task<bool> CanUserAccessProfileAsync(UserId userId, ProfileId profileId);
 }

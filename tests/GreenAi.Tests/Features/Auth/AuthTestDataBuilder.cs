@@ -72,8 +72,8 @@ public sealed class AuthTestDataBuilder(string connectionString)
     // ---------------------------------------------------------------
 
     /// <summary>
-    /// Inserts a Profile row and a ProfileUserMappings row for the given user, returns the Profile.Id.
-    /// Profile access is many-to-many via ProfileUserMappings — UserId is NOT stored on Profiles.
+    /// Inserts a Profile row (no UserId — V009 dropped that column) and grants access
+    /// to <paramref name="userId"/> via ProfileUserMappings. Returns the new Profile Id.
     /// </summary>
     public async Task<int> InsertProfileAsync(CustomerId customerId, UserId userId, string displayName = "Test Profile")
     {
@@ -93,18 +93,6 @@ public sealed class AuthTestDataBuilder(string connectionString)
         return profileId;
     }
 
-    /// <summary>
-    /// Inserts a ProfileUserMappings row for an existing profile and user.
-    /// Use this to set up many-to-many access grant scenarios in tests.
-    /// </summary>
-    public async Task InsertProfileUserMappingAsync(UserId userId, int profileId)
-    {
-        await using var conn = new SqlConnection(connectionString);
-        await conn.ExecuteAsync(
-            "INSERT INTO ProfileUserMappings (ProfileId, UserId) VALUES (@ProfileId, @UserId)",
-            new { ProfileId = profileId, UserId = userId.Value });
-    }
-
     // ---------------------------------------------------------------
     // Refresh tokens
     // ---------------------------------------------------------------
@@ -115,8 +103,6 @@ public sealed class AuthTestDataBuilder(string connectionString)
         public DateTimeOffset ExpiresAt { get; init; } = DateTimeOffset.UtcNow.AddDays(30);
         public DateTimeOffset? UsedAt { get; init; } = null;
         public int LanguageId { get; init; } = 1;
-        // ProfileId defaults to 0 only for pre-Step-11 test rows intentionally exercising the
-        // V008 DEFAULT 0 migration path. New tests should always supply a real ProfileId > 0.
         public int ProfileId { get; init; } = 0;
     }
 
@@ -189,38 +175,37 @@ public sealed class AuthTestDataBuilder(string connectionString)
     }
 
     // ---------------------------------------------------------------
-    // UserRole + ProfileRole helpers
+    // Role assignments
     // ---------------------------------------------------------------
 
-    /// <summary>
-    /// Assigns an existing UserRole (by name) to a user via UserRoleMappings.
-    /// The role must already exist in UserRoles (seeded by V010 migration).
-    /// </summary>
+    /// <summary>Assigns a global UserRole to a user via UserRoleMappings.</summary>
     public async Task AssignUserRoleAsync(UserId userId, string roleName)
     {
         await using var conn = new SqlConnection(connectionString);
         await conn.ExecuteAsync("""
             INSERT INTO UserRoleMappings (UserId, UserRoleId)
-            SELECT @UserId, ur.Id
-            FROM   UserRoles ur
-            WHERE  ur.Name = @RoleName
+            SELECT @UserId, Id FROM UserRoles WHERE Name = @RoleName
             """,
             new { UserId = userId.Value, RoleName = roleName });
     }
 
-    /// <summary>
-    /// Assigns an existing ProfileRole (by name) to a profile via ProfileRoleMappings.
-    /// The role must already exist in ProfileRoles (seeded by V010 migration).
-    /// </summary>
+    /// <summary>Assigns a ProfileRole to a profile via ProfileRoleMappings.</summary>
     public async Task AssignProfileRoleAsync(int profileId, string roleName)
     {
         await using var conn = new SqlConnection(connectionString);
         await conn.ExecuteAsync("""
             INSERT INTO ProfileRoleMappings (ProfileId, ProfileRoleId)
-            SELECT @ProfileId, pr.Id
-            FROM   ProfileRoles pr
-            WHERE  pr.Name = @RoleName
+            SELECT @ProfileId, Id FROM ProfileRoles WHERE Name = @RoleName
             """,
             new { ProfileId = profileId, RoleName = roleName });
+    }
+
+    /// <summary>Inserts a ProfileUserMapping (many-to-many profile access for a user).</summary>
+    public async Task InsertProfileUserMappingAsync(UserId userId, int profileId)
+    {
+        await using var conn = new SqlConnection(connectionString);
+        await conn.ExecuteAsync(
+            "INSERT INTO ProfileUserMappings (ProfileId, UserId) VALUES (@ProfileId, @UserId)",
+            new { ProfileId = profileId, UserId = userId.Value });
     }
 }

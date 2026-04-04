@@ -11,18 +11,15 @@ public sealed class SelectCustomerHandler : IRequestHandler<SelectCustomerComman
     private readonly ISelectCustomerRepository _repository;
     private readonly JwtTokenService _jwt;
     private readonly ICurrentUser _currentUser;
-    private readonly IRefreshTokenWriter _tokenWriter;
 
     public SelectCustomerHandler(
         ISelectCustomerRepository repository,
         JwtTokenService jwt,
-        ICurrentUser currentUser,
-        IRefreshTokenWriter tokenWriter)
+        ICurrentUser currentUser)
     {
         _repository  = repository;
         _jwt         = jwt;
         _currentUser = currentUser;
-        _tokenWriter = tokenWriter;
     }
 
     public async Task<Result<SelectCustomerResponse>> Handle(SelectCustomerCommand request, CancellationToken ct)
@@ -55,8 +52,8 @@ public sealed class SelectCustomerHandler : IRequestHandler<SelectCustomerComman
             _currentUser.Email,
             membership.LanguageId);
 
-        await _tokenWriter.SaveAsync(
-            userId, customerId, profileId, token.RefreshToken, token.ExpiresAt.AddDays(30), membership.LanguageId);
+        await _repository.SaveRefreshTokenAsync(
+            userId, customerId, token.RefreshToken, token.ExpiresAt.AddDays(30), membership.LanguageId);
 
         return Result<SelectCustomerResponse>.Ok(
             SelectCustomerResponse.WithToken(token.AccessToken, token.ExpiresAt, token.RefreshToken));

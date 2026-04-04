@@ -1,14 +1,10 @@
 {
-  "phase": "profile_hardening",
-  "current_step": 16,
+  "phase": "identity_refactor",
+  "current_step": 11,
   "status": "ready",
   "allowed_next_actions": ["execute_current_step", "validate_current_step"],
   "forbidden_actions": ["skip_step", "combine_steps", "modify_plan"],
-  "completed_steps": [1, 2, 3, 4, 5, "6", "6b", 7, 8, 9, 10, 11, 12, 13, 14, 15],
-  "active_violations": [],
-  "foundation_complete": true,
-  "foundation_complete_date": "2026-04-02",
-  "next_phase": "localization_or_next_domain",
+  "completed_steps": [1, 2, 3, 4, 5, "6", "6b", 7, 8, 9, 10],
   "execution_guard": {
     "one_step_at_a_time": true,
     "require_manual_continue": true,
@@ -215,144 +211,6 @@
         "Naming pattern: MethodName_StateUnderTest_ExpectedBehavior applied throughout",
         "AuthTestDataBuilder: comment added above InsertUserCustomerMembershipAsync documenting that LanguageId=1 default is test-only — production must always pass explicit LanguageId",
         "No production code changes"
-      ]
-    },
-    {
-      "step": 11,
-      "description": "SelectProfile vertical slice — resolve ProfileId from Profiles table, eliminate ProfileId(0) placeholder from all auth flows",
-      "migration": "V008_Add_ProfileId_to_UserRefreshTokens.sql",
-      "files_created": [
-        "src/GreenAi.Api/Database/Migrations/V008_Add_ProfileId_to_UserRefreshTokens.sql",
-        "src/GreenAi.Api/SharedKernel/Auth/ProfileSummary.cs",
-        "src/GreenAi.Api/Features/Auth/SelectProfile/SelectProfileCommand.cs",
-        "src/GreenAi.Api/Features/Auth/SelectProfile/SelectProfileResponse.cs",
-        "src/GreenAi.Api/Features/Auth/SelectProfile/ISelectProfileRepository.cs",
-        "src/GreenAi.Api/Features/Auth/SelectProfile/SelectProfileRepository.cs",
-        "src/GreenAi.Api/Features/Auth/SelectProfile/SelectProfileHandler.cs",
-        "src/GreenAi.Api/Features/Auth/SelectProfile/SelectProfileEndpoint.cs",
-        "src/GreenAi.Api/Features/Auth/SelectProfile/GetAvailableProfiles.sql",
-        "src/GreenAi.Api/Features/Auth/SelectProfile/SaveRefreshToken.sql",
-        "src/GreenAi.Api/Features/Auth/Login/GetProfiles.sql",
-        "src/GreenAi.Api/Features/Auth/SelectCustomer/GetProfiles.sql",
-        "tests/GreenAi.Tests/Features/Auth/SelectProfileHandlerTests.cs",
-        "tests/GreenAi.Tests/Features/Auth/SelectProfileRepositoryTests.cs"
-      ],
-      "completed_at": "2026-04-02",
-      "tests_green": 76,
-      "build_warnings": 0,
-      "notes": [
-        "Profile model (V009): many-to-many via ProfileUserMappings — Profiles.UserId FK removed. SUPERSEDED by Step 14 (Profile Hardening Phase 2.B).",
-        "V008: ALTER TABLE UserRefreshTokens ADD ProfileId INT NOT NULL DEFAULT 0 — DEFAULT 0 covers pre-migration rows only. New application code must always supply a real ProfileId > 0.",
-        "SelectProfile endpoint: POST /api/auth/select-profile (.RequireAuthorization())",
-        "Handler: 0 profiles→PROFILE_NOT_FOUND, 1→auto-resolve, >1 no cmd.ProfileId→NeedsProfileSelection, explicit valid→select, explicit invalid→PROFILE_ACCESS_DENIED",
-        "ProfileId > 0 guaranteed before JwtTokenService.CreateToken in all three entry flows (Login, SelectCustomer, SelectProfile)",
-        "ISelectCustomerRepository.cs was stale (old signature) — fixed: added GetProfilesAsync + ProfileId param; duplicate interface removed from SelectCustomerRepository.cs",
-        "LoginRepositoryTests.SaveRefreshTokenAsync test updated to pass ProfileId (was missing required param)",
-        "SelectCustomerHandlerTests fully rewritten (8 tests incl. multi-profile + no-profile cases)",
-        "SelectCustomerRepositoryTests fully rewritten (removed DefaultProfileId COALESCE test, added GetProfilesAsync tests)",
-        "AuthTestDataBuilder.InsertTokenOptions gains ProfileId (default 0 for V008 migration path tests)"
-      ]
-    },
-    {
-      "step": 12,
-      "description": "IRequireProfile marker + RequireProfileBehavior — enforce ProfileId > 0 at pipeline level",
-      "files_created": [
-        "src/GreenAi.Api/SharedKernel/Pipeline/RequireProfileBehavior.cs",
-        "tests/GreenAi.Tests/SharedKernel/Pipeline/RequireProfileBehaviorTests.cs"
-      ],
-      "files_modified": [
-        "src/GreenAi.Api/SharedKernel/Auth/ICurrentUser.cs",
-        "src/GreenAi.Api/Program.cs",
-        "ai-governance/13_VALIDATION_RULES.json"
-      ],
-      "completed_at": "2026-04-02",
-      "tests_green": 76,
-      "build_warnings": 0,
-      "notes": [
-        "IRequireProfile marker created in RequireProfileBehavior.cs (same file — mirrors IRequireAuthentication pattern)",
-        "RequireProfileBehavior<TRequest,TResponse>: blocks requests where ProfileId.Value <= 0, returns Result<T>.Fail('PROFILE_NOT_SELECTED'). Auth commands exempt (no IRequireProfile).",
-        "Pipeline order: LoggingBehavior → AuthorizationBehavior → RequireProfileBehavior → ValidationBehavior",
-        "ICurrentUser.cs: XML comments added documenting all runtime guarantees and forbidden states",
-        "13_VALIDATION_RULES.json: profile_required_before_protected_operations promoted from advisory_until_step_12 → mandatory. Added jwt_must_never_contain_unresolved_profile, no_require_profile_on_auth_commands.",
-        "No business commands exist yet — IRequireProfile will be applied as domain features are implemented (Step 13+)",
-        "Option A (MediatR pipeline behavior) chosen over Option B (middleware): clean integration with existing behavior chain, no ASP.NET dependencies in behavior, consistent with AuthorizationBehavior pattern",
-        "RequireProfileBehaviorTests: 7 unit tests — ProfileId=0 blocked, ProfileId<0 blocked, valid ProfileId passes, no-IRequireProfile always passes (3 InlineData variants)"
-      ]
-    },
-    {
-      "step": 13,
-      "description": "Audit and confirm zero profile bypass patterns; update governance/docs to reflect Steps 11+12 completion",
-      "files_modified": [
-        "src/GreenAi.Api/Features/Auth/RefreshToken/RefreshTokenHandler.cs",
-        "ai-governance/00_SYSTEM_RULES.json",
-        "docs/CODE-REVIEW.md"
-      ],
-      "completed_at": "2026-04-02",
-      "tests_green": 76,
-      "build_warnings": 0,
-      "notes": [
-        "AUDIT RESULT: Zero bypass patterns found in production code after Steps 11+12.",
-        "No ProfileId == 0 conditionals allowing execution. No COALESCE. No DefaultProfileId. No optional/nullable ProfileId parameters.",
-        "Single ProfileId source confirmed: ICurrentUser.ProfileId (from JWT claim via HttpContextCurrentUser) is the sole runtime source.",
-        "RefreshTokenHandler comment updated: pre-Step-11 tokens (V008 DEFAULT 0) pass ProfileId = 0 through rotation. This is safe — RequireProfileBehavior blocks all protected operations. No conditional bypass exists.",
-        "00_SYSTEM_RULES.json: VIOLATION-005, 006, 007 marked RESOLVED. enforcement_step updated to COMPLETE.",
-        "CODE-REVIEW.md: pipeline order updated (RequireProfileBehavior added), Profile hardening removed from 'Not Yet Implemented', VIOLATION-005/006/007 marked RESOLVED.",
-        "Profile hardening phase is now complete (Steps 11–13). Step 14 (align JWT/runtime profile source) is next."
-      ]
-    },
-    {
-      "step": 14,
-      "description": "Identity & Access foundation regression gate — full audit + documentation closeout",
-      "files_modified": [
-        "docs/CODE-REVIEW.md",
-        "docs/DECISIONS.md",
-        "ai-governance/13_VALIDATION_RULES.json",
-        "ai-governance/11_EXECUTION_STATE.json"
-      ],
-      "foundation_status": "FOUNDATION_COMPLETE",
-      "completed_at": "2026-04-02",
-      "tests_green": 76,
-      "build_warnings": 0,
-      "notes": [
-        "REGRESSION AUDIT RESULT: Zero forbidden patterns in production code. Two migration comment matches (V005/V007) are historical only.",
-        "ICurrentUser is the sole runtime auth context. ITenantContext is a permitted thin delegate over ICurrentUser.CustomerId — no feature handler uses it yet.",
-        "No changes to production code required — foundation was already clean after Steps 11–13.",
-        "13_VALIDATION_RULES.json: icurrentuser_sole_auth_contract rule added.",
-        "CODE-REVIEW.md: section 9 'Identity & Access Foundation — Complete Criteria' added with invariants table.",
-        "DECISIONS.md: [2026-04-02] foundation closeout entry added at top.",
-        "Localization and downstream domains are UNBLOCKED. Next step: Step 15 — Languages table + service."
-      ]
-    },
-    {
-      "step": 15,
-      "description": "Profile model refactor — Profiles.UserId FK removed; access via ProfileUserMappings (many-to-many)",
-      "migration": "V009_ProfileUserMappings.sql",
-      "files_created": [
-        "src/GreenAi.Api/Database/Migrations/V009_ProfileUserMappings.sql",
-        "src/GreenAi.DB/Tables/ProfileUserMappings.sql"
-      ],
-      "files_modified": [
-        "src/GreenAi.DB/Tables/Profiles.sql",
-        "src/GreenAi.DB/GreenAi.DB.sqlproj",
-        "src/GreenAi.Api/Features/Auth/Login/GetProfiles.sql",
-        "src/GreenAi.Api/Features/Auth/SelectCustomer/GetProfiles.sql",
-        "src/GreenAi.Api/Features/Auth/SelectProfile/GetAvailableProfiles.sql",
-        "tests/GreenAi.Tests/Features/Auth/AuthTestDataBuilder.cs",
-        "tests/GreenAi.Tests/Features/Auth/SelectProfileRepositoryTests.cs",
-        "tests/GreenAi.Tests/Features/Auth/SelectCustomerRepositoryTests.cs"
-      ],
-      "completed_at": "2026-04-01",
-      "tests_green": null,
-      "build_warnings": 0,
-      "notes": [
-        "SUPERSEDES step 11 note: 'Profile model confirmed: direct Profiles.UserId FK'. That decision is now REVERSED.",
-        "V009: CREATE ProfileUserMappings (ProfileId, UserId) PK; FKs to Profiles + Users. Backfill from Profiles.UserId. Drop FK. Drop Profiles.UserId column. Fully idempotent.",
-        "Three GetProfiles/GetAvailableProfiles SQL files rewritten: FROM Profiles p INNER JOIN ProfileUserMappings m ON m.ProfileId = p.Id WHERE m.UserId = @UserId AND p.CustomerId = @CustomerId.",
-        "AuthTestDataBuilder.InsertProfileAsync: Profiles INSERT no longer writes UserId column; mapping row written to ProfileUserMappings after profile insert.",
-        "AuthTestDataBuilder.InsertProfileUserMappingAsync(UserId, profileId) added for many-to-many test setup.",
-        "New tests (×2 per repository test file): ProfileExistsButNoMappingForUser_ReturnsEmpty, ProfileMappedToMultipleUsers_AllUsersCanAccess.",
-        "No handler C# code changes required — repositories unchanged in signature; SQL alone enforces access.",
-        "SelectProfileHandler access validation (profiles.FirstOrDefault) remains correct — mapping-join SQL guarantees only accessible profiles are returned."
       ]
     }
   ]

@@ -180,4 +180,76 @@ public sealed class PermissionServiceTests : IAsyncLifetime
         Assert.True(await CreateService().DoesProfileHaveRoleAsync(new ProfileId(profileId), ProfileRoleNames.CanSendByVoice));
         Assert.False(await CreateService().DoesProfileHaveRoleAsync(new ProfileId(profileId), ProfileRoleNames.HaveNoSendRestrictions));
     }
+
+    // ===================================================================
+    // CanUserAccessCustomerAsync
+    // ===================================================================
+
+    [Fact]
+    public async Task CanUserAccessCustomerAsync_ActiveMembership_ReturnsTrue()
+    {
+        var customerId = await _builder.InsertCustomerAsync();
+        var userId     = await _builder.InsertUserAsync();
+        await _builder.InsertUserCustomerMembershipAsync(userId, customerId);
+
+        var result = await CreateService().CanUserAccessCustomerAsync(userId, customerId);
+
+        Assert.True(result);
+    }
+
+    [Fact]
+    public async Task CanUserAccessCustomerAsync_NoMembership_ReturnsFalse()
+    {
+        var customerId = await _builder.InsertCustomerAsync();
+        var userId     = await _builder.InsertUserAsync();
+        // No membership inserted
+
+        var result = await CreateService().CanUserAccessCustomerAsync(userId, customerId);
+
+        Assert.False(result);
+    }
+
+    [Fact]
+    public async Task CanUserAccessCustomerAsync_OtherCustomer_ReturnsFalse()
+    {
+        var customerId      = await _builder.InsertCustomerAsync();
+        var otherCustomerId = await _builder.InsertCustomerAsync("Other Customer");
+        var userId          = await _builder.InsertUserAsync();
+        await _builder.InsertUserCustomerMembershipAsync(userId, customerId);
+
+        var result = await CreateService().CanUserAccessCustomerAsync(userId, otherCustomerId);
+
+        Assert.False(result);
+    }
+
+    // ===================================================================
+    // CanUserAccessProfileAsync
+    // ===================================================================
+
+    [Fact]
+    public async Task CanUserAccessProfileAsync_MappingExists_ReturnsTrue()
+    {
+        var customerId = await _builder.InsertCustomerAsync();
+        var userId     = await _builder.InsertUserAsync();
+        var profileId  = await _builder.InsertProfileAsync(customerId, userId);
+        // InsertProfileAsync already creates the ProfileUserMapping
+
+        var result = await CreateService().CanUserAccessProfileAsync(userId, new ProfileId(profileId));
+
+        Assert.True(result);
+    }
+
+    [Fact]
+    public async Task CanUserAccessProfileAsync_NoMapping_ReturnsFalse()
+    {
+        var customerId = await _builder.InsertCustomerAsync();
+        var userId     = await _builder.InsertUserAsync();
+        var otherUser  = await _builder.InsertUserAsync(new() { Email = "other@test.local" });
+        var profileId  = await _builder.InsertProfileAsync(customerId, otherUser);
+        // userId has no mapping to this profile
+
+        var result = await CreateService().CanUserAccessProfileAsync(userId, new ProfileId(profileId));
+
+        Assert.False(result);
+    }
 }

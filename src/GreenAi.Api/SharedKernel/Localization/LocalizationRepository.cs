@@ -37,8 +37,7 @@ public sealed class LocalizationRepository : ILocalizationRepository
         var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         foreach (var (name, value) in rows)
         {
-            var key = name.ToUpperInvariant();
-            result.TryAdd(key, value);
+            result.TryAdd(name, value);
         }
 
         return result;

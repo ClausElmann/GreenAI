@@ -28,4 +28,20 @@ public sealed class PermissionService : IPermissionService
             new { ProfileId = profileId.Value, RoleName = roleName });
         return result ?? false;
     }
+
+    public async Task<bool> CanUserAccessCustomerAsync(UserId userId, CustomerId customerId)
+    {
+        var result = await _db.QuerySingleOrDefaultAsync<bool?>(
+            SqlLoader.Load<PermissionService>("CanUserAccessCustomer.sql"),
+            new { UserId = userId.Value, CustomerId = customerId.Value });
+        return result ?? false;
+    }
+
+    public async Task<bool> CanUserAccessProfileAsync(UserId userId, ProfileId profileId)
+    {
+        var result = await _db.QuerySingleOrDefaultAsync<bool?>(
+            SqlLoader.Load<PermissionService>("CanUserAccessProfile.sql"),
+            new { UserId = userId.Value, ProfileId = profileId.Value });
+        return result ?? false;
+    }
 }
