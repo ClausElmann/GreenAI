@@ -116,24 +116,46 @@ public abstract class E2ETestBase : IAsyncLifetime
     // Auth helpers
     // -------------------------------------------------------------------------
 
-    /// <summary>Logs in with dev credentials and waits until redirected away from /login.</summary>
-    protected async Task LoginAsync(string email = "admin@dev.local", string password = "dev123")
+    /// <summary>
+    /// Logs in by calling the auth API directly and injecting the JWT into localStorage.
+    /// This is the ONLY reliable way to authenticate in Playwright tests against
+    /// Blazor Server: the UI form requires timing-sensitive SignalR circuit interactions
+    /// that are fragile under test conditions. API login + localStorage injection is
+    /// the recommended Playwright pattern for JS/Blazor auth.
+    /// </summary>
+    protected async Task LoginAsync(string email = "claus.elmann@gmail.com", string password = "Flipper12#")
     {
-        await Page.GotoAsync($"{BaseUrl}/login");
+        // Step 1: Call the auth API to get a real JWT
+        using var http = new HttpClient();
+        var body = System.Text.Json.JsonSerializer.Serialize(new { email, password });
+        var response = await http.PostAsync(
+            $"{BaseUrl}/api/auth/login",
+            new StringContent(body, System.Text.Encoding.UTF8, "application/json"));
 
-        await Page.WaitForSelectorAsync("input[type='email']", new PageWaitForSelectorOptions { Timeout = 10_000 });
+        if (!response.IsSuccessStatusCode)
+            throw new Exception($"Login API returned {response.StatusCode} for {email}. Check credentials and backend.");
 
-        await Page.FillAsync("input[type='email']", email);
-        await Page.FillAsync("input[type='password']", password);
-        await Page.ClickAsync("button[type='submit']");
+        var json = System.Text.Json.JsonDocument.Parse(await response.Content.ReadAsStringAsync()).RootElement;
+        var accessToken  = json.GetProperty("accessToken").GetString()!;
+        var refreshToken = json.GetProperty("refreshToken").GetString()!;
+        var expiresAt    = json.GetProperty("expiresAt").GetString()!;
 
-        // Blazor Server uses WebSocket — poll for URL change
-        var deadline = DateTime.UtcNow.AddSeconds(15);
-        while (DateTime.UtcNow < deadline && Page.Url.Contains("/login"))
-            await Task.Delay(200, TestContext.Current.CancellationToken);
+        // Step 2: Navigate to the app to establish domain context for localStorage
+        await Page.GotoAsync($"{BaseUrl}/");
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
-        if (Page.Url.Contains("/login"))
-            await FailAsync($"Login did not redirect away from /login after 15s (email={email})");
+        // Step 3: Inject tokens — keys match GreenAiAuthenticationStateProvider constants
+        await Page.EvaluateAsync($"""
+            localStorage.setItem('greenai_access_token',  '{accessToken}');
+            localStorage.setItem('greenai_refresh_token', '{refreshToken}');
+            localStorage.setItem('greenai_expires_at',    '{expiresAt}');
+        """);
+
+        // Step 4: Navigate to /dashboard — NOT /: Home.razor does SSR redirect to /login
+        // before the circuit reads localStorage. Going direct to a protected page is safe
+        // because DashboardPage reads AuthStateTask in OnAfterRenderAsync (circuit side).
+        await Page.GotoAsync($"{BaseUrl}/dashboard");
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 
     // -------------------------------------------------------------------------

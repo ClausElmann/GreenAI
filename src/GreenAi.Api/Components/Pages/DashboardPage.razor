@@ -1,0 +1,26 @@
+@page "/dashboard"
+@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager Nav
+@inject ILocalizationContext Loc
+
+<AppShell Title="@Loc.Get("nav.Home")"
+          IsLoading="false">
+
+    <MudText Typo="Typo.body1" Color="Color.Secondary" data-testid="dashboard-placeholder">
+        @Loc.Get("page.dashboard.Placeholder")
+    </MudText>
+
+</AppShell>
+
+@code {
+    [CascadingParameter] private Task<AuthenticationState> AuthStateTask { get; set; } = null!;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        var authState = await AuthStateTask;
+        if (authState.User.Identity?.IsAuthenticated != true)
+            Nav.NavigateTo("/login");
+    }
+}

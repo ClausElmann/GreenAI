@@ -29,7 +29,7 @@
 | "audit" / "audit log" / "log handling" / "trail"       | `read_file docs/SSOT/backend/patterns/audit-log-pattern.md`               | V016_AuditLog, ExecuteInTransactionAsync, action_catalog |
 | "anti-pattern" / "forkert kode" / "hvad må jeg ikke"   | `read_file docs/SSOT/governance/ANTI_PATTERN_REGISTRY.md`                 | APR_001-APR_009 catalog             |
 | "ny migration" / "ny tabel" / "schema"                 | `read_file docs/SSOT/database/patterns/migration-pattern.md`              | V0XX_Navn.sql, DbUp                 |
-| "ny label" / "lokalisering" / "tekst"                  | `read_file docs/SSOT/localization/guides/label-creation-guide.md`         | Aldrig hardcode strings             |
+| "ny label" / "lokalisering" / "tekst"                  | `read_file docs/SSOT/localization/guides/label-creation-guide.md`         | ENESTE lovlige metode: `$labels=@(...); & scripts/localization/Add-Labels.ps1 -Labels $labels` → `Sync-Labels.ps1`. Aldrig SQL, aldrig .ps1 fil på disk, aldrig direkte mod dev DB |
 | "ny test" / "skriv test" / "tilføj test"               | `read_file docs/SSOT/testing/testing-strategy.md`                         | Layer: http_integration PRIMARY     |
 | "respawn" / "db reset" / "TablesToIgnore" / "fixture"  | `read_file docs/SSOT/testing/guides/respawn-guide.md`                     | Ignored tables catalog, seed rules  |
 | "permission" / "IPermissionService" / "UserRole" / "ProfileRole" | `read_file docs/SSOT/identity/permissions.md`                    | Two systems: UserRoles (global) vs ProfileRoles (operational) |

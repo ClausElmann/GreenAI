@@ -1,30 +1,14 @@
 @page "/"
-@using GreenAi.Api.SharedKernel.Localization
-@inject ILocalizationContext Loc
+@* DEPRECATED — replaced by /dashboard. Redirects immediately. *@
+@inject NavigationManager Nav
+@inject ICurrentUser CurrentUser
+@using GreenAi.Api.SharedKernel.Auth
 
-<PageTitle>@Loc.Get("nav.Home") — GreenAi</PageTitle>
+@code {
+    protected override void OnInitialized()
+    {
+        var target = CurrentUser.IsAuthenticated ? "/dashboard" : "/login";
+        Nav.NavigateTo(target, replace: true);
+    }
+}
 
-<MudText Typo="Typo.h5" Class="mb-6">@Loc.Get("nav.Home")</MudText>
-
-<MudGrid>
-    <MudItem xs="12" sm="6" md="4">
-        <MudPaper Elevation="2" Class="pa-6">
-            <MudStack Spacing="3">
-                <MudIcon Icon="@Icons.Material.Filled.BusinessCenter"
-                         Size="Size.Large"
-                         Color="Color.Primary" />
-                <MudText Typo="Typo.h6">@Loc.Get("nav.CustomerAdmin")</MudText>
-                <MudText Typo="Typo.body2" Color="Color.Secondary">
-                    @Loc.Get("page.home.CustomerAdminDescription")
-                </MudText>
-                <MudButton Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           Href="/customer-admin"
-                           FullWidth="true"
-                           data-testid="go-to-customer-admin">
-                    @Loc.Get("shared.OpenButton")
-                </MudButton>
-            </MudStack>
-        </MudPaper>
-    </MudItem>
-</MudGrid>

@@ -1,0 +1,26 @@
+@page "/send/wizard"
+@layout WizardLayout
+@using GreenAi.Api.Components.Layout
+@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager Nav
+@inject ILocalizationContext Loc
+
+<MudText Typo="Typo.h5" Class="mb-4" data-testid="wizard-heading">
+    @Loc.Get("nav.Send")
+</MudText>
+<MudText Typo="Typo.body2" Color="Color.Secondary" data-testid="wizard-placeholder">
+    @Loc.Get("page.wizard.Placeholder")
+</MudText>
+
+@code {
+    [CascadingParameter] private Task<AuthenticationState> AuthStateTask { get; set; } = null!;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        var authState = await AuthStateTask;
+        if (authState.User.Identity?.IsAuthenticated != true)
+            Nav.NavigateTo("/login");
+    }
+}

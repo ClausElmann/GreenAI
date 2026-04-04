@@ -1,0 +1,196 @@
+@* OverlayNav — full-screen overlay navigation panel.
+   Opens when AppState.IsOverlayNavOpen = true.
+   Closes on: route navigation, ESC key, click-outside.
+   NO sidebar — positioned absolutely over content.
+   Role filtering: nav_visible_for from ui-navigation-schema.json.
+   Active route: MudNavLink applies mud-nav-link-active automatically.
+*@
+
+@using GreenAi.Api.SharedKernel.State
+@using GreenAi.Api.SharedKernel.Permissions
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AppState AppState
+@inject ILocalizationContext Loc
+@inject NavigationManager Nav
+@inject IPermissionService Permissions
+@inject BlazorPrincipalHolder PrincipalHolder
+@inject ICurrentUser CurrentUser
+@implements IDisposable
+
+@if (AppState.IsOverlayNavOpen)
+{
+    @* Backdrop — click-outside closes nav *@
+    <div class="overlay-nav-backdrop"
+         @onclick="AppState.CloseOverlayNav"
+         data-testid="overlay-nav-backdrop"></div>
+
+    @* Panel *@
+    <div class="overlay-nav-panel"
+         data-testid="overlay-nav-panel"
+         tabindex="-1"
+         @ref="_panelRef"
+         @onkeydown="HandleKeyDown">
+
+        <div class="overlay-nav-header">
+            <MudText Typo="Typo.subtitle1"><b>GreenAI</b></MudText>
+            <MudIconButton Icon="@Icons.Material.Filled.Close"
+                           Color="Color.Inherit"
+                           OnClick="AppState.CloseOverlayNav"
+                           data-testid="overlay-nav-close"
+                           aria-label="@Loc.Get("nav.CloseMenu")" />
+        </div>
+
+        <MudDivider Class="mb-2" />
+
+        @* Section: Send *@
+        <div class="overlay-nav-section">
+            <MudNavLink Href="/dashboard"
+                        Icon="@Icons.Material.Filled.Dashboard"
+                        Match="NavLinkMatch.All"
+                        OnClick="AppState.CloseOverlayNav"
+                        data-testid="nav-dashboard">
+                @Loc.Get("nav.Home")
+            </MudNavLink>
+            <MudNavLink Href="/send/wizard"
+                        Icon="@Icons.Material.Filled.Send"
+                        Match="NavLinkMatch.Prefix"
+                        OnClick="AppState.CloseOverlayNav"
+                        data-testid="nav-send-wizard">
+                @Loc.Get("nav.Send")
+            </MudNavLink>
+        </div>
+
+        <MudDivider Class="my-2" />
+
+        @* Section: Messages *@
+        <div class="overlay-nav-section">
+            <MudNavLink Href="/status"
+                        Icon="@Icons.Material.Filled.CheckCircle"
+                        Match="NavLinkMatch.Prefix"
+                        OnClick="AppState.CloseOverlayNav"
+                        data-testid="nav-status">
+                @Loc.Get("nav.Status")
+            </MudNavLink>
+            <MudNavLink Href="/drafts"
+                        Icon="@Icons.Material.Filled.Edit"
+                        Match="NavLinkMatch.Prefix"
+                        OnClick="AppState.CloseOverlayNav"
+                        data-testid="nav-drafts">
+                @Loc.Get("nav.Drafts")
+            </MudNavLink>
+        </div>
+
+        <MudDivider Class="my-2" />
+
+        @* Section: Account + Admin (authenticated) *@
+        <AuthorizeView>
+            <Authorized>
+                <div class="overlay-nav-section">
+                    <MudNavLink Href="/user/profile"
+                                Icon="@Icons.Material.Filled.Person"
+                                Match="NavLinkMatch.Prefix"
+                                OnClick="AppState.CloseOverlayNav"
+                                data-testid="nav-user-profile">
+                        @Loc.Get("nav.UserProfile")
+                    </MudNavLink>
+
+                    @* nav_visible_for: ["CustomerSetup", "ManageUsers", "ManageProfiles"] *@
+                    @if (_showCustomerAdmin)
+                    {
+                        <MudNavLink Href="/customer-admin"
+                                    Icon="@Icons.Material.Filled.BusinessCenter"
+                                    Match="NavLinkMatch.Prefix"
+                                    OnClick="AppState.CloseOverlayNav"
+                                    data-testid="nav-customer-admin">
+                            @Loc.Get("nav.CustomerAdmin")
+                        </MudNavLink>
+                    }
+
+                    @* nav_visible_for: ["SuperAdmin", "ManageUsers"] *@
+                    @if (_showAdminUsers)
+                    {
+                        <MudNavLink Href="/admin/users"
+                                    Icon="@Icons.Material.Filled.ManageAccounts"
+                                    Match="NavLinkMatch.Prefix"
+                                    OnClick="AppState.CloseOverlayNav"
+                                    data-testid="nav-admin-users">
+                            @Loc.Get("nav.AdminUsers")
+                        </MudNavLink>
+                    }
+                </div>
+            </Authorized>
+        </AuthorizeView>
+
+    </div>
+}
+
+@code {
+    [CascadingParameter] private Task<AuthenticationState> AuthStateTask { get; set; } = null!;
+
+    // Role visibility flags — derived from nav_visible_for in ui-navigation-schema.json.
+    // Default false — items hidden until roles confirm visibility (prevents permission escalation flicker).
+    private bool _showCustomerAdmin; // CustomerSetup | ManageUsers | ManageProfiles
+    private bool _showAdminUsers;    // SuperAdmin | ManageUsers
+
+    private ElementReference _panelRef;
+    private bool             _wasOpen;
+
+    protected override void OnInitialized()
+    {
+        AppState.StateChanged += OnStateChanged;
+        Nav.LocationChanged   += OnLocationChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Auto-focus the panel when it opens — enables ESC to reach HandleKeyDown.
+        if (AppState.IsOverlayNavOpen && !_wasOpen)
+        {
+            _wasOpen = true;
+            try { await _panelRef.FocusAsync(); } catch { /* best-effort */ }
+        }
+        else if (!AppState.IsOverlayNavOpen)
+        {
+            _wasOpen = false;
+        }
+
+        if (!firstRender) return;
+
+        var authState = await AuthStateTask;
+        if (authState.User.Identity?.IsAuthenticated != true) return;
+
+        PrincipalHolder.Set(authState.User);
+
+        var userId       = CurrentUser.UserId;
+        var isSuperAdmin = await Permissions.IsUserSuperAdminAsync(userId);
+
+        // nav_visible_for: ["SuperAdmin", "ManageUsers"]
+        _showAdminUsers = isSuperAdmin
+            || await Permissions.DoesUserHaveRoleAsync(userId, UserRoleNames.ManageUsers);
+
+        // nav_visible_for: ["CustomerSetup", "ManageUsers", "ManageProfiles"]
+        _showCustomerAdmin = isSuperAdmin
+            || await Permissions.DoesUserHaveRoleAsync(userId, UserRoleNames.CustomerSetup)
+            || await Permissions.DoesUserHaveRoleAsync(userId, UserRoleNames.ManageUsers)
+            || await Permissions.DoesUserHaveRoleAsync(userId, UserRoleNames.ManageProfiles);
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+        => InvokeAsync(AppState.CloseOverlayNav);
+
+    private void HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key is "Escape")
+            AppState.CloseOverlayNav();
+    }
+
+    public void Dispose()
+    {
+        AppState.StateChanged -= OnStateChanged;
+        Nav.LocationChanged   -= OnLocationChanged;
+    }
+}

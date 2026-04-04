@@ -51,11 +51,12 @@
       ]
     },
     "ui": {
-      "description": "Blazor pages/components, MudBlazor conventions, UI navigation model",
+      "description": "Blazor pages/components, MudBlazor conventions, UI navigation model, layout architecture",
       "patterns": [
         "blazor-component-pattern",
         "mudblazor-conventions",
-        "ui-navigation-schema"
+        "ui-navigation-schema",
+        "greenai-ui-architecture"
       ]
     },
     "governance": {
@@ -281,6 +282,14 @@
       "applies_to": ["Components/Pages/**/*.razor", "Program.cs"],
       "enforcement": "manual update when new page is added"
     },
+    "greenai-ui-architecture": {
+      "path": "docs/SSOT/ui/greenai-ui-architecture.md",
+      "type": "architecture",
+      "red_threads": ["auth_flow"],
+      "triggers": ["ui arkitektur", "ui", "navigation", "blazor layout", "menu", "topbar", "overlay nav", "sidebar", "AppShell", "layout struktur", "WizardLayout", "CommandPalette"],
+      "applies_to": ["Components/Layout/**/*.razor", "Components/Shared/*.razor", "SharedKernel/State/*.cs"],
+      "enforcement": "forbidden-patterns section — no MudDrawer Persistent/Responsive in MainLayout"
+    },
     "red-thread-registry": {
       "path": "docs/SSOT/governance/RED_THREAD_REGISTRY.md",
       "type": "registry",
@@ -400,6 +409,14 @@
       "triggers": ["db integration test", "database test", "integration test DB", "DatabaseFixture", "SQL integration"],
       "applies_to": ["tests/GreenAi.Tests/**/*Tests.cs"],
       "enforcement": "DatabaseFixture + Respawn per test"
+    },
+    "visual-analysis": {
+      "path": "docs/SSOT/testing/visual-analysis.md",
+      "type": "guide",
+      "red_threads": [],
+      "triggers": ["visual analysis", "screenshot analysis", "ui qa", "playwright screenshots", "analyze UI screenshots", "export screenshots", "analysis-pack", "VisualAnalysisExporter", "ExportVisualAnalysisPackage"],
+      "applies_to": ["tests/GreenAi.E2E/VisualAnalysis/**", "tests/GreenAi.E2E/Visual/**"],
+      "enforcement": "Run visual_tests before export"
     }
   },
 
@@ -430,7 +447,10 @@
     "AuditLog":                   "audit-log-pattern",
     "APR_":                       "anti-pattern-registry",
     "STOP_":                      "execution-protocol",
-    "EXEC_":                      "execution-memory"
+    "EXEC_":                       "execution-memory",
+    "VisualAnalysisExporter":      "visual-analysis",
+    "ExportVisualAnalysisPackage": "visual-analysis",
+    "analysis-pack":               "visual-analysis"
   },
 
   "stop_conditions": {

@@ -49,13 +49,13 @@
                     <MudAlert Severity="Severity.Error" Class="mb-4">@_errorMessage</MudAlert>
                 }
 
-                <MudButton ButtonType="ButtonType.Submit"
-                           Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           FullWidth="true"
-                           Disabled="_loading"
-                           data-testid="login-submit"
-                           Class="mt-2">
+        <MudButton ButtonType="ButtonType.Submit"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   FullWidth="true"
+                   Disabled="_loading"
+                   data-testid="login-submit"
+                   Class="mt-2">
                     @if (_loading)
                     {
                         <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
@@ -71,16 +71,37 @@
     </MudItem>
 </MudGrid>
 
+@* Blazor circuit readiness marker — only rendered after OnAfterRenderAsync.
+   Tests wait for this element before interacting so they know event handlers are wired. *@
+@if (_circuitReady)
+{
+    <span id="blazor-circuit-ready" style="display:none" data-testid="blazor-circuit-ready"></span>
+}
+
 @code {
     private readonly LoginModel _model = new();
     private bool _loading;
     private bool _showPassword;
     private string? _errorMessage;
+    private bool _circuitReady;
 
     protected override async Task OnInitializedAsync()
     {
         // Login page uses EmptyLayout (no MainLayout), so labels must be loaded here.
         await Loc.EnsureLoadedAsync(1); // Default Danish — user not authenticated yet
+    }
+
+    // OnAfterRenderAsync fires ONLY via the Blazor circuit (never during SSR pre-render).
+    // Setting _circuitReady here gives tests a reliable DOM marker to wait for before
+    // interacting, ensuring @bind-Value and form event handlers are fully wired.
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !_circuitReady)
+        {
+            _circuitReady = true;
+            StateHasChanged();
+        }
+        return Task.CompletedTask;
     }
 
     private async Task HandleLoginAsync()

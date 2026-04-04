@@ -27,8 +27,10 @@ public sealed class HttpContextCurrentUser : ICurrentUser
 
     // HTTP API requests → HttpContext.User (always available, has Bearer token claims)
     // Blazor Server circuits → BlazorPrincipalHolder (set by the component before Mediator.Send)
+    // Note: BlazorPrincipalHolder takes priority when set — in Blazor circuits, HttpContext.User
+    // is the unauthenticated SSR request principal (no Bearer token), not the interactive user.
     private ClaimsPrincipal? Principal =>
-        _accessor.HttpContext?.User ?? _blazorHolder.Current;
+        _blazorHolder.Current ?? _accessor.HttpContext?.User;
 
     /// <summary>Returns an authenticated principal, or throws if no authenticated context is available.</summary>
     private ClaimsPrincipal AuthenticatedPrincipal =>

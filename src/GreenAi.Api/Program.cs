@@ -101,6 +101,7 @@ try
     builder.Services.AddHttpContextAccessor();
     builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.Section));
     builder.Services.AddScoped<BlazorPrincipalHolder>();
+    builder.Services.AddScoped<GreenAi.Api.SharedKernel.State.AppState>();
     builder.Services.AddScoped<ICurrentUser, HttpContextCurrentUser>();
     builder.Services.AddScoped<ITenantContext, CurrentUserTenantContext>();
     builder.Services.AddScoped<JwtTokenService>();

@@ -119,6 +119,19 @@ Er teksten et generisk UI-koncept (Save, Cancel, Delete, Status...)?
 
 ## Step-by-Step: Adding a New Label
 
+### ABSOLUT REGEL — Aldrig direkte SQL mod dev DB
+
+```
+❌ FORBUDT: INSERT direkte mod GreenAI_DEV
+❌ FORBUDT: .ps1 filer på disk til label-oprettelse
+❌ FORBUDT: SQL migrations (.sql) til labels
+
+✅ KORREKT:  POST via API mod live (itgain.dk) — inline i terminal
+✅ KORREKT:  Sync ned til dev via Sync-Labels.ps1 efterfølgende
+```
+
+---
+
 ### Step 1 — Check if label already exists
 
 ```
@@ -127,25 +140,29 @@ See: docs/SSOT/localization/reference/shared-labels-reference.md
 
 If existing — use it. Do NOT create a duplicate.
 
-### Step 2 — Create a DB migration
+### Step 2 — Post labels til live via inline terminal (ALDRIG gemme som fil)
 
-```sql
--- V017_NewFeatureLabels.sql (or append to existing pending migration)
-INSERT INTO [dbo].[Labels] ([ResourceName], [ResourceValue], [LanguageId])
-SELECT v.[ResourceName], v.[ResourceValue], v.[LanguageId]
-FROM (VALUES
-    ('feature.profile.CreateButton',   'Opret profil',  1),
-    ('feature.profile.CreateButton',   'Create profile',3)
-) AS v ([ResourceName], [ResourceValue], [LanguageId])
-WHERE NOT EXISTS (
-    SELECT 1 FROM [dbo].[Labels] l
-    WHERE l.[ResourceName] = v.[ResourceName] AND l.[LanguageId] = v.[LanguageId]
-);
+```powershell
+# Kør direkte i terminal — ingen .ps1 fil gemmes på disk
+$labels = @(
+    [hashtable]@{ ResourceName="feature.profile.CreateButton"; ResourceValue="Opret profil";   LanguageId=1 },
+    [hashtable]@{ ResourceName="feature.profile.CreateButton"; ResourceValue="Create profile"; LanguageId=2 }
+)
+& "c:\Udvikling\green-ai\scripts\localization\Add-Labels.ps1" -Labels $labels
 ```
 
-Migration naming: `V{next}_SeedLabels_{domain}.sql`
+- Kræver: `appsettings.Production.json` med `LabelManagementApi.Email` + `LabelManagementApi.Password`
+- Labels er straks aktive på live (itgain.dk) efter upsert
 
-### Step 3 — Use in Razor
+### Step 3 — Sync til lokal dev DB
+
+```powershell
+& "c:\Udvikling\green-ai\scripts\localization\Sync-Labels.ps1"
+```
+
+Pulr alle labels fra live ned i GreenAI_DEV — MERGE-pattern (insert nye, opdater eksisterende, sletter ikke).
+
+### Step 4 — Use in Razor
 
 ```razor
 @inject ILocalizationContext Loc
@@ -153,7 +170,7 @@ Migration naming: `V{next}_SeedLabels_{domain}.sql`
 <MudButton>@Loc.Get("feature.profile.CreateButton")</MudButton>
 ```
 
-### Step 4 — Update shared-labels-reference.md
+### Step 5 — Update shared-labels-reference.md
 
 If you added `shared.*` labels, add them to the reference catalog.
 

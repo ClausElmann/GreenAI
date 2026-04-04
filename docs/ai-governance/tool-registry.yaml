@@ -7,7 +7,7 @@
 # Context:
 #   Runtime:  .NET 10, Blazor Server, port 5057 (http, NOT https)
 #   Database: GreenAI_DEV on (localdb)\MSSQLLocalDB
-#   Auth:     POST /api/auth/login → JWT (dev: admin@dev.local / dev123)
+#   Auth:     POST /api/auth/login → JWT (dev: claus.elmann@gmail.com / Flipper12#)
 #   Health:   GET /api/ping → 200 OK
 
 ---
@@ -54,6 +54,35 @@ test_runners:
     command: "dotnet test tests/GreenAi.Tests --filter \"FullyQualifiedName~<TestName>\" -v n"
     purpose: "Run specific test by name"
     timeout_seconds: 60
+
+  visual_tests:
+    command: "dotnet test tests/GreenAi.E2E --filter \"FullyQualifiedName~Visual\" --nologo"
+    purpose: "Run all multi-device visual tests (Playwright, headless Chromium)"
+    timeout_seconds: 300
+    output_location: "tests/GreenAi.E2E/TestResults/Visual/current/{device}/*.png"
+    notes:
+      - "Requires app running on http://localhost:5057"
+      - "Produces screenshots in current/ — NOT baseline/"
+      - "Set GREENAI_UPDATE_BASELINE=true to overwrite baselines"
+
+  visual_analysis_export:
+    command: "dotnet test tests/GreenAi.E2E --filter ExportVisualAnalysisPackage --nologo -v n"
+    purpose: "Package latest Playwright screenshots into analysis-pack.zip for external AI review"
+    timeout_seconds: 30
+    output_location: "tests/GreenAi.E2E/TestResults/Visual/analysis-pack.zip"
+    trigger_patterns:
+      - "visual analysis"
+      - "analyze UI screenshots"
+      - "export screenshots"
+      - "UI QA review"
+      - "screenshot analysis"
+      - "playwright screenshots"
+    notes:
+      - "Run visual_tests FIRST to produce screenshots (current/ must exist)"
+      - "No AI integration inside system — export only"
+      - "Upload ZIP + instructions.json to ChatGPT/Claude for external analysis"
+      - "See: docs/SSOT/testing/visual-analysis.md"
+    ssot: "docs/SSOT/testing/visual-analysis.md"
 
 ---
 
@@ -130,6 +159,49 @@ debug_tools:
     purpose: "Parse newest TRX file and show failing tests with error messages"
     timeout_seconds: 5
     notes: "Run after: dotnet test tests/GreenAi.Tests --logger trx"
+
+---
+
+# ── Database Tools ────────────────────────────────────────────────────────────
+
+database_tools:
+  restore_production_backup:
+    command: "pwsh -File scripts/database/Restore-ProductionBackup.ps1"
+    parameters:
+      - name: "BackupPath"
+        description: "Path to .bak file. Default: auto-finds latest greenai_prod*.bak in Downloads."
+        required: false
+        example: "-BackupPath C:\\Backups\\greenai_prod_2026-04-04.bak"
+      - name: "Force"
+        description: "Skip confirmation prompt."
+        required: false
+        example: "-Force"
+    purpose: >
+      Restore a production .bak file to GreenAI_DEV on LocalDB.
+      Dev is a mirror of prod — use this to sync schema and data, then
+      DbUp migrations are re-applied on top to add any dev-only objects.
+    trigger_patterns:
+      - "restore backup"
+      - "sync from prod"
+      - "production backup"
+      - "dev is behind prod"
+      - "schema mismatch"
+      - ".bak"
+    what_it_does:
+      - "1. Auto-finds latest greenai_prod*.bak in Downloads (or uses -BackupPath)"
+      - "2. Verifies / starts MSSQLLocalDB"
+      - "3. Drops + re-creates GreenAI_DEV from the .bak"
+      - "4. Re-runs DbUp migrations (dev-only schema on top of prod)"
+      - "5. Reports table count so you can verify completeness"
+    backup_naming_convention: "greenai_prod_YYYY-MM-DD.bak → save to %USERPROFILE%\\Downloads\\"
+    cwd: "c:\\Udvikling\\green-ai"
+    exit_codes:
+      0: "GreenAI_DEV restored and migrations applied"
+      1: "Failure — check output for details"
+    mandatory_rules:
+      - "ALWAYS run from repo root (c:\\Udvikling\\green-ai)"
+      - "Stop the backend (dotnet run) before restoring — LocalDB file may be locked"
+      - "After restore: re-seed E2E data if running E2E tests (E2EDatabaseFixture handles this automatically)"
 
 ---
 

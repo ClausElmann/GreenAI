@@ -1,0 +1,65 @@
+@* TopBar — persistent application bar (48px).
+   Contains: brand, user identity, overlay-nav toggle.
+   NO navigation links — navigation is OverlayNav only.
+*@
+
+@using GreenAi.Api.SharedKernel.State
+@inject AppState AppState
+@inject ILocalizationContext Loc
+@implements IDisposable
+
+<MudAppBar Elevation="1" Dense="true" data-testid="top-bar">
+
+    @* Left: Overlay nav toggle *@
+    <MudIconButton Icon="@Icons.Material.Filled.GridView"
+                   Color="Color.Inherit"
+                   Edge="Edge.Start"
+                   OnClick="AppState.ToggleOverlayNav"
+                   data-testid="top-bar-nav-toggle"
+                   aria-label="@Loc.Get("nav.OpenMenu")" />
+
+    @* Left: Brand *@
+    <MudText Typo="Typo.h6" Class="ml-1" data-testid="top-bar-brand">GreenAI</MudText>
+
+    <MudSpacer />
+
+    @* Right: Active context (profile + customer) *@
+    @if (AppState.ActiveProfileName is not null)
+    {
+        <MudText Typo="Typo.body2"
+                 Class="mr-1"
+                 data-testid="top-bar-profile-name">
+            @AppState.ActiveProfileName
+        </MudText>
+        @if (AppState.ActiveCustomerName is not null)
+        {
+            <MudText Typo="Typo.caption"
+                     Class="mr-2 mud-text-secondary"
+                     data-testid="top-bar-customer-name">
+                (@AppState.ActiveCustomerName)
+            </MudText>
+        }
+    }
+
+    @* Right: User identity *@
+    <AuthorizeView>
+        <Authorized>
+            <MudText Typo="Typo.body2"
+                     Class="mr-2"
+                     data-testid="top-bar-user-email">
+                @context.User.Identity?.Name
+            </MudText>
+        </Authorized>
+    </AuthorizeView>
+
+</MudAppBar>
+
+@code {
+    protected override void OnInitialized()
+        => AppState.StateChanged += OnStateChanged;
+
+    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+        => AppState.StateChanged -= OnStateChanged;
+}

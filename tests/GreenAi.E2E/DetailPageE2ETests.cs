@@ -63,8 +63,11 @@ public sealed class DetailPageE2ETests : E2ETestBase
         await Page.ClickAsync("[data-testid='profile-table'] a");
         await WaitOrFailAsync("[data-testid='profile-save']", timeoutMs: 15_000);
 
-        // Verify the profile name text field is editable
-        var nameField = Page.Locator("[data-testid='profile-name'] input");
+        // Wait for the profile name input to be present and read its value
+        // Note: MudTextField renders UserAttributes directly on the <input> element, not a wrapper
+        await WaitOrFailAsync("[data-testid='profile-name']", timeoutMs: 10_000,
+            hint: "MudTextField with data-testid='profile-name' should render an input element when the form is loaded");
+        var nameField = Page.Locator("[data-testid='profile-name']");
         var value = await nameField.InputValueAsync();
         Assert.False(string.IsNullOrWhiteSpace(value), "Profile name field should have a non-empty value after load");
     }

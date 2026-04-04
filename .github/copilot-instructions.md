@@ -41,6 +41,9 @@ read_file AI_WORK_CONTRACT.md
 ❌ ProfileId(0) — aldrig udsted token med nul-profil
 ❌ SSOT-fil > 600 linjer
 ❌ git commit/push/reset uden bruger-godkendelse
+❌ SQL INSERT direkte mod [dbo].[Labels] (dev ELLER live) — labels KUN via API
+❌ .ps1 filer på disk til label-oprettelse — ALTID inline i terminal
+❌ SQL migrations (.sql filer) til labels — ALDRIG
 ```
 
 ---
@@ -54,6 +57,7 @@ read_file AI_WORK_CONTRACT.md
 ✅ 0 compiler warnings efter enhver ændring
 ✅ Valider kun ved system-grænser
 ✅ Opdatér SSOT når nyt mønster opdages
+✅ Labels KUN via: $labels=@(...); & scripts/localization/Add-Labels.ps1 -Labels $labels → Sync-Labels.ps1
 ```
 
 ---

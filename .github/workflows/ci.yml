@@ -37,3 +37,25 @@ jobs:
         shell: pwsh
         run: |
           .\scripts\governance\Validate-GreenAiCompliance.ps1
+
+      # ── Visual test screenshots (upload if present) ──────────────
+      # E2E/visual tests run LOCALLY only — LocalDB is unavailable on ubuntu-latest.
+      # When tests run locally, screenshots are saved under tests/GreenAi.E2E/TestResults/Visual/.
+      # If a developer pushes a commit that includes screenshot artifacts (e.g., baseline updates),
+      # this step uploads them. Non-blocking: uses if: always() + continue-on-error.
+      #
+      # To run visual tests locally:
+      #   dotnet test tests/GreenAi.E2E --filter "FullyQualifiedName~Visual" --nologo
+      # To update baselines:
+      #   $env:GREENAI_UPDATE_BASELINE="true"
+      #   dotnet test tests/GreenAi.E2E --filter "FullyQualifiedName~Visual" --nologo
+      #   $env:GREENAI_UPDATE_BASELINE=$null
+      - name: Upload visual test screenshots
+        uses: actions/upload-artifact@v4
+        if: always()
+        continue-on-error: true
+        with:
+          name: visual-screenshots
+          path: tests/GreenAi.E2E/TestResults/Visual/
+          if-no-files-found: ignore
+          retention-days: 14

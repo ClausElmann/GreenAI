@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="777483e1-1b9c-414c-9974-41e85ddbd840" name="claus.elmann@LAPTOP-2Q5GS5I8 2026-04-04 23:57:54" runUser="F24\claus.elmann" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-04-04T23:57:54.4088947+02:00" queuing="2026-04-04T23:57:54.4088956+02:00" start="2026-04-04T23:57:28.3710310+02:00" finish="2026-04-04T23:57:54.4175278+02:00" />
+  <TestSettings name="default" id="cfd660b2-3c93-44a8-96ce-f250f9235b4d">
+    <Deployment runDeploymentRoot="claus.elmann_LAPTOP-2Q5GS5I8_2026-04-04_23_57_54" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="8feffe97-c9f0-4963-9bc5-04f113df5780" testId="d185c56f-05f8-ea55-f119-8e96d680bae6" testName="GreenAi.E2E.CustomerAdminE2ETests.Login_WithValidCredentials_RedirectsToHome" computerName="LAPTOP-2Q5GS5I8" duration="00:00:24.3363570" startTime="2026-04-04T23:57:29.8833172+02:00" endTime="2026-04-04T23:57:54.2370477+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8feffe97-c9f0-4963-9bc5-04f113df5780">
+      <Output>
+        <ErrorInfo>
+          <Message>System.Exception : E2E FAILURE: Login did not redirect away from /login after 20s (email=claus.elmann@gmail.com)
+
+URL:     http://localhost:5057/login
+Screenshot: C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\..\..\..\TestResults\Screenshots\CustomerAdminE2ETests_20260404_215753.png
+
+Browser console errors:
+  (none)
+
+Recent DB logs (Logs table):
+  (no rows in Logs table)</Message>
+          <StackTrace>   at GreenAi.E2E.E2ETestBase.FailAsync(String reason) in C:\Udvikling\green-ai\tests\GreenAi.E2E\E2ETestBase.cs:line 100&#xD;
+   at GreenAi.E2E.E2ETestBase.LoginAsync(String email, String password) in C:\Udvikling\green-ai\tests\GreenAi.E2E\E2ETestBase.cs:line 146&#xD;
+   at GreenAi.E2E.CustomerAdminE2ETests.Login_WithValidCredentials_RedirectsToHome() in C:\Udvikling\green-ai\tests\GreenAi.E2E\CustomerAdminE2ETests.cs:line 11&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="GreenAi.E2E.CustomerAdminE2ETests.Login_WithValidCredentials_RedirectsToHome" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="d185c56f-05f8-ea55-f119-8e96d680bae6">
+      <Execution id="8feffe97-c9f0-4963-9bc5-04f113df5780" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.CustomerAdminE2ETests" name="Login_WithValidCredentials_RedirectsToHome" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="d185c56f-05f8-ea55-f119-8e96d680bae6" executionId="8feffe97-c9f0-4963-9bc5-04f113df5780" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="1" executed="1" passed="0" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.5+1b188a7b0a (64-bit .NET 10.0.5)&#xD;
+[xUnit.net 00:00:00.20]   Discovering: GreenAi.E2E&#xD;
+[xUnit.net 00:00:00.44]   Discovered:  GreenAi.E2E&#xD;
+[xUnit.net 00:00:00.65]   Starting:    GreenAi.E2E&#xD;
+[xUnit.net 00:00:25.38]       System.Exception : E2E FAILURE: Login did not redirect away from /login after 20s (email=claus.elmann@gmail.com)
+
+URL:     http://localhost:5057/login
+Screenshot: C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\..\..\..\TestResults\Screenshots\CustomerAdminE2ETests_20260404_215753.png
+
+Browser console errors:
+  (none)
+
+Recent DB logs (Logs table):
+  (no rows in Logs table)&#xD;
+[xUnit.net 00:00:25.38]       Stack Trace:&#xD;
+[xUnit.net 00:00:25.38]         C:\Udvikling\green-ai\tests\GreenAi.E2E\E2ETestBase.cs(100,0): at GreenAi.E2E.E2ETestBase.FailAsync(String reason)&#xD;
+[xUnit.net 00:00:25.39]         C:\Udvikling\green-ai\tests\GreenAi.E2E\E2ETestBase.cs(146,0): at GreenAi.E2E.E2ETestBase.LoginAsync(String email, String password)&#xD;
+[xUnit.net 00:00:25.39]         C:\Udvikling\green-ai\tests\GreenAi.E2E\CustomerAdminE2ETests.cs(11,0): at GreenAi.E2E.CustomerAdminE2ETests.Login_WithValidCredentials_RedirectsToHome()&#xD;
+[xUnit.net 00:00:25.39]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:25.41]   Finished:    GreenAi.E2E (ID = 'b22c8369b1bbe770defd711cb8a9268ada6d4b894a82e516ae76dd9d44f93e08')&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LAPTOP-2Q5GS5I8" outcome="Error" timestamp="2026-04-04T23:57:54.2459316+02:00">
+        <Text>[xUnit.net 00:00:25.38]     GreenAi.E2E.CustomerAdminE2ETests.Login_WithValidCredentials_RedirectsToHome [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

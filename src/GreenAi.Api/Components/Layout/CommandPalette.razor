@@ -1,0 +1,181 @@
+@* CommandPalette — global search/navigation modal.
+   Open: Ctrl+K (registered via greenai.registerCtrlK in JS).
+   Close: ESC, backdrop click, or after navigation.
+   Keyboard: ArrowDown/Up to move selection, Enter to navigate.
+   Role filtering: reads AppState.AllowedNavItems (set by MainLayout).
+   This component is always in the DOM — it owns the Ctrl+K JS listener.
+*@
+
+@using GreenAi.Api.SharedKernel.State
+@using GreenAi.Api.SharedKernel.Navigation
+@inject AppState AppState
+@inject ILocalizationContext Loc
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+@if (AppState.IsCommandPaletteOpen)
+{
+    @* Backdrop — click-outside closes palette *@
+    <div class="cmd-backdrop"
+         @onclick="Close"
+         data-testid="cmd-palette-backdrop"></div>
+
+    @* Panel *@
+    <div class="cmd-panel"
+         data-testid="cmd-palette-panel"
+         @onkeydown="HandleKeyDown"
+         @onkeydown:stopPropagation="true"
+         @onkeydown:preventDefault="true">
+
+        <div class="cmd-search-row">
+            <MudIcon Icon="@Icons.Material.Filled.Search" Class="cmd-search-icon" />
+            <input @ref="_inputRef"
+                   type="text"
+                   value="@_query"
+                   @oninput="OnQueryInput"
+                   class="cmd-search-input"
+                   placeholder="@Loc.Get("cmd.Placeholder")"
+                   data-testid="cmd-palette-input"
+                   autocomplete="off"
+                   spellcheck="false" />
+        </div>
+
+        <MudDivider />
+
+        <ul class="cmd-results" data-testid="cmd-palette-results">
+            @{ var idx = 0; }
+            @foreach (var item in _filtered)
+            {
+                var capturedItem  = item;
+                var capturedIndex = idx;
+                <li class="cmd-item @(capturedIndex == _selectedIndex ? "cmd-item--active" : "")"
+                    @onclick="() => SelectItem(capturedItem)"
+                    data-testid="cmd-item">
+                    <MudIcon Icon="@item.Icon" Class="cmd-item-icon" />
+                    <span>@Loc.Get(item.LabelKey)</span>
+                </li>
+                idx++;
+            }
+            @if (_filtered.Count == 0)
+            {
+                <li class="cmd-item cmd-item--empty" data-testid="cmd-palette-no-results">
+                    @Loc.Get("cmd.NoResults")
+                </li>
+            }
+        </ul>
+
+    </div>
+}
+
+@code {
+    private ElementReference _inputRef;
+    private string           _query         = string.Empty;
+    private int              _selectedIndex;
+    private List<NavItem>    _filtered      = [];
+    private bool             _shouldFocus;
+
+    private DotNetObjectReference<CommandPalette>? _dotNetRef;
+
+    protected override void OnInitialized()
+    {
+        AppState.StateChanged += OnStateChanged;
+        UpdateFiltered();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _dotNetRef = DotNetObjectReference.Create(this);
+            await JS.InvokeVoidAsync("greenai.registerCtrlK", _dotNetRef);
+        }
+
+        if (_shouldFocus && AppState.IsCommandPaletteOpen)
+        {
+            _shouldFocus = false;
+            await _inputRef.FocusAsync();
+        }
+    }
+
+    /// <summary>Called from JS when the user presses Ctrl+K.</summary>
+    [JSInvokable]
+    public void OpenPalette()
+    {
+        AppState.OpenCommandPalette();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void OnStateChanged()
+    {
+        if (AppState.IsCommandPaletteOpen)
+        {
+            _query         = string.Empty;
+            _selectedIndex = 0;
+            _shouldFocus   = true;
+        }
+        UpdateFiltered();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void OnQueryInput(ChangeEventArgs e)
+    {
+        _query         = e.Value?.ToString() ?? string.Empty;
+        _selectedIndex = 0;
+        UpdateFiltered();
+    }
+
+    private void UpdateFiltered()
+    {
+        _filtered = AppState.AllowedNavItems
+            .Where(item =>
+                string.IsNullOrEmpty(_query) ||
+                Loc.Get(item.LabelKey).Contains(_query, StringComparison.OrdinalIgnoreCase) ||
+                item.Route.Contains(_query, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+    }
+
+    private void SelectItem(NavItem item)
+    {
+        AppState.CloseCommandPalette();
+        Nav.NavigateTo(item.Route);
+    }
+
+    private void Close() => AppState.CloseCommandPalette();
+
+    private void HandleKeyDown(KeyboardEventArgs e)
+    {
+        switch (e.Key)
+        {
+            case "Escape":
+                AppState.CloseCommandPalette();
+                break;
+            case "ArrowDown":
+                if (_selectedIndex < _filtered.Count - 1)
+                    _selectedIndex++;
+                break;
+            case "ArrowUp":
+                if (_selectedIndex > 0)
+                    _selectedIndex--;
+                break;
+            case "Enter":
+                if (_selectedIndex >= 0 && _selectedIndex < _filtered.Count)
+                    SelectItem(_filtered[_selectedIndex]);
+                break;
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        AppState.StateChanged -= OnStateChanged;
+        try
+        {
+            await JS.InvokeVoidAsync("greenai.unregisterCtrlK");
+        }
+        catch
+        {
+            // Circuit may already be disconnected — safe to swallow
+        }
+        _dotNetRef?.Dispose();
+    }
+}

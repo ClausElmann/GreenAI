@@ -3,8 +3,9 @@ using Microsoft.Data.SqlClient;
 namespace GreenAi.E2E;
 
 /// <summary>
-/// Ensures dev seed data (admin@dev.local, sender@dev.local, Testkommune, profiles)
+/// Ensures dev seed data (claus.elmann@gmail.com, sender@dev.local, Testkommune, profiles)
 /// exists in the DB before E2E tests run.
+/// Dev is a mirror of prod: claus.elmann@gmail.com / Flipper12# is the primary test account.
 /// Safe to run even if data already exists (idempotent upsert via MERGE).
 /// </summary>
 public sealed class E2EDatabaseFixture : IAsyncLifetime
@@ -26,14 +27,14 @@ public sealed class E2EDatabaseFixture : IAsyncLifetime
         var customerId = await ScalarAsync<int>(conn,
             "SELECT [Id] FROM [dbo].[Customers] WHERE [Name] = 'Testkommune'");
 
-        // Ensure users exist (no CustomerId column since V007 removed it)
+        // Primary E2E user: claus.elmann@gmail.com / Flipper12# (mirrors prod — V026 hash)
         await ExecAsync(conn, """
-            IF NOT EXISTS (SELECT 1 FROM [dbo].[Users] WHERE [Email] = 'admin@dev.local')
+            IF NOT EXISTS (SELECT 1 FROM [dbo].[Users] WHERE [Email] = 'claus.elmann@gmail.com')
                 INSERT INTO [dbo].[Users] ([Email], [PasswordHash], [PasswordSalt], [IsActive])
                 VALUES (
-                    'admin@dev.local',
-                    'jX4HKkXh60GLPYnd5RBku7PVbsF6Oijuerfd4/zV6LeF2QpsvE9ysH7Jyl0kRY7IJR0ctlaseEh64iuCdQVKfw==',
-                    'fLKlYkEcWwpdIAH+Wkx1CXFg1CD0c/rMiKc/RFTmyqg=',
+                    'claus.elmann@gmail.com',
+                    'N9p1t00iogUQwhDCgeFGRQgv174X9Wjc+NKjIg7g7LdHVGGBtrK88r5jwRsfM7bQszVQV9+333ASHfJ8qKjAhg==',
+                    'VlN9lBRMfoASx0x6+OrUpbA0TTHXi/X8cEpXU2mYauk=',
                     1);
             """);
 
@@ -47,7 +48,7 @@ public sealed class E2EDatabaseFixture : IAsyncLifetime
                     1);
             """);
 
-        var adminId  = await ScalarAsync<int>(conn, "SELECT [Id] FROM [dbo].[Users] WHERE [Email] = 'admin@dev.local'");
+        var adminId  = await ScalarAsync<int>(conn, "SELECT [Id] FROM [dbo].[Users] WHERE [Email] = 'claus.elmann@gmail.com'");
         var senderId = await ScalarAsync<int>(conn, "SELECT [Id] FROM [dbo].[Users] WHERE [Email] = 'sender@dev.local'");
 
         // UserCustomerMemberships
@@ -72,7 +73,6 @@ public sealed class E2EDatabaseFixture : IAsyncLifetime
         // ProfileUserMappings — admin gets Nordjylland only (1 profile → login auto-resolves full JWT).
         // Sønderjylland mapping for admin is intentionally removed: admin having 2 profiles triggers
         // RequiresProfileSelection in LoginHandler which the login UI doesn't handle yet.
-        // The CustomerAdmin profiles list still shows both profiles (query is by CustomerId, not UserId).
         await ExecAsync(conn, $"""
             DELETE FROM [dbo].[ProfileUserMappings] WHERE [ProfileId] = {profile2Id} AND [UserId] = {adminId};
             IF NOT EXISTS (SELECT 1 FROM [dbo].[ProfileUserMappings] WHERE [ProfileId] = {profile1Id} AND [UserId] = {adminId})
@@ -81,9 +81,7 @@ public sealed class E2EDatabaseFixture : IAsyncLifetime
                 INSERT INTO [dbo].[ProfileUserMappings] ([ProfileId], [UserId]) VALUES ({profile1Id}, {senderId});
             """);
 
-        // UserRoleMappings — admin@dev.local gets SuperAdmin + other roles for full E2E coverage.
-        // Note: V015 migration may not have inserted these if UserRoles were seeded in a later migration.
-        // This fixture ensures roles are always present for E2E tests regardless of migration order.
+        // UserRoleMappings — primary E2E user gets SuperAdmin + other roles for full E2E coverage.
         await ExecAsync(conn, $"""
             DECLARE @RoleSuperAdmin    INT = (SELECT [Id] FROM [dbo].[UserRoles] WHERE [Name] = 'SuperAdmin');
             DECLARE @RoleManageUsers   INT = (SELECT [Id] FROM [dbo].[UserRoles] WHERE [Name] = 'ManageUsers');

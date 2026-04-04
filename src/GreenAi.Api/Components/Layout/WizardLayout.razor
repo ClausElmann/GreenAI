@@ -1,0 +1,33 @@
+@* WizardLayout — minimal shell for /send/wizard.
+   Full wizard implementation is deferred (step logic not yet built).
+   Uses EmptyLayout-style chrome: TopBar minimal, no OverlayNav.
+*@
+@inherits LayoutComponentBase
+@inject ILocalizationContext Loc
+@inject ICurrentUser CurrentUser
+
+<MudThemeProvider />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="1" Dense="true" data-testid="wizard-app-bar">
+        <MudText Typo="Typo.h6" Class="ml-3">GreenAI</MudText>
+        <MudSpacer />
+    </MudAppBar>
+
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Medium" Class="pt-8 pb-8">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var languageId = CurrentUser.IsAuthenticated ? CurrentUser.LanguageId : 1;
+        await Loc.EnsureLoadedAsync(languageId);
+    }
+}

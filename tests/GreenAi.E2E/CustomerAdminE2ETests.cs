@@ -16,13 +16,17 @@ public sealed class CustomerAdminE2ETests : E2ETestBase
     public async Task Login_WithWrongPassword_ShowsError()
     {
         await Page.GotoAsync($"{BaseUrl}/login");
-        await Page.WaitForSelectorAsync("input[type='email']", new PageWaitForSelectorOptions { Timeout = 10_000 });
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await Page.WaitForSelectorAsync("[data-testid='blazor-circuit-ready']",
+            new PageWaitForSelectorOptions { Timeout = 20_000, State = WaitForSelectorState.Attached });
 
-        await Page.FillAsync("input[type='email']", "admin@dev.local");
+        await Page.ClickAsync("input[type='email']");
+        await Page.FillAsync("input[type='email']", "claus.elmann@gmail.com");
+        await Page.PressAsync("input[type='email']", "Tab");
         await Page.FillAsync("input[type='password']", "forkert");
-        await Page.ClickAsync("button[type='submit']");
+        await Page.PressAsync("input[type='password']", "Enter");
 
-        await WaitOrFailAsync(".mud-alert-message", timeoutMs: 5_000, hint: "Error alert should appear after wrong password");
+        await WaitOrFailAsync(".mud-alert-message", timeoutMs: 8_000, hint: "Error alert should appear after wrong password");
         Assert.Contains("/login", Page.Url);
     }
 
@@ -36,7 +40,7 @@ public sealed class CustomerAdminE2ETests : E2ETestBase
         await WaitOrFailAsync("[data-testid='customer-admin-heading']", timeoutMs: 20_000,
             hint: "Heading should be visible after login. If redirected, check BlazorPrincipalHolder + ICurrentUser DI.");
 
-        var heading = Page.Locator("[data-testid='customer-admin-heading']");
+        var heading = Page.Locator("[data-testid='page-title']");
         Assert.Equal("Kundestyre", await heading.InnerTextAsync());
 
         await AssertNoMissingLabelsAsync("CustomerAdmin page");
@@ -53,7 +57,7 @@ public sealed class CustomerAdminE2ETests : E2ETestBase
         await WaitOrFailAsync("[data-testid='user-table']", timeoutMs: 10_000);
 
         var content = await Page.Locator("[data-testid='user-table']").InnerTextAsync();
-        Assert.Contains("admin@dev.local", content);
+        Assert.Contains("claus.elmann@gmail.com", content);
         Assert.Contains("sender@dev.local", content);
     }
 

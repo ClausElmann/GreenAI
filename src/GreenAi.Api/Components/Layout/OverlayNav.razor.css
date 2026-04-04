@@ -1,0 +1,45 @@
+.overlay-nav-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 1299;
+}
+
+.overlay-nav-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100vh;
+    background: var(--mud-palette-surface);
+    box-shadow: var(--mud-elevation-8);
+    z-index: 1300;
+    overflow-y: auto;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.overlay-nav-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 8px 8px 16px;
+    min-height: 48px;
+}
+
+.overlay-nav-section {
+    padding: 4px 0;
+}
+
+/* Active route highlight — MudNavLink applies .mud-nav-link-active on match */
+::deep .overlay-nav-section .mud-nav-link-active {
+    background-color: var(--mud-palette-action-default-hover);
+    border-radius: 4px;
+    color: var(--mud-palette-primary) !important;
+    font-weight: 600;
+}
+
+::deep .overlay-nav-section .mud-nav-link-active .mud-nav-link-icon {
+    color: var(--mud-palette-primary) !important;
+}

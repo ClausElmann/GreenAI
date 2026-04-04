@@ -1,9 +1,270 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "description": "green-ai UI navigation model — routes, auth requirements, breadcrumbs. Machine-readable. Updated when new pages are added.",
-  "version": "1.0.0",
-  "last_updated": "2026-04-03",
+  "description": "green-ai UI navigation model — routes, auth requirements, breadcrumbs, role visibility. Machine-readable. Updated when new pages are added.",
+  "version": "2.1.0",
+  "last_updated": "2026-04-04",
+  "decisions_locked": "2026-04-04",
   "ssot_source": "docs/SSOT/ui/models/ui-navigation-schema.json",
+
+  "architecture_ref": "docs/SSOT/ui/greenai-ui-architecture.md",
+
+  "routing_decisions": {
+    "root_authenticated": "MUST redirect to /dashboard",
+    "root_unauthenticated": "redirect to /login (existing auth flow)",
+    "home_razor_status": "DEPRECATED — must not remain as user-facing page",
+    "login_layout": "EmptyLayout — DO NOT CHANGE",
+    "wizard_send": "Route placeholder + WizardLayout shell only — no step logic in current slice"
+  },
+
+  "wizard_draft_policy": {
+    "auto_save_required": true,
+    "save_triggers": ["step_change", "explicit_back", "route_away"],
+    "save_target": "/drafts",
+    "scope": "safe recovery only — not live sync",
+    "out_of_scope": ["debounced_autosave_while_typing", "collaborative_sync", "conflict_resolution"]
+  },
+
+  "implementation_order": ["AppState", "TopBar", "OverlayNav", "MainLayout_refactor"],
+  "implementation_constraints": [
+    "EmptyLayout + /login: DO NOT TOUCH",
+    "CommandPalette: do not build before TopBar + OverlayNav shell is stable",
+    "/send/wizard: route placeholder + WizardLayout shell only"
+  ],
+
+  "auth_requirements": {
+    "none": "Public — no token required",
+    "authenticated": "ICurrentUser.UserId must be set (BlazorPrincipalHolder.Set() called)",
+    "tenant": "ICurrentUser.CustomerId must be set (JWT claim)",
+    "profile": "ICurrentUser.ProfileId must be set (JWT claim)"
+  },
+
+  "layouts": {
+    "EmptyLayout": "Login, OAuth, wizard steps — no chrome",
+    "MainLayout": "All authenticated pages — TopBar + OverlayNav",
+    "WizardLayout": "Send flow (/send/wizard) — TopBar minimal + progress bar"
+  },
+
+  "pages": [
+    {
+      "id": "root",
+      "route": "/",
+      "status": "deprecated_redirect",
+      "note": "Home.razor deprecated — must redirect authenticated → /dashboard, unauthenticated → /login",
+      "layout": "none",
+      "auth": "none",
+      "redirect_authenticated": "/dashboard",
+      "redirect_unauthenticated": "/login",
+      "breadcrumb": []
+    },
+    {
+      "id": "login",
+      "route": "/login",
+      "status": "existing",
+      "layout": "EmptyLayout",
+      "auth": "none",
+      "component": "Features/Auth/Login/LoginPage.razor",
+      "breadcrumb": []
+    },
+    {
+      "id": "select_customer",
+      "route": "/select-customer",
+      "status": "planned",
+      "layout": "EmptyLayout",
+      "auth": "authenticated",
+      "breadcrumb": []
+    },
+    {
+      "id": "select_profile",
+      "route": "/select-profile",
+      "status": "planned",
+      "layout": "EmptyLayout",
+      "auth": "authenticated",
+      "breadcrumb": []
+    },
+    {
+      "id": "dashboard",
+      "route": "/dashboard",
+      "status": "planned",
+      "layout": "MainLayout",
+      "auth": "profile",
+      "required_roles": [],
+      "nav_visible_for": ["any_authenticated"],
+      "breadcrumb": [{ "text": "Oversigt", "href": null }],
+      "description": "Intent-based entry point — quick access to primary actions"
+    },
+    {
+      "id": "send_wizard",
+      "route": "/send/wizard",
+      "status": "placeholder",
+      "note": "Current slice: route + WizardLayout shell only. Step logic deferred.",
+      "layout": "WizardLayout",
+      "auth": "profile",
+      "required_roles": [],
+      "nav_visible_for": ["any_authenticated"],
+      "draft_auto_save": true,
+      "draft_save_triggers": ["step_change", "explicit_back", "route_away"],
+      "breadcrumb": [],
+      "description": "Multi-step send flow — WizardLayout replaces MainLayout chrome"
+    },
+    {
+      "id": "send_wizard_step",
+      "route": "/send/wizard/{step}",
+      "status": "planned",
+      "layout": "WizardLayout",
+      "auth": "profile",
+      "required_roles": [],
+      "nav_visible_for": [],
+      "breadcrumb": []
+    },
+    {
+      "id": "status",
+      "route": "/status",
+      "status": "planned",
+      "layout": "MainLayout",
+      "auth": "profile",
+      "required_roles": [],
+      "nav_visible_for": ["any_authenticated"],
+      "breadcrumb": [{ "text": "Status", "href": null }],
+      "tabs": ["Sendt", "Planlagt", "Fejlet"]
+    },
+    {
+      "id": "drafts",
+      "route": "/drafts",
+      "status": "planned",
+      "layout": "MainLayout",
+      "auth": "profile",
+      "required_roles": [],
+      "nav_visible_for": ["any_authenticated"],
+      "breadcrumb": [{ "text": "Kladder", "href": null }]
+    },
+    {
+      "id": "admin",
+      "route": "/admin",
+      "status": "planned",
+      "layout": "MainLayout",
+      "auth": "profile",
+      "required_roles": ["SuperAdmin"],
+      "redirect_if_role_missing": "/dashboard",
+      "nav_visible_for": ["SuperAdmin"],
+      "breadcrumb": [{ "text": "Admin", "href": null }]
+    },
+    {
+      "id": "admin_users",
+      "route": "/admin/users",
+      "status": "existing",
+      "layout": "MainLayout",
+      "auth": "profile",
+      "required_roles": ["SuperAdmin", "ManageUsers"],
+      "redirect_if_role_missing": "/dashboard",
+      "nav_visible_for": ["SuperAdmin", "ManageUsers"],
+      "component": "Components/Pages/AdminLight/AdminUserListPage.razor",
+      "breadcrumb": [
+        { "text": "Admin", "href": "/admin" },
+        { "text": "Brugere", "href": null }
+      ]
+    },
+    {
+      "id": "admin_settings",
+      "route": "/admin/settings",
+      "status": "existing",
+      "layout": "MainLayout",
+      "auth": "profile",
+      "required_roles": ["SuperAdmin"],
+      "redirect_if_role_missing": "/dashboard",
+      "nav_visible_for": ["SuperAdmin"],
+      "component": "Components/Pages/AdminLight/AdminSettingsPage.razor",
+      "breadcrumb": [
+        { "text": "Admin", "href": "/admin" },
+        { "text": "Indstillinger", "href": null }
+      ]
+    },
+    {
+      "id": "user_profile",
+      "route": "/user/profile",
+      "status": "existing",
+      "layout": "MainLayout",
+      "auth": "profile",
+      "required_roles": [],
+      "nav_visible_for": ["any_authenticated"],
+      "component": "Components/Pages/UserSelfService/UserProfilePage.razor",
+      "breadcrumb": [{ "text": "Min profil", "href": null }]
+    },
+    {
+      "id": "customer_admin",
+      "route": "/customer-admin",
+      "status": "existing",
+      "layout": "MainLayout",
+      "auth": "profile",
+      "required_roles": ["CustomerSetup", "ManageUsers", "ManageProfiles"],
+      "nav_visible_for": ["CustomerSetup", "ManageUsers", "ManageProfiles"],
+      "component": "Components/Pages/CustomerAdmin/Index.razor",
+      "breadcrumb": [{ "text": "Kundestyre", "href": null }],
+      "tabs": ["Indstillinger", "Brugere", "Profiler"]
+    },
+    {
+      "id": "customer_admin_user_detail",
+      "route": "/customer-admin/users/{UserId:int}",
+      "status": "existing",
+      "layout": "MainLayout",
+      "auth": "profile",
+      "required_roles": ["CustomerSetup", "ManageUsers"],
+      "nav_visible_for": [],
+      "component": "Components/Pages/CustomerAdmin/UserDetail.razor",
+      "breadcrumb": [
+        { "text": "Kundestyre", "href": "/customer-admin" },
+        { "text": "Bruger", "href": null }
+      ]
+    },
+    {
+      "id": "customer_admin_profile_detail",
+      "route": "/customer-admin/profiles/{ProfileId:int}",
+      "status": "existing",
+      "layout": "MainLayout",
+      "auth": "profile",
+      "required_roles": ["CustomerSetup", "ManageProfiles"],
+      "nav_visible_for": [],
+      "component": "Components/Pages/CustomerAdmin/ProfileDetail.razor",
+      "breadcrumb": [
+        { "text": "Kundestyre", "href": "/customer-admin" },
+        { "text": "Profil", "href": null }
+      ]
+    }
+  ],
+
+  "nav_rules": {
+    "unauthenticated": "redirect to /login",
+    "authenticated_no_customer": "redirect to /select-customer",
+    "authenticated_no_profile": "redirect to /select-profile",
+    "fully_authenticated": "allow profile-scoped pages",
+    "role_check_failure": "redirect to /dashboard (never 403 in UI)"
+  },
+
+  "overlay_nav_sections": [
+    {
+      "section": "Send",
+      "items": [
+        { "label": "Oversigt", "route": "/dashboard", "roles": [] },
+        { "label": "Send besked", "route": "/send/wizard", "roles": [] }
+      ]
+    },
+    {
+      "section": "Beskeder",
+      "items": [
+        { "label": "Status", "route": "/status", "roles": [] },
+        { "label": "Kladder", "route": "/drafts", "roles": [] }
+      ]
+    },
+    {
+      "section": "Admin",
+      "roles_required_for_section": ["SuperAdmin", "ManageUsers"],
+      "items": [
+        { "label": "Brugere", "route": "/admin/users", "roles": ["SuperAdmin", "ManageUsers"] },
+        { "label": "Indstillinger", "route": "/admin/settings", "roles": ["SuperAdmin"] },
+        { "label": "Kundestyre", "route": "/customer-admin", "roles": ["CustomerSetup", "ManageUsers", "ManageProfiles"] }
+      ]
+    }
+  ]
+}
 
   "auth_requirements": {
     "authenticated": "ICurrentUser.UserId must be set (BlazorPrincipalHolder.Set() called)",

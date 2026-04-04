@@ -64,7 +64,8 @@ public sealed class JwtTokenService
 
         try
         {
-            var principal = new JwtSecurityTokenHandler().ValidateToken(token, parameters, out _);
+            var handler = new JwtSecurityTokenHandler { MapInboundClaims = false };
+            var principal = handler.ValidateToken(token, parameters, out _);
             return principal;
         }
         catch
