@@ -35,6 +35,9 @@ public static class ResultExtensions
             "PROFILE_NOT_FOUND"      => HttpResults.Problem(result.Error.Message, statusCode: 404),
             "NOT_FOUND"              => HttpResults.Problem(result.Error.Message, statusCode: 404),
 
+            // 400 — token is invalid or expired
+            "INVALID_TOKEN"          => HttpResults.Problem(result.Error.Message, statusCode: 400),
+
             // 409 — conflict: resource already exists or state prevents the action
             "EMAIL_TAKEN"            => HttpResults.Problem(result.Error.Message, statusCode: 409),
 

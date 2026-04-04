@@ -1,0 +1,17 @@
+@* ErrorAlert — delt fejlvisning fra Result<T>.Error.
+   Parametrer:  ErrorMessage (string?) — vis kun hvis ikke null/empty
+*@
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <MudAlert Severity="Severity.Error"
+              Variant="Variant.Filled"
+              Class="mb-4"
+              data-testid="error-alert">
+        @ErrorMessage
+    </MudAlert>
+}
+
+@code {
+    [Parameter] public string? ErrorMessage { get; set; }
+}

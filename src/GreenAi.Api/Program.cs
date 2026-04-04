@@ -1,5 +1,4 @@
 using GreenAi.Api.Components;
-using GreenAi.Api.Database;
 using GreenAi.Api.Features.Api.V1.Auth.Token;
 using GreenAi.Api.Features.Auth.ChangePassword;
 using GreenAi.Api.Features.Auth.Login;
@@ -13,19 +12,30 @@ using GreenAi.Api.Features.Localization.BatchUpsertLabels;
 using GreenAi.Api.Features.Localization.GetLabels;
 using GreenAi.Api.Features.System.Health;
 using GreenAi.Api.Features.System.Ping;
+using GreenAi.Api.Features.UserSelfService.PasswordReset;
+using GreenAi.Api.Features.UserSelfService.UpdateUser;
+using GreenAi.Api.Features.AdminLight.CreateUser;
+using GreenAi.Api.Features.AdminLight.AssignRole;
+using GreenAi.Api.Features.AdminLight.AssignProfile;
+using GreenAi.Api.Features.AdminLight.ListSettings;
+using GreenAi.Api.Features.AdminLight.SaveSetting;
 using GreenAi.Api.SharedKernel.Settings;
 using GreenAi.Api.SharedKernel.Auth;
 using GreenAi.Api.SharedKernel.Db;
 using GreenAi.Api.SharedKernel.Localization;
 using GreenAi.Api.SharedKernel.Logging;
+using GreenAi.Api.SharedKernel.Email;
 using GreenAi.Api.SharedKernel.Permissions;
 using GreenAi.Api.SharedKernel.Pipeline;
 using GreenAi.Api.SharedKernel.Tenant;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Components.Server.Circuits;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
 using MudBlazor.Services;
 using Serilog;
@@ -46,7 +56,9 @@ try
     // Serilog — konfigureres via appsettings
     builder.Host.UseSerilog((ctx, _, config) =>
     {
-        var cs = ctx.Configuration.GetConnectionString("Default")!;
+        var cs = ctx.HostingEnvironment.IsDevelopment()
+            ? ctx.Configuration.GetConnectionString("Dev")!
+            : ctx.Configuration.GetConnectionString("Live")!;
         config
             .MinimumLevel.Information()
             .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
@@ -67,13 +79,25 @@ try
     builder.Services.AddRazorComponents()
         .AddInteractiveServerComponents();
 
+    // Blazor: detailed circuit errors in development
+    if (builder.Environment.IsDevelopment())
+        builder.Services.Configure<CircuitOptions>(o => o.DetailedErrors = true);
+
     builder.Services.ConfigureHttpJsonOptions(options =>
     {
         options.SerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
         options.SerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
     });
 
-    builder.Services.AddMudServices();
+    builder.Services.AddMudServices(config =>
+    {
+        config.SnackbarConfiguration.PositionClass = MudBlazor.Defaults.Classes.Position.TopRight;
+        config.SnackbarConfiguration.PreventDuplicates = true;
+        config.SnackbarConfiguration.NewestOnTop = true;
+        config.SnackbarConfiguration.VisibleStateDuration = 3000;
+        config.SnackbarConfiguration.ShowTransitionDuration = 300;
+        config.SnackbarConfiguration.HideTransitionDuration = 300;
+    });
     builder.Services.AddHttpContextAccessor();
     builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.Section));
     builder.Services.AddScoped<BlazorPrincipalHolder>();
@@ -100,6 +124,13 @@ try
     builder.Services.AddSingleton<CircuitHandler, LoggingCircuitHandler>();
     builder.Services.AddScoped<ISystemLogger, DefaultSystemLogger>();
     builder.Services.AddTransient<OutgoingHttpClientLoggingHandler>();
+    builder.Services.AddScoped<EmailTemplateRepository>();
+    builder.Services.AddScoped<IEmailService, SmtpEmailService>();
+    builder.Services.AddScoped<IPasswordResetRequestRepository, PasswordResetRequestRepository>();
+    builder.Services.AddScoped<IPasswordResetConfirmRepository, PasswordResetConfirmRepository>();
+    builder.Services.AddScoped<ICreateUserRepository, CreateUserRepository>();
+    builder.Services.AddScoped<IAssignRoleRepository, AssignRoleRepository>();
+    builder.Services.AddScoped<IAssignProfileRepository, AssignProfileRepository>();
 
     // JWT authentication
     var jwtOptions = builder.Configuration.GetSection(JwtOptions.Section).Get<JwtOptions>()
@@ -121,6 +152,34 @@ try
         });
     builder.Services.AddAuthorization();
 
+    if (builder.Environment.IsDevelopment())
+    {
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen(options =>
+        {
+            options.SwaggerDoc("v1", new OpenApiInfo { Title = "GreenAI API", Version = "v1" });
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Type = SecuritySchemeType.Http,
+                Scheme = "Bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Description = "Indsæt JWT token — eksempel: eyJhbGci..."
+            });
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+                    },
+                    []
+                }
+            });
+        });
+    }
+
     builder.Services.AddMediatR(cfg =>
     {
         cfg.RegisterServicesFromAssemblyContaining<Program>();
@@ -131,11 +190,22 @@ try
     });
     builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
-    var connectionString = builder.Configuration.GetConnectionString("Default")
-        ?? throw new InvalidOperationException("ConnectionStrings:Default is required");
+    // Priority: 1) env var (test isolation / Docker), 2) Dev/Live based on environment
+    var connectionString =
+        System.Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
+        ?? (builder.Environment.IsDevelopment()
+            ? builder.Configuration.GetConnectionString("Dev")
+            : builder.Configuration.GetConnectionString("Live"))
+        ?? throw new InvalidOperationException("ConnectionStrings:Dev/Live is required");
     builder.Services.AddScoped<IDbSession>(_ => new DbSession(connectionString));
 
     var app = builder.Build();
+
+    // Required for shared hosting / reverse proxy (IIS, nginx) — fixes scheme, IP
+    app.UseForwardedHeaders(new ForwardedHeadersOptions
+    {
+        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+    });
 
     app.UseSerilogRequestLogging(options =>
     {
@@ -147,9 +217,6 @@ try
         };
     });
 
-    // Run database migrations on startup
-    DatabaseMigrator.Run(connectionString, app.Logger);
-
     // Initialize Dapper.Plus license
     DapperPlusSetup.Initialize();
 
@@ -160,7 +227,12 @@ try
         await settingService.CreateDefaultsAsync();
     }
 
-    if (!app.Environment.IsDevelopment())
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "GreenAI API v1"));
+    }
+    else
     {
         app.UseExceptionHandler("/Error", createScopeForErrors: true);
         app.UseHsts();
@@ -199,6 +271,14 @@ try
     BatchUpsertLabelsEndpoint.Map(app);
     GetLabelsEndpoint.Map(app);
     GetApiTokenEndpoint.Map(app);
+    UpdateUserEndpoint.Map(app);
+    PasswordResetRequestEndpoint.Map(app);
+    PasswordResetConfirmEndpoint.Map(app);
+    CreateUserEndpoint.Map(app);
+    AssignRoleEndpoint.Map(app);
+    AssignProfileEndpoint.Map(app);
+    ListSettingsEndpoint.Map(app);
+    SaveSettingEndpoint.Map(app);
 
     app.MapStaticAssets();
     app.MapRazorComponents<App>()

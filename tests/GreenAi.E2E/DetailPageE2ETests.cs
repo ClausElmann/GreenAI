@@ -130,4 +130,34 @@ public sealed class DetailPageE2ETests : E2ETestBase
         var chipText = await chip.InnerTextAsync();
         Assert.True(chipText is "Aktiv" or "Inaktiv", $"Chip text should be Aktiv or Inaktiv, got: '{chipText}'");
     }
+
+    // ─────────────────────────────────────────────────────────────
+    // Label validation — dedicated smoke tests
+    // ─────────────────────────────────────────────────────────────
+
+    [Fact]
+    public async Task ProfileDetail_NoMissingLabels()
+    {
+        await LoginAsync();
+        await Page.GotoAsync($"{BaseUrl}/customer-admin");
+        await WaitOrFailAsync("[data-testid='customer-admin-heading']", timeoutMs: 20_000);
+        await Page.ClickAsync(".mud-tabs .mud-tab:nth-of-type(3)");
+        await WaitOrFailAsync("[data-testid='profile-table'] a", timeoutMs: 10_000);
+        await Page.ClickAsync("[data-testid='profile-table'] a");
+        await WaitOrFailAsync("[data-testid='profile-save']", timeoutMs: 15_000);
+        await AssertNoMissingLabelsAsync("ProfileDetail page");
+    }
+
+    [Fact]
+    public async Task UserDetail_NoMissingLabels()
+    {
+        await LoginAsync();
+        await Page.GotoAsync($"{BaseUrl}/customer-admin");
+        await WaitOrFailAsync("[data-testid='customer-admin-heading']", timeoutMs: 20_000);
+        await Page.ClickAsync(".mud-tabs .mud-tab:nth-of-type(2)");
+        await WaitOrFailAsync("[data-testid='user-table'] a", timeoutMs: 10_000);
+        await Page.ClickAsync("[data-testid='user-table'] a");
+        await WaitOrFailAsync(".mud-breadcrumbs", timeoutMs: 15_000);
+        await AssertNoMissingLabelsAsync("UserDetail page");
+    }
 }

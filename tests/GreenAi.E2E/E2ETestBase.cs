@@ -137,6 +137,64 @@ public abstract class E2ETestBase : IAsyncLifetime
     }
 
     // -------------------------------------------------------------------------
+    // Label validation helpers
+    // -------------------------------------------------------------------------
+
+    /// <summary>
+    /// Scans the rendered page for missing localization labels.
+    /// Missing labels appear as raw keys in the UI: "shared.SaveButton" instead of "Gem".
+    /// Uses JavaScript to traverse all text nodes recursively.
+    /// </summary>
+    protected async Task<IReadOnlyList<string>> ScanForMissingLabelsAsync()
+    {
+        // Wait for network idle so dynamic labels have time to load
+        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        const string js = """
+            (() => {
+                const missing = new Set();
+                const pattern = /\b(shared|feature|nav)\.[A-Z][a-zA-Z0-9]+/g;
+
+                function scan(node) {
+                    if (node.nodeType === 3) {
+                        const text = node.textContent.trim();
+                        if (text) {
+                            const hits = text.match(pattern);
+                            if (hits) hits.forEach(h => missing.add(h));
+                        }
+                    } else {
+                        node.childNodes.forEach(scan);
+                    }
+                }
+
+                scan(document.body);
+                return Array.from(missing);
+            })()
+            """;
+
+        var result = await Page.EvaluateAsync<string[]>(js);
+        return result ?? [];
+    }
+
+    /// <summary>
+    /// Asserts that the current page has NO raw label keys visible in the UI.
+    /// Call this after navigating to a page to verify all localization labels loaded correctly.
+    /// </summary>
+    protected async Task AssertNoMissingLabelsAsync(string? pageDescription = null)
+    {
+        var missing = await ScanForMissingLabelsAsync();
+
+        if (missing.Count > 0)
+        {
+            var context = pageDescription ?? Page.Url;
+            var details = string.Join("\n  - ", missing);
+            await FailAsync(
+                $"Label validation failed on '{context}' — {missing.Count} raw key(s) found:\n  - {details}\n\n" +
+                "Fix: run scripts/localization/Add-Labels.ps1 for missing keys (DA + EN).");
+        }
+    }
+
+    // -------------------------------------------------------------------------
     // Private helpers
     // -------------------------------------------------------------------------
 

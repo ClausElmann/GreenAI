@@ -38,6 +38,8 @@ public sealed class CustomerAdminE2ETests : E2ETestBase
 
         var heading = Page.Locator("[data-testid='customer-admin-heading']");
         Assert.Equal("Kundestyre", await heading.InnerTextAsync());
+
+        await AssertNoMissingLabelsAsync("CustomerAdmin page");
     }
 
     [Fact]
@@ -53,6 +55,37 @@ public sealed class CustomerAdminE2ETests : E2ETestBase
         var content = await Page.Locator("[data-testid='user-table']").InnerTextAsync();
         Assert.Contains("admin@dev.local", content);
         Assert.Contains("sender@dev.local", content);
+    }
+
+    [Fact]
+    public async Task CustomerAdmin_SettingsTab_NoMissingLabels()
+    {
+        await LoginAsync();
+        await Page.GotoAsync($"{BaseUrl}/customer-admin");
+        await WaitOrFailAsync("[data-testid='customer-admin-heading']", timeoutMs: 20_000);
+        await AssertNoMissingLabelsAsync("CustomerAdmin / Settings tab");
+    }
+
+    [Fact]
+    public async Task CustomerAdmin_UsersTab_NoMissingLabels()
+    {
+        await LoginAsync();
+        await Page.GotoAsync($"{BaseUrl}/customer-admin");
+        await WaitOrFailAsync("[data-testid='customer-admin-heading']", timeoutMs: 20_000);
+        await Page.ClickAsync("text=Brugere");
+        await WaitOrFailAsync("[data-testid='user-table']", timeoutMs: 10_000);
+        await AssertNoMissingLabelsAsync("CustomerAdmin / Users tab");
+    }
+
+    [Fact]
+    public async Task CustomerAdmin_ProfilesTab_NoMissingLabels()
+    {
+        await LoginAsync();
+        await Page.GotoAsync($"{BaseUrl}/customer-admin");
+        await WaitOrFailAsync("[data-testid='customer-admin-heading']", timeoutMs: 20_000);
+        await Page.ClickAsync("text=Profiler");
+        await WaitOrFailAsync("[data-testid='profile-table']", timeoutMs: 10_000);
+        await AssertNoMissingLabelsAsync("CustomerAdmin / Profiles tab");
     }
 
     [Fact]

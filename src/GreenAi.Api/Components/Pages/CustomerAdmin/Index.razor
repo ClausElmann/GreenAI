@@ -10,17 +10,11 @@
 @inject BlazorPrincipalHolder PrincipalHolder
 @inject ILocalizationContext Loc
 
-<PageTitle>@Loc.Get("nav.CustomerAdmin") — GreenAi</PageTitle>
+<AppShell Title="@Loc.Get("nav.CustomerAdmin")"
+          IsLoading="_loading">
 
-<MudText Typo="Typo.h5" Class="mb-4" data-testid="customer-admin-heading">@Loc.Get("nav.CustomerAdmin")</MudText>
-
-@if (_loading)
-{
-    <MudProgressCircular Indeterminate="true" Class="mt-8" />
-}
-else
-{
-    <MudTabs Elevation="1" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pt-4">
+    <MudTabs Elevation="1" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pt-4"
+             data-testid="customer-admin-heading">
         <MudTabPanel Text="@Loc.Get("feature.customerAdmin.TabSettings")" Icon="@Icons.Material.Filled.Settings">
             <SettingsTab CustomerId="_customerId" CustomerName="_customerName" />
         </MudTabPanel>
@@ -33,7 +27,8 @@ else
             <ProfileList Profiles="_profiles" OnDelete="DeleteProfileAsync" />
         </MudTabPanel>
     </MudTabs>
-}
+
+</AppShell>
 
 @code {
     [CascadingParameter] private Task<AuthenticationState> AuthStateTask { get; set; } = null!;

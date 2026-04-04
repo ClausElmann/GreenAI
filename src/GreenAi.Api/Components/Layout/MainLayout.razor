@@ -27,18 +27,7 @@
         <MudDrawerHeader>
             <MudText Typo="Typo.subtitle1"><b>GreenAi</b></MudText>
         </MudDrawerHeader>
-        <MudNavMenu>
-            <MudNavLink Href="/"
-                        Match="NavLinkMatch.All"
-                        Icon="@Icons.Material.Filled.Home">
-                @Loc.Get("nav.Home")
-            </MudNavLink>
-            <MudNavLink Href="/customer-admin"
-                        Match="NavLinkMatch.Prefix"
-                        Icon="@Icons.Material.Filled.BusinessCenter">
-                @Loc.Get("nav.CustomerAdmin")
-            </MudNavLink>
-        </MudNavMenu>
+        <NavigationMenu />
     </MudDrawer>
 
     <MudMainContent>
@@ -60,7 +49,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (CurrentUser.IsAuthenticated)
-            await Loc.EnsureLoadedAsync(CurrentUser.LanguageId);
+        // Load labels always — fallback to Danish (1) for unauthenticated users
+        var languageId = CurrentUser.IsAuthenticated ? CurrentUser.LanguageId : 1;
+        await Loc.EnsureLoadedAsync(languageId);
     }
 }

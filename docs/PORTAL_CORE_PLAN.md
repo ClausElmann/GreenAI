@@ -3,6 +3,11 @@
 > **Phase:** 2 — Core Portal Flows
 > **Gate:** SLICE-006 (Foundation) completed ✅ — all 226 tests green
 > **Created:** 2026-04-04
+> **Updated:** 2026-04-05
+> **P2-SLICE-002:** ✅ COMPLETE (238 tests)
+> **P2-SLICE-001:** ✅ COMPLETE (270 tests — +32 new)
+> **P2-SLICE-003:** ✅ COMPLETE (297 tests — +27 new)
+> **P2-SLICE-004:** ✅ COMPLETE (305 tests — +8 new)
 > **Prerequisite:** `docs/FOUNDATION-PLAN.md` Phase 1 complete
 
 ---
@@ -57,17 +62,17 @@ Fasen er domæne-agnostisk — ingen SMS, messaging, delivery eller integrations
 
 ## Slices — Phase 2
 
-### P2-SLICE-001 — user_self_service (PRIORITY 1)
+### P2-SLICE-001 — user_self_service (PRIORITY 1) ✅ COMPLETE (270/270 tests)
 
 **Mål:** Brugeren kan se og opdatere sin profil, anmode om og bekræfte password reset.
 
 | Opgave | Beskrivelse | Status |
 |--------|-------------|--------|
-| `PUT /api/user/update` | Opdater DisplayName + LanguageId | ❌ |
-| `POST /api/user/password-reset-request` | Send reset-link via email (token i DB) | ❌ |
-| `POST /api/user/password-reset-confirm` | Valider token + opdater password | ❌ |
-| `UserProfilePage.razor` | Blazor-side: vis og rediger profil | ❌ |
-| Tests | HTTP integration + unit | ❌ |
+| `PUT /api/user/update` | Opdater DisplayName + LanguageId | ✅ |
+| `POST /api/user/password-reset-request` | Send reset-link via email (token i DB) | ✅ |
+| `POST /api/user/password-reset-confirm` | Valider token + opdater password | ✅ |
+| `UserProfilePage.razor` | Blazor-side: vis og rediger profil | ❌ (P2-SLICE-004) |
+| Tests | HTTP integration (12) + unit (20) | ✅ |
 
 **Dependencies:** email_foundation (reset-link), ISystemLogger (ved token-oprettelse)
 
@@ -75,17 +80,22 @@ Fasen er domæne-agnostisk — ingen SMS, messaging, delivery eller integrations
 
 ---
 
-### P2-SLICE-002 — email_foundation (PRIORITY 2)
+### P2-SLICE-002 — email_foundation (PRIORITY 2) ✅ COMPLETE (238/238 tests)
 
 **Mål:** Email-infrastruktur der kan sende template-baserede mails (reset link, notifikationer).
 
 | Opgave | Beskrivelse | Status |
 |--------|-------------|--------|
-| `EmailTemplates`-tabel + migration | Navn, Subject, BodyHtml, LanguageId | ❌ |
-| `IEmailService` + `EmailService` | Send via SMTP/relay | ❌ |
-| Template rendering | Erstat `{{token}}`, `{{name}}` etc. | ❌ |
-| `AppSetting.SmtpHost` / `SmtpPort` | Konfiguration via AppSetting | ❌ |
-| Tests | Unit test rendering, integration test send (mock SMTP) | ❌ |
+| `EmailTemplates`-tabel + migration | V022 — Navn, Subject, BodyHtml, LanguageId | ✅ |
+| `PasswordResetTokens`-tabel + migration | V021 | ✅ |
+| `IEmailService` + `SmtpEmailService` | System.Net.Mail, config fra AppSetting | ✅ |
+| `NoOpEmailService` | Dev/test-override | ✅ |
+| `EmailTemplateRenderer` | `{{token}}`, `{{name}}`, `{{link}}`, `{{ttl}}` | ✅ |
+| `EmailTemplateRepository` | FindAsync med EN fallback | ✅ |
+| `AppSetting` SMTP-nøgler (10–16) | SmtpHost, SmtpPort, SmtpUseSsl, From, Auth | ✅ |
+| `AppSetting` PasswordReset-nøgler (20–21) | TtlMinutes, BaseUrl | ✅ |
+| DA+EN seed-templates | V022 + V024 (re-seed) | ✅ |
+| Tests | 7 unit (renderer) + 6 integration (repository) | ✅ |
 
 **Bruges af:** password_reset_request (P2-SLICE-001)
 
@@ -93,17 +103,17 @@ Fasen er domæne-agnostisk — ingen SMS, messaging, delivery eller integrations
 
 ---
 
-### P2-SLICE-003 — admin_light (PRIORITY 3)
+### P2-SLICE-003 — admin_light (PRIORITY 3) ✅ COMPLETE (297/297 tests)
 
 **Mål:** Administrator kan oprette brugere, tildele roller og profiler (minimal UI).
 
 | Opgave | Beskrivelse | Status |
 |--------|-------------|--------|
-| `POST /api/admin/users` | Opret bruger (email + initial password) | ❌ |
-| `POST /api/admin/users/{id}/roles` | Tildel UserRole | ❌ |
-| `POST /api/admin/users/{id}/profiles` | Tildel profil-adgang | ❌ |
-| `AdminUserListPage.razor` | Enkel liste over brugere under customer | ❌ |
-| Tests | HTTP integration + unit | ❌ |
+| `POST /api/admin/users` | Opret bruger (email + initial password) | ✅ |
+| `POST /api/admin/users/{id}/roles` | Tildel UserRole | ✅ |
+| `POST /api/admin/users/{id}/profiles` | Tildel profil-adgang | ✅ |
+| `AdminUserListPage.razor` | Enkel liste over brugere under customer | ❌ (P2-SLICE-004) |
+| Tests | HTTP integration (11) + unit (16) | ✅ |
 
 **Constraints:**
 - Kræver `UserRole.ManageUsers` på kaldende bruger
@@ -113,19 +123,23 @@ Fasen er domæne-agnostisk — ingen SMS, messaging, delivery eller integrations
 
 ---
 
-### P2-SLICE-004 — ui_foundation (PRIORITY 4)
+### P2-SLICE-004 — ui_foundation (PRIORITY 4) ✅ COMPLETE (305/305 tests)
 
 **Mål:** Grundlæggende Blazor-skelet der kan navigere, vise loading states og fejlhåndtere.
 
 | Opgave | Beskrivelse | Status |
 |--------|-------------|--------|
-| `NavigationMenu.razor` | Sidebar/top-nav med auth-guards | ❌ |
-| `AppShell.razor` | Overordnet layout: nav + content + breadcrumb | ❌ |
-| `LoadingOverlay.razor` | Delt loading-komponent (bool IsLoading) | ❌ |
-| `ErrorAlert.razor` | Delt fejlvisning fra `Result<T>.Error` | ❌ |
-| Auth-guards i nav | Skjul menupunkter uden rettigheder | ❌ |
-| Blazor-side: Settings | Bruger kan sætte AppSettings (SuperAdmin only) | ❌ |
-| Tests | E2E smoke tests for nav + loading | ❌ |
+| `NavigationMenu.razor` | Sidebar/top-nav med auth-guards | ✅ |
+| `AppShell.razor` | Overordnet layout: nav + content + breadcrumb | ✅ |
+| `LoadingOverlay.razor` | Delt loading-komponent (bool IsLoading) | ✅ |
+| `ErrorAlert.razor` | Delt fejlvisning fra `Result<T>.Error` | ✅ |
+| Auth-guards i nav | Skjul menupunkter uden rettigheder | ✅ |
+| `GET /api/admin/settings` | List alle AppSettings (SuperAdmin) | ✅ |
+| `PUT /api/admin/settings/{key}` | Gem AppSetting-værdi (SuperAdmin) | ✅ |
+| `AdminSettingsPage.razor` | Blazor-side: redigér AppSettings | ✅ |
+| `UserProfilePage.razor` | Blazor-side: vis og rediger profil | ✅ |
+| `AdminUserListPage.razor` | Blazor-side: opret bruger (enkel form) | ✅ |
+| Tests | HTTP integration (8 SettingsTests) | ✅ |
 
 **Færdig når:** Alle sider bruger `AppShell`, alle loading states bruger `LoadingOverlay`.
 

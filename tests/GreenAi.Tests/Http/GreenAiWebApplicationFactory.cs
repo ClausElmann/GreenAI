@@ -1,6 +1,8 @@
+using GreenAi.Api.SharedKernel.Email;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace GreenAi.Tests.Http;
 
@@ -37,5 +39,15 @@ public sealed class GreenAiWebApplicationFactory : WebApplicationFactory<Program
         builder.ConfigureAppConfiguration(config =>
             config.AddInMemoryCollection(
                 new Dictionary<string, string?> { ["Testing:SkipStatusCodePages"] = "true" }));
+
+        // Replace SmtpEmailService with NoOpEmailService — no real SMTP in tests.
+        builder.ConfigureServices(services =>
+        {
+            var descriptor = services.SingleOrDefault(
+                d => d.ServiceType == typeof(IEmailService));
+            if (descriptor is not null)
+                services.Remove(descriptor);
+            services.AddScoped<IEmailService, NoOpEmailService>();
+        });
     }
 }

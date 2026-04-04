@@ -16,6 +16,34 @@
 
 ---
 
+## Label Workflow (AI: FØLG DETTE)
+
+```
+STEP 1: Tjek eksisterende labels (DRY!)
+   pwsh -File scripts/localization/Get-Labels.ps1 -Filter "shared.*"
+
+STEP 2: Opret MANGLENDE labels i LIVE (itgain.dk) FØRST — inden kodeændringer
+   $labels = @(
+       @{ ResourceName="shared.MyLabel"; ResourceValue="Dansk";  LanguageId=1 }
+       @{ ResourceName="shared.MyLabel"; ResourceValue="English"; LanguageId=2 }
+   )
+   pwsh -File scripts/localization/Add-Labels.ps1 -Labels $labels
+
+STEP 3: Sync til lokal dev DB (så UI ikke viser nøgler under debugging)
+   pwsh -File scripts/localization/Sync-Labels.ps1
+
+STEP 4: Opdater kode (Blazor @Loc.Get("shared.MyLabel"))
+```
+
+**KRITISK:**
+- ⛔ ALDRIG SQL direkte mod Labels-tabellen
+- ⛔ ALDRIG localhost — altid `https://itgain.dk`
+- ⛔ ALDRIG opret feature.SaveButton hvis shared.SaveButton eksisterer
+- ✅ Credentials: `appsettings.Production.json` → `LabelManagementApi` (gitignored)
+- ✅ LanguageId: 1=Dansk, 2=English
+
+---
+
 ## Architecture
 
 ```

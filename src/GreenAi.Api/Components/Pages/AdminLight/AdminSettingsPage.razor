@@ -1,0 +1,91 @@
+@page "/admin/settings"
+@using GreenAi.Api.Features.AdminLight.ListSettings
+@using GreenAi.Api.Features.AdminLight.SaveSetting
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IMediator Mediator
+@inject NavigationManager Nav
+@inject BlazorPrincipalHolder PrincipalHolder
+@inject ILocalizationContext Loc
+@inject ISnackbar Snackbar
+
+<AppShell Title="@Loc.Get("feature.adminSettings.Title")"
+          IsLoading="_loading"
+          ErrorMessage="_errorMessage">
+
+    @if (_settings is not null)
+    {
+        <MudTable Items="_settings" Dense="true" Hover="true" data-testid="settings-table">
+            <HeaderContent>
+                <MudTh>@Loc.Get("feature.adminSettings.KeyColumn")</MudTh>
+                <MudTh>@Loc.Get("feature.adminSettings.ValueColumn")</MudTh>
+                <MudTh></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Key">@context.Name</MudTd>
+                <MudTd DataLabel="Value">
+                    <MudTextField @bind-Value="@_editValues[context.Key]"
+                                  Variant="Variant.Text"
+                                  Immediate="true"
+                                  data-testid="@($"setting-{context.Name}-input")" />
+                </MudTd>
+                <MudTd>
+                    <MudIconButton Icon="@Icons.Material.Filled.Save"
+                                   Color="Color.Primary"
+                                   Size="Size.Small"
+                                   OnClick="@(() => SaveAsync(context.Key))"
+                                   data-testid="@($"save-{context.Name}-button")" />
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    }
+
+</AppShell>
+
+@code {
+    [CascadingParameter] private Task<AuthenticationState> AuthStateTask { get; set; } = null!;
+
+    private bool                        _loading   = true;
+    private string?                     _errorMessage;
+    private IReadOnlyList<SettingDto>?  _settings;
+    private Dictionary<int, string?>   _editValues = [];
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        var authState = await AuthStateTask;
+        if (authState.User.Identity?.IsAuthenticated != true)
+        {
+            Nav.NavigateTo("/login");
+            return;
+        }
+
+        PrincipalHolder.Set(authState.User);
+
+        var result = await Mediator.Send(new ListSettingsQuery());
+
+        if (!result.IsSuccess)
+        {
+            _errorMessage = result.Error!.Message;
+            _loading      = false;
+            StateHasChanged();
+            return;
+        }
+
+        _settings   = result.Value!.Settings;
+        _editValues = _settings.ToDictionary(s => s.Key, s => s.Value);
+
+        _loading = false;
+        StateHasChanged();
+    }
+
+    private async Task SaveAsync(int key)
+    {
+        var result = await Mediator.Send(new SaveSettingCommand(key, _editValues.GetValueOrDefault(key)));
+
+        if (!result.IsSuccess)
+            Snackbar.Add(result.Error!.Message, Severity.Error);
+        else
+            Snackbar.Add(Loc.Get("feature.adminSettings.SaveSuccess"), Severity.Success);
+    }
+}

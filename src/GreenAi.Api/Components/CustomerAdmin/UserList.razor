@@ -12,7 +12,7 @@
                Size="Size.Small"
                OnClick="CreateUser"
                data-testid="create-user">
-        @Loc.Get("feature.user.CreateButton")
+        @string.Format(Loc.Get("shared.CreateEntityButton"), Loc.Get("shared.User").ToLower())
     </MudButton>
 </MudStack>
 

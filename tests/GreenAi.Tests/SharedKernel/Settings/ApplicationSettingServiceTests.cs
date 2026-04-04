@@ -81,7 +81,7 @@ public sealed class ApplicationSettingServiceTests : IAsyncLifetime
         await svc.CreateDefaultsAsync();
 
         // Verificér at mindst én nøgle eksisterer bagefter
-        var value = await svc.GetAsync(AppSetting.DisableAllBroadcasts);
+        var value = await svc.GetAsync(AppSetting.RequestLogLevel);
         Assert.Null(value); // default = null (tom streng ikke seedet)
     }
 }

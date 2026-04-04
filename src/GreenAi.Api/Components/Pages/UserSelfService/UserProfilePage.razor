@@ -1,0 +1,91 @@
+@page "/user/profile"
+@using GreenAi.Api.Features.Auth.Me
+@using GreenAi.Api.Features.UserSelfService.UpdateUser
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IMediator Mediator
+@inject NavigationManager Nav
+@inject BlazorPrincipalHolder PrincipalHolder
+@inject ILocalizationContext Loc
+
+<AppShell Title="@Loc.Get("feature.userProfile.Title")"
+          IsLoading="_loading"
+          ErrorMessage="_errorMessage">
+
+    <MudGrid>
+        <MudItem xs="12" sm="6">
+            <MudTextField @bind-Value="_displayName"
+                          Label="@Loc.Get("feature.userProfile.DisplayNameLabel")"
+                          Variant="Variant.Outlined"
+                          data-testid="display-name-input" />
+        </MudItem>
+    </MudGrid>
+
+    <MudStack Row="true" Spacing="2" Class="mt-4">
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   OnClick="SaveAsync"
+                   data-testid="save-profile-button">
+            @Loc.Get("feature.userProfile.SaveButton")
+        </MudButton>
+    </MudStack>
+
+    @if (_saveSuccess)
+    {
+        <MudAlert Severity="Severity.Success" Class="mt-4" data-testid="save-success-alert">
+            @Loc.Get("feature.userProfile.SaveSuccess")
+        </MudAlert>
+    }
+
+</AppShell>
+
+@code {
+    [CascadingParameter] private Task<AuthenticationState> AuthStateTask { get; set; } = null!;
+
+    private bool   _loading     = true;
+    private string _displayName = string.Empty;
+    private string? _errorMessage;
+    private bool   _saveSuccess;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        var authState = await AuthStateTask;
+        if (authState.User.Identity?.IsAuthenticated != true)
+        {
+            Nav.NavigateTo("/login");
+            return;
+        }
+
+        PrincipalHolder.Set(authState.User);
+
+        var result = await Mediator.Send(new MeQuery());
+        if (!result.IsSuccess)
+        {
+            _errorMessage = result.Error!.Message;
+            _loading      = false;
+            StateHasChanged();
+            return;
+        }
+
+        _displayName = result.Value!.Email; // email as display fallback until DisplayName in MeResponse
+
+        _loading = false;
+        StateHasChanged();
+    }
+
+    private async Task SaveAsync()
+    {
+        _errorMessage = null;
+        _saveSuccess  = false;
+
+        var result = await Mediator.Send(new UpdateUserCommand(_displayName, null));
+
+        if (!result.IsSuccess)
+            _errorMessage = result.Error!.Message;
+        else
+            _saveSuccess = true;
+
+        StateHasChanged();
+    }
+}

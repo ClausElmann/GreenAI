@@ -411,7 +411,7 @@
       "domain": "UserSelfService",
       "route": "PUT /api/user/update",
       "phase": "P2-SLICE-001",
-      "status": "not_implemented",
+      "status": "implemented",
       "red_threads": [
         "result_pattern",
         "current_user",
@@ -440,7 +440,7 @@
       "domain": "UserSelfService",
       "route": "POST /api/user/password-reset-request",
       "phase": "P2-SLICE-001",
-      "status": "not_implemented",
+      "status": "implemented",
       "red_threads": [
         "result_pattern"
       ],
@@ -466,7 +466,7 @@
       "domain": "UserSelfService",
       "route": "POST /api/user/password-reset-confirm",
       "phase": "P2-SLICE-001",
-      "status": "not_implemented",
+      "status": "implemented",
       "red_threads": [
         "result_pattern"
       ],
@@ -518,7 +518,7 @@
       "domain": "AdminLight",
       "route": "POST /api/admin/users",
       "phase": "P2-SLICE-003",
-      "status": "not_implemented",
+      "status": "implemented",
       "red_threads": [
         "result_pattern",
         "tenant_isolation",
@@ -549,7 +549,7 @@
       "domain": "AdminLight",
       "route": "POST /api/admin/users/{id}/roles",
       "phase": "P2-SLICE-003",
-      "status": "not_implemented",
+      "status": "implemented",
       "red_threads": [
         "result_pattern",
         "tenant_isolation",
@@ -579,7 +579,7 @@
       "domain": "AdminLight",
       "route": "POST /api/admin/users/{id}/profiles",
       "phase": "P2-SLICE-003",
-      "status": "not_implemented",
+      "status": "implemented",
       "red_threads": [
         "result_pattern",
         "tenant_isolation",
@@ -596,6 +596,60 @@
       "tests": {
         "integration": "tests/GreenAi.Tests/Http/AdminLight/AdminLightTests.cs",
         "unit": "tests/GreenAi.Tests/Features/AdminLight/AssignProfileHandlerTests.cs",
+        "e2e": null
+      },
+      "auth": "profile",
+      "pipeline_markers": [
+        "IRequireAuthentication",
+        "IRequireProfile"
+      ]
+    },
+    {
+      "id": "admin_list_settings",
+      "domain": "AdminLight",
+      "route": "GET /api/admin/settings",
+      "phase": "P2-SLICE-004",
+      "status": "implemented",
+      "red_threads": [
+        "result_pattern",
+        "current_user"
+      ],
+      "command_or_query": "Features/AdminLight/ListSettings/ListSettingsQuery.cs",
+      "handler": "Features/AdminLight/ListSettings/ListSettingsHandler.cs",
+      "endpoint": "Features/AdminLight/ListSettings/ListSettingsEndpoint.cs",
+      "sql_files": [],
+      "validator": null,
+      "ui_page": "Components/Pages/AdminLight/AdminSettingsPage.razor",
+      "tests": {
+        "integration": "tests/GreenAi.Tests/Http/AdminLight/SettingsTests.cs",
+        "unit": null,
+        "e2e": null
+      },
+      "auth": "profile",
+      "pipeline_markers": [
+        "IRequireAuthentication",
+        "IRequireProfile"
+      ]
+    },
+    {
+      "id": "admin_save_setting",
+      "domain": "AdminLight",
+      "route": "PUT /api/admin/settings/{key:int}",
+      "phase": "P2-SLICE-004",
+      "status": "implemented",
+      "red_threads": [
+        "result_pattern",
+        "current_user"
+      ],
+      "command_or_query": "Features/AdminLight/SaveSetting/SaveSettingCommand.cs",
+      "handler": "Features/AdminLight/SaveSetting/SaveSettingHandler.cs",
+      "endpoint": "Features/AdminLight/SaveSetting/SaveSettingEndpoint.cs",
+      "sql_files": [],
+      "validator": null,
+      "ui_page": "Components/Pages/AdminLight/AdminSettingsPage.razor",
+      "tests": {
+        "integration": "tests/GreenAi.Tests/Http/AdminLight/SettingsTests.cs",
+        "unit": null,
         "e2e": null
       },
       "auth": "profile",

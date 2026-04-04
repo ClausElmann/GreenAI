@@ -1,0 +1,106 @@
+@page "/admin/users"
+@using GreenAi.Api.Features.AdminLight.CreateUser
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IMediator Mediator
+@inject NavigationManager Nav
+@inject BlazorPrincipalHolder PrincipalHolder
+@inject ILocalizationContext Loc
+@inject ISnackbar Snackbar
+
+<AppShell Title="@Loc.Get("feature.adminUsers.Title")"
+          IsLoading="_loading"
+          ErrorMessage="_errorMessage">
+
+    <MudStack Row="true" Spacing="2" Class="mb-4">
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   StartIcon="@Icons.Material.Filled.PersonAdd"
+                   OnClick="OpenCreateDrawer"
+                   data-testid="create-user-button">
+            @string.Format(Loc.Get("shared.CreateEntityButton"), Loc.Get("shared.User").ToLower())
+        </MudButton>
+    </MudStack>
+
+    @* Create user inline form (drawer-lite) *@
+    @if (_showCreateForm)
+    {
+        <MudPaper Class="pa-4 mb-4" Elevation="1">
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="_newEmail"
+                                  Label="@Loc.Get("shared.EmailLabel")"
+                                  Variant="Variant.Outlined"
+                                  data-testid="new-user-email-input" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="_newPassword"
+                                  Label="shared.PasswordLabel"
+                                  InputType="InputType.Password"
+                                  Variant="Variant.Outlined"
+                                  data-testid="new-user-password-input" />
+                </MudItem>
+            </MudGrid>
+            <MudStack Row="true" Spacing="2" Class="mt-4">
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           OnClick="CreateUserAsync"
+                           data-testid="confirm-create-user-button">
+                    @Loc.Get("shared.SaveButton")
+                </MudButton>
+                <MudButton Variant="Variant.Text"
+                           OnClick="CloseCreateForm"
+                           data-testid="cancel-create-user-button">
+                    @Loc.Get("shared.CancelButton")
+                </MudButton>
+            </MudStack>
+        </MudPaper>
+    }
+
+</AppShell>
+
+@code {
+    [CascadingParameter] private Task<AuthenticationState> AuthStateTask { get; set; } = null!;
+
+    private bool    _loading         = true;
+    private string? _errorMessage;
+    private bool    _showCreateForm;
+    private string  _newEmail        = string.Empty;
+    private string  _newPassword     = string.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        var authState = await AuthStateTask;
+        if (authState.User.Identity?.IsAuthenticated != true)
+        {
+            Nav.NavigateTo("/login");
+            return;
+        }
+
+        PrincipalHolder.Set(authState.User);
+
+        _loading = false;
+        StateHasChanged();
+    }
+
+    private void OpenCreateDrawer() { _showCreateForm = true; StateHasChanged(); }
+    private void CloseCreateForm()  { _showCreateForm = false; _newEmail = _newPassword = string.Empty; StateHasChanged(); }
+
+    private async Task CreateUserAsync()
+    {
+        _errorMessage = null;
+
+        var result = await Mediator.Send(new CreateUserCommand(_newEmail, _newPassword));
+
+        if (!result.IsSuccess)
+        {
+            _errorMessage = result.Error!.Message;
+            StateHasChanged();
+            return;
+        }
+
+        Snackbar.Add($"User '{_newEmail}' created.", Severity.Success);
+        CloseCreateForm();
+    }
+}

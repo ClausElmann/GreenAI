@@ -1,6 +1,6 @@
 # Status
 
-> Last updated: 2026-04-02 (session 2)
+> Last updated: 2026-04-04 (session 4 — Phase 2 Portal Core complete)
 
 ## Løsningsstatus
 
@@ -9,8 +9,8 @@
 - [x] `GreenAi.Api` oprettet (Blazor Server, .NET 10)
 - [x] `GreenAi.Tests` oprettet (xUnit + NSubstitute)
 - [x] SharedKernel: `ICurrentUser`, `IDbSession`, `DbSession`, `SqlLoader`, `Result<T>`, `StrongIds`, `ITenantContext`, `ValidationBehavior`, `AuthorizationBehavior`, `RequireProfileBehavior`, `LoggingBehavior`
-- [x] Database: DbUp + 14 migrationer (V001–V014), `DatabaseMigrator`
-- [x] `GreenAi.DB` SSDT-projekt (14 tabeller)
+- [x] Database: DbUp + 25 migrationer (V001–V025), `DatabaseMigrator`
+- [x] `GreenAi.DB` SSDT-projekt (tabeller)
 - [x] Dapper + Z.Dapper.Plus (licenseret)
 - [x] Serilog → SQL + console
 - [x] `DatabaseFixture` + Respawn
@@ -47,6 +47,12 @@
 - [x] `ILocalizationContext` + `LocalizationContext` — Scoped Blazor helper (`@Loc.Get("key")`)
 - [x] `BatchUpsertLabels` endpoint (`POST /api/labels/batch-upsert`) — SuperAdmin only, validator, MERGE SQL
 
+### Portal Core — Phase 2 (COMPLETE — 305/305 tests)
+- [x] P2-SLICE-002 — email_foundation: `IEmailService`, `SmtpEmailService`, `NoOpEmailService`, `EmailTemplateRenderer` + tests
+- [x] P2-SLICE-001 — user_self_service: `PUT /api/user/update`, password reset request + confirm, `UserProfilePage.razor`
+- [x] P2-SLICE-003 — admin_light: `POST /api/admin/users`, assign role/profile, `AdminUserListPage.razor`
+- [x] P2-SLICE-004 — ui_foundation: `AppShell`, `NavigationMenu`, `LoadingOverlay`, `ErrorAlert`, Settings endpoints, `AdminSettingsPage.razor`
+
 ### Public API v1 (IN PROGRESS)
 - [x] `POST /api/v1/auth/token` — maskin-til-maskin login med `UserRole = API`
 - [ ] Øvrige v1-endpoints (følger domæne-implementering)
@@ -54,11 +60,11 @@
 ### Mangler stadig
 - [ ] CI/CD pipeline
 - [ ] Rate limiting på auth-endpoints
-- [ ] Audit logging
+- [ ] Audit logging (AuditLog tabel v016 eksisterer — handlers mangler)
 - [ ] SAML2 SSO
 - [ ] Azure AD / Entra ID login
 - [ ] Impersonation (Step 5b)
-- [ ] Admin: ManageUsers, ManageProfiles, UserRoleAssignment
+- [ ] Phase 3: Forretningsdomæner (SMS, messaging, delivery, lookup) — GATE UNLOCKED
 
 ## Tests
-**105 tests grønne** (inkl. 14 LocalizationServiceTests, 9 PermissionService-tests, 4 many-to-many tests).
+**305/305 tests grønne** (2026-04-04)

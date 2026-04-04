@@ -1,0 +1,57 @@
+@* NavigationMenu — sidebar nav med auth-guards.
+   Erstatter den gamle NavMenu.razor (Bootstrap-baseret).
+   Auth-guards: AuthorizeView skjuler sektioner uden rettigheder.
+   Injekteres i MainLayout.razor via <NavigationMenu />.
+*@
+
+@inject ILocalizationContext Loc
+
+<MudNavMenu>
+
+    @* Altid synlig: hjem *@
+    <MudNavLink Href="/"
+                Match="NavLinkMatch.All"
+                Icon="@Icons.Material.Filled.Home"
+                data-testid="nav-home">
+        @Loc.Get("nav.Home")
+    </MudNavLink>
+
+    @* Authenticated: bruger-selvbetjening *@
+    <AuthorizeView>
+        <Authorized>
+            <MudNavLink Href="/user/profile"
+                        Match="NavLinkMatch.Prefix"
+                        Icon="@Icons.Material.Filled.Person"
+                        data-testid="nav-user-profile">
+                @Loc.Get("nav.UserProfile")
+            </MudNavLink>
+
+            <MudNavLink Href="/customer-admin"
+                        Match="NavLinkMatch.Prefix"
+                        Icon="@Icons.Material.Filled.BusinessCenter"
+                        data-testid="nav-customer-admin">
+                @Loc.Get("nav.CustomerAdmin")
+            </MudNavLink>
+
+            <MudNavLink Href="/admin/users"
+                        Match="NavLinkMatch.Prefix"
+                        Icon="@Icons.Material.Filled.ManageAccounts"
+                        data-testid="nav-admin-users">
+                @Loc.Get("nav.AdminUsers")
+            </MudNavLink>
+
+            @* SuperAdmin only: AppSettings *@
+            <AuthorizeView Roles="SuperAdmin">
+                <Authorized Context="superContext">
+                    <MudNavLink Href="/admin/settings"
+                                Match="NavLinkMatch.Prefix"
+                                Icon="@Icons.Material.Filled.Settings"
+                                data-testid="nav-admin-settings">
+                        @Loc.Get("nav.AdminSettings")
+                    </MudNavLink>
+                </Authorized>
+            </AuthorizeView>
+        </Authorized>
+    </AuthorizeView>
+
+</MudNavMenu>

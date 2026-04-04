@@ -26,6 +26,7 @@ red_threads: []
 | `shared.EditButton` | Rediger | Edit | V014 |
 | `shared.CloseButton` | Luk | Close | V014 |
 | `shared.ClearButton` | Ryd | Clear | V014 |
+| `shared.ClearFiltersButton` | Ryd filtre | Clear filters | API |
 | `shared.ExportButton` | Eksport | Export | V014 |
 | `shared.RefreshButton` | Opdater | Refresh | V014 |
 | `shared.CreateEntityButton` | Opret ny {0} | Create new {0} | V014 |
@@ -37,6 +38,7 @@ red_threads: []
 | `shared.ColumnName` | Navn | Name | V014 |
 | `shared.ColumnStatus` | Status | Status | V014 |
 | `shared.ColumnEmail` | E-mail | Email | V017 |
+| `shared.ColumnId` | ID | ID | V017 |
 
 ## Labels & Status
 
@@ -47,14 +49,20 @@ red_threads: []
 | `shared.EmailLabel` | E-mail | Email | V017 |
 | `shared.Active` | Aktiv | Active | V017 |
 | `shared.Inactive` | Inaktiv | Inactive | V017 |
+| `shared.Note` | Note | Note | API |
+| `shared.NotesLabel` | Noter | Notes | API |
+| `shared.User` | Bruger | User | API |
 
 ## Messages
 
 | Key | DA | EN | Seeded |
 |-----|----|----|--------|
 | `shared.SaveSuccess` | Gemt! | Saved! | V014 |
+| `shared.SaveErrorFormat` | Kunne ikke gemme: {0} | Could not save: {0} | API |
 | `shared.DeleteConfirmFormat` | Er du sikker på at slette {0}? | Are you sure you want to delete {0}? | V014 |
+| `shared.DeleteErrorFormat` | Kunne ikke slette: {0} | Could not delete: {0} | API |
 | `shared.DeletedMessage` | {0} slettet. | {0} deleted. | V017 |
+| `shared.Created` | Oprettet | Created | API |
 
 ## Input Placeholders
 
@@ -86,7 +94,6 @@ red_threads: []
 
 | Key | DA | EN | Seeded |
 |-----|----|----|--------|
-| `feature.user.CreateButton` | Opret bruger | Create user | V017 |
 | `feature.user.DeleteTitle` | Slet bruger | Delete user | V017 |
 | `feature.user.NoRecords` | Ingen brugere. | No users. | V017 |
 | `feature.user.CreateNotImplemented` | Opret bruger — ikke implementeret endnu. | Create user — not yet implemented. | V017 |

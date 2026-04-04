@@ -1,0 +1,30 @@
+@* AppShell — side-niveau-skelet: heading + breadcrumb + loading + error + indhold.
+   Bruges som wrapper i alle authenticated Blazor-sider.
+   LoadingOverlay og ErrorAlert er allerede inkluderet.
+*@
+
+<PageTitle>@Title — GreenAi</PageTitle>
+
+@if (!string.IsNullOrEmpty(Title))
+{
+    <MudText Typo="Typo.h5" Class="mb-2" data-testid="page-title">@Title</MudText>
+}
+
+@if (Breadcrumbs is not null && Breadcrumbs.Count > 0)
+{
+    <MudBreadcrumbs Items="Breadcrumbs" Class="px-0 mb-4" />
+}
+
+<ErrorAlert ErrorMessage="@ErrorMessage" />
+
+<LoadingOverlay IsLoading="IsLoading">
+    @ChildContent
+</LoadingOverlay>
+
+@code {
+    [Parameter, EditorRequired] public string Title     { get; set; } = string.Empty;
+    [Parameter]                 public bool   IsLoading { get; set; }
+    [Parameter]                 public string? ErrorMessage { get; set; }
+    [Parameter]                 public List<BreadcrumbItem>? Breadcrumbs { get; set; }
+    [Parameter]                 public RenderFragment? ChildContent { get; set; }
+}

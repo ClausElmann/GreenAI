@@ -16,14 +16,85 @@ enforcement: Validate-GreenAiCompliance.ps1 (LOC-001 — planned)
 
 ---
 
+## ⚠️ MANDATORY PRE-CREATION CHECKLIST
+
+**Kør dette FØR du opretter ETHVERT label:**
+
+```
+[ ] 1. Er det et generisk UI-koncept? (se FORBIDDEN-tabel nedenfor)
+       → JA: brug shared.* (ALDRIG feature-specifik!)
+       → NEJ: gå til trin 2
+
+[ ] 2. Søg i shared-labels-reference.md — findes det allerede?
+       → JA: brug det eksisterende key
+       → NEJ: gå til trin 3
+
+[ ] 3. Bruges det på 2+ features?
+       → JA: opret som shared.*
+       → NEJ: gå til trin 4
+
+[ ] 4. Er det forretningslogik specifik for ÉN feature?
+       → JA: opret som feature.*
+       → NEJ: default til shared.*
+
+[ ] 5. Valider navnekonvention (se tabel nedenfor)
+
+[ ] 6. Opret ALTID BEGGE: DA (LanguageId=1) OG EN (LanguageId=2)
+```
+
+---
+
+## 🔴 FORBIDDEN — Opret ALDRIG som feature.*
+
+**Disse er generiske UI-koncepter — ALTID shared.\*:**
+
+### Buttons
+
+| Korrekt shared.* | FORBUDT feature.* eksempel |
+|---|---|
+| `shared.SaveButton` | ❌ feature.settings.SaveButton |
+| `shared.CancelButton` | ❌ feature.user.CancelButton |
+| `shared.DeleteButton` | ❌ feature.profile.DeleteButton |
+| `shared.EditButton` | ❌ feature.user.EditButton |
+| `shared.CloseButton` | ❌ feature.drawer.CloseButton |
+| `shared.ClearButton` | ❌ feature.filter.ClearButton |
+| `shared.ClearFiltersButton` | ❌ feature.list.ClearFiltersButton |
+| `shared.ExportButton` | ❌ feature.user.ExportButton |
+| `shared.RefreshButton` | ❌ feature.list.RefreshButton |
+| `shared.CreateEntityButton` (format) | ❌ feature.*.CreateButton |
+
+**🔴 REGEL:** Brug altid `string.Format(Loc.Get("shared.CreateEntityButton"), Loc.Get("shared.{Entity}").ToLower())` frem for feature-specifikke create-buttons.
+- `.ToLower()` på entity-navnet giver korrekt "Opret ny bruger" (ikke "Opret ny Bruger")
+
+### Data-felter
+
+| Korrekt shared.* | FORBUDT feature.* eksempel |
+|---|---|
+| `shared.StatusLabel` / `shared.ColumnStatus` | ❌ feature.user.StatusLabel |
+| `shared.EmailLabel` / `shared.ColumnEmail` | ❌ feature.adminUsers.EmailColumn |
+| `shared.NameLabel` / `shared.ColumnName` | ❌ feature.user.NameColumn |
+| `shared.SearchPlaceholder` | ❌ feature.list.SearchInput |
+| `shared.Note` / `shared.NotesLabel` | ❌ feature.customer.Notes |
+
+### Messages
+
+| Korrekt shared.* | FORBUDT feature.* eksempel |
+|---|---|
+| `shared.SaveSuccess` | ❌ feature.settings.SavedMessage (brug kun til feature-specifik tekst) |
+| `shared.SaveErrorFormat` | ❌ feature.form.SaveError |
+| `shared.DeleteErrorFormat` | ❌ feature.list.DeleteError |
+| `shared.DeleteConfirmFormat` | ❌ feature.user.DeleteConfirm |
+
+---
+
 ## Decision Tree: shared.* vs feature.*
 
 ```
-Is the string a generic UI concept (Save, Cancel, Delete, Status...)?
-  YES → use shared.* key (check shared-labels-reference.md first)
-  NO  → Is it shared across ALL features in the domain?
-          YES → feature.{domain}.{purpose}   e.g. feature.profile.NoRecords
-          NO  → feature.{domain}.{componentName}.{purpose}
+Er teksten et generisk UI-koncept (Save, Cancel, Delete, Status...)?
+  JA  → brug shared.* key (tjek shared-labels-reference.md først)
+  NEJ → bruges det på 2+ features?
+          JA  → feature.{domain}.{purpose}   f.eks. feature.profile.NoRecords
+          NEJ → feature.{domain}.{purpose}   (accepter som feature-specifik)
 ```
 
 ---

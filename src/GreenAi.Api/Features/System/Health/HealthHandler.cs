@@ -31,8 +31,8 @@ public sealed class HealthHandler : IRequestHandler<HealthQuery, Result<HealthRe
 
         try
         {
-            // Bekræft at config kan læses (DisableAllBroadcasts er laveste-fælles-nævner nøgle)
-            await _settings.GetAsync(AppSetting.DisableAllBroadcasts, defaultValue: "false");
+            // Bekræft at config kan læses (RequestLogLevel er et grøn-ai nøgle der altid er til stede)
+            await _settings.GetAsync(AppSetting.RequestLogLevel, defaultValue: "off");
             configOk = true;
         }
         catch { /* Config unreachable — rapporteres via configOk = false */ }

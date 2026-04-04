@@ -1,0 +1,18 @@
+@* LoadingOverlay — delt loading-komponent.
+   Parametrer:  IsLoading (bool) — vis/skjul loading-bar
+   Brug: wrap page content i <LoadingOverlay IsLoading="_loading">...</LoadingOverlay>
+*@
+
+@if (IsLoading)
+{
+    <MudProgressLinear Indeterminate="true" data-testid="loading-overlay" />
+}
+else
+{
+    @ChildContent
+}
+
+@code {
+    [Parameter, EditorRequired] public bool IsLoading { get; set; }
+    [Parameter]                 public RenderFragment? ChildContent { get; set; }
+}
