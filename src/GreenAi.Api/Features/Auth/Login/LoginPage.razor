@@ -77,6 +77,12 @@
     private bool _showPassword;
     private string? _errorMessage;
 
+    protected override async Task OnInitializedAsync()
+    {
+        // Login page uses EmptyLayout (no MainLayout), so labels must be loaded here.
+        await Loc.EnsureLoadedAsync(1); // Default Danish — user not authenticated yet
+    }
+
     private async Task HandleLoginAsync()
     {
         _loading = true;

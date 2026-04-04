@@ -9,7 +9,7 @@ public static class PingEndpoint
     {
         app.MapGet("/api/ping", async (IMediator mediator) =>
         {
-            var result = await mediator.Send(new PingCommand());
+            var result = await mediator.Send(new PingQuery());
             return result.ToHttpResult();
         });
     }

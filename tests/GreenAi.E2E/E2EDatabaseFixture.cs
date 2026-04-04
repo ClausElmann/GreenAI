@@ -80,6 +80,24 @@ public sealed class E2EDatabaseFixture : IAsyncLifetime
             IF NOT EXISTS (SELECT 1 FROM [dbo].[ProfileUserMappings] WHERE [ProfileId] = {profile1Id} AND [UserId] = {senderId})
                 INSERT INTO [dbo].[ProfileUserMappings] ([ProfileId], [UserId]) VALUES ({profile1Id}, {senderId});
             """);
+
+        // UserRoleMappings — admin@dev.local gets SuperAdmin + other roles for full E2E coverage.
+        // Note: V015 migration may not have inserted these if UserRoles were seeded in a later migration.
+        // This fixture ensures roles are always present for E2E tests regardless of migration order.
+        await ExecAsync(conn, $"""
+            DECLARE @RoleSuperAdmin    INT = (SELECT [Id] FROM [dbo].[UserRoles] WHERE [Name] = 'SuperAdmin');
+            DECLARE @RoleManageUsers   INT = (SELECT [Id] FROM [dbo].[UserRoles] WHERE [Name] = 'ManageUsers');
+            DECLARE @RoleManageProfiles INT = (SELECT [Id] FROM [dbo].[UserRoles] WHERE [Name] = 'ManageProfiles');
+            DECLARE @RoleCustomerSetup  INT = (SELECT [Id] FROM [dbo].[UserRoles] WHERE [Name] = 'CustomerSetup');
+            IF @RoleSuperAdmin IS NOT NULL AND NOT EXISTS (SELECT 1 FROM [dbo].[UserRoleMappings] WHERE [UserId] = {adminId} AND [UserRoleId] = @RoleSuperAdmin)
+                INSERT INTO [dbo].[UserRoleMappings] ([UserId], [UserRoleId]) VALUES ({adminId}, @RoleSuperAdmin);
+            IF @RoleManageUsers IS NOT NULL AND NOT EXISTS (SELECT 1 FROM [dbo].[UserRoleMappings] WHERE [UserId] = {adminId} AND [UserRoleId] = @RoleManageUsers)
+                INSERT INTO [dbo].[UserRoleMappings] ([UserId], [UserRoleId]) VALUES ({adminId}, @RoleManageUsers);
+            IF @RoleManageProfiles IS NOT NULL AND NOT EXISTS (SELECT 1 FROM [dbo].[UserRoleMappings] WHERE [UserId] = {adminId} AND [UserRoleId] = @RoleManageProfiles)
+                INSERT INTO [dbo].[UserRoleMappings] ([UserId], [UserRoleId]) VALUES ({adminId}, @RoleManageProfiles);
+            IF @RoleCustomerSetup IS NOT NULL AND NOT EXISTS (SELECT 1 FROM [dbo].[UserRoleMappings] WHERE [UserId] = {adminId} AND [UserRoleId] = @RoleCustomerSetup)
+                INSERT INTO [dbo].[UserRoleMappings] ([UserId], [UserRoleId]) VALUES ({adminId}, @RoleCustomerSetup);
+            """);
     }
 
     public ValueTask DisposeAsync() => ValueTask.CompletedTask;

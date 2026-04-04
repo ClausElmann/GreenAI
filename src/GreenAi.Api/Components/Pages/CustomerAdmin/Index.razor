@@ -11,12 +11,13 @@
 @inject ILocalizationContext Loc
 
 <AppShell Title="@Loc.Get("nav.CustomerAdmin")"
-          IsLoading="_loading">
+          IsLoading="_loading"
+          ErrorMessage="@_errorMessage">
 
     <MudTabs Elevation="1" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pt-4"
              data-testid="customer-admin-heading">
         <MudTabPanel Text="@Loc.Get("feature.customerAdmin.TabSettings")" Icon="@Icons.Material.Filled.Settings">
-            <SettingsTab CustomerId="_customerId" CustomerName="_customerName" />
+            <SettingsTab CustomerId="_customerId" CustomerName="@_customerName" />
         </MudTabPanel>
 
         <MudTabPanel Text="@Loc.Get("feature.customerAdmin.TabUsers")" Icon="@Icons.Material.Filled.People">
@@ -34,6 +35,7 @@
     [CascadingParameter] private Task<AuthenticationState> AuthStateTask { get; set; } = null!;
 
     private bool _loading = true;
+    private string? _errorMessage;
     private int _customerId;
     private string _customerName = string.Empty;
     private List<UserRow> _users = [];
@@ -63,6 +65,14 @@
         if (!settingsResult.IsSuccess && settingsResult.Error?.Code == "NO_CUSTOMER")
         {
             Nav.NavigateTo("/select-customer");
+            return;
+        }
+
+        if (!settingsResult.IsSuccess)
+        {
+            _errorMessage = settingsResult.Error!.Message;
+            _loading      = false;
+            StateHasChanged();
             return;
         }
 

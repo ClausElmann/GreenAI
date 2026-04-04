@@ -1,7 +1,7 @@
 # Database Schema Overview
 
 > **Canonical:** SSOT for the GreenAi database schema.
-> **Migration source:** `src/GreenAi.Api/Database/Migrations/V001–V016`
+> **Migration source:** `src/GreenAi.Api/Database/Migrations/V001–V026`
 
 ```yaml
 id: schema_overview
@@ -54,6 +54,19 @@ related:
 | `AuditLog` | Compliance audit trail (V016) — email changes etc. |
 | `Countries` | ISO country lookup (V012) |
 
+## Application Config
+
+| Table | Key columns | Purpose |
+|-------|-------------|--------|
+| `ApplicationSettings` | `ApplicationSettingTypeId` INT, `Name` NVARCHAR(200), `Value` NVARCHAR(MAX), `UpdatedAt` | System config key/value. TypeId = `AppSetting` enum int. Read via `IApplicationSettingService` (cached full-load). |
+
+## User Self-Service
+
+| Table | Key columns | Purpose |
+|-------|-------------|--------|
+| `PasswordResetTokens` | `UserId` INT FK, `Token` NVARCHAR(128), `ExpiresAt` DATETIMEOFFSET, `UsedAt` DATETIMEOFFSET NULL, `CreatedAt` | Single-use tokens for password reset. 64-char hex. Expires per `AppSetting.PasswordResetTokenTtlMinutes`. |
+| `EmailTemplates` | `Name` NVARCHAR(100), `LanguageId` INT FK, `Subject`, `BodyHtml`, `UpdatedAt` | Transactional email templates. Unique on (Name, LanguageId). Supports `{{token}}`, `{{name}}`, `{{link}}`, `{{ttl}}` substitution. |
+
 ---
 
 ## Tenant Isolation Rule
@@ -87,7 +100,17 @@ See: [identity/tenant-isolation.md](../../identity/tenant-isolation.md)
 | V014 | Seed shared.* localization labels (DA + EN) |
 | V015 | Dev seed data |
 | V016 | AuditLog table |
+| V017 | Seed shared.* + feature.* labels (DA + EN) |
+| V018 | Seed auth feature labels |
+| V020 | ApplicationSettings table (replaces orphaned V019 schema) |
+| V021 | PasswordResetTokens table |
+| V022 | EmailTemplates table + seed (password-reset DA + EN) |
+| V023 | Re-seed ApplicationSettings with correct enum values |
+| V024 | Re-seed EmailTemplates (fix content) |
+| V025 | Seed portal/admin labels |
+| V026 | Seed prod admin user |
+| V027 | FK indexes: Profiles.CustomerId, UserCustomerMemberships.CustomerId, UserRefreshTokens.UserId+CustomerId, PasswordResetTokens.UserId, ProfileUserMappings.UserId, AuditLog.ActorId |
 
 ---
 
-**Last Updated:** 2026-04-06
+**Last Updated:** 2026-04-04

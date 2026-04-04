@@ -15,7 +15,7 @@ namespace GreenAi.Tests.Http;
 /// - Testing:SkipStatusCodePages=true disables UseStatusCodePagesWithReExecute,
 ///   which would otherwise intercept 401/405 and re-execute to a Blazor page,
 ///   causing 400 responses instead of the expected status codes.
-/// - DatabaseMigrator.Run() is called during startup (idempotent — safe).
+/// - Schema is managed by the DB project — no migration step at startup.
 /// - DapperPlusSetup.Initialize() is called during startup (idempotent).
 ///
 /// IMPORTANT: Tests that mutate DB state must call DatabaseFixture.ResetAsync()

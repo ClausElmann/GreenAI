@@ -73,6 +73,17 @@ Features/[Domain]/[Feature]/
 
 ---
 
+## EKSTERN KODE (NeeoBovisWeb / sms-service)
+
+```
+✅ Governance-struktur og SSOT-mønstre: adoptér direkte
+✅ Idéer som startpunkt: ok
+❌ .cs / .razor / .sql kode: ALDRIG copy-paste uden vurdering
+❌ Justificér IKKE med "NeeoBovisWeb gør det" — brug green-ai SSOT
+```
+
+---
+
 ## SSOT-MAP (topic → fil)
 
 ```
@@ -102,6 +113,7 @@ current user / principal→ docs/SSOT/identity/current-user.md
 result pattern          → docs/SSOT/backend/patterns/result-pattern.md
 blazor page pattern     → docs/SSOT/backend/patterns/blazor-page-pattern.md
 e2e test pattern        → docs/SSOT/testing/patterns/e2e-test-pattern.md
+tool registry/ps tools  → docs/ai-governance/tool-registry.yaml
 ```
 
 ---
@@ -118,28 +130,32 @@ dotnet test tests/GreenAi.Tests -v q
 # Specifik test
 dotnet test tests/GreenAi.Tests --filter "FullyQualifiedName~<TestName>" -v n
 
-# E2E tests
-dotnet test tests/GreenAi.E2E -v q
+# TRX output (til Get-FailedTestsFromTrx.ps1)
+dotnet test tests/GreenAi.Tests --logger trx -v q
 
-# DB logs (debug)
-Invoke-Sqlcmd -ServerInstance "(localdb)\MSSQLLocalDB" -Database "GreenAI_DEV" -TrustServerCertificate -Query "SELECT TOP 20 TimeStamp,Level,Message,Exception FROM Logs ORDER BY TimeStamp DESC"
+# Parse fejlede tests fra TRX
+pwsh -File scripts/testing/Get-FailedTestsFromTrx.ps1
+
+# ⚡ SQL validation (10x hurtigere end trial-and-error via tests)
+pwsh -File scripts/debug/Test-SqlStatement.ps1 `
+    -SqlFile "src/GreenAi.Api/Features/<Domain>/<Feature>/<Feature>.sql" `
+    -Parameters @{ Id = 1; CustomerId = 1 }
+
+# DB logs (debug — seneste 10 min fejl)
+pwsh -File scripts/testing/Get-Latest-Errors.ps1
 
 # DB auth-state (debug)
 Invoke-Sqlcmd -ServerInstance "(localdb)\MSSQLLocalDB" -Database "GreenAI_DEV" -TrustServerCertificate -Query "SELECT u.Email, p.DisplayName FROM ProfileUserMappings pum JOIN Users u ON u.Id=pum.UserId JOIN Profiles p ON p.Id=pum.ProfileId ORDER BY u.Email"
+
+# PS modules (import i scripts)
+Import-Module "$PSScriptRoot\..\modules\Core.psm1"    -Force  # timestamps, settings, connection string
+Import-Module "$PSScriptRoot\..\modules\Backend.psm1" -Force  # start/stop/wait/build
+Import-Module "$PSScriptRoot\..\modules\Http.psm1"    -Force  # auth + HTTP GET/POST/PUT/DELETE
+Import-Module "$PSScriptRoot\..\modules\Database.psm1"-Force  # Invoke-DatabaseQuery, Test-DatabaseConnection
+Import-Module "$PSScriptRoot\..\modules\Output.psm1"  -Force  # Write-Header, Write-Success, etc.
 ```
 
 ---
 
-## EKSTERN KODE (NeeoBovisWeb / sms-service)
-
-```
-✅ Governance-struktur og SSOT-mønstre: adoptér direkte
-✅ Idéer som startpunkt: ok
-❌ .cs / .razor / .sql kode: ALDRIG copy-paste uden vurdering
-❌ Justificér IKKE med "NeeoBovisWeb gør det" — brug green-ai SSOT
-```
-
----
-
-**Last Updated:** 2026-04-03
+**Last Updated:** 2026-04-04
 

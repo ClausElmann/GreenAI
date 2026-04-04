@@ -224,6 +224,32 @@ public sealed class AdminLightTests : IClassFixture<GreenAiWebApplicationFactory
         Assert.Equal(HttpStatusCode.OK, r2.StatusCode);
     }
 
+    [Fact]
+    public async Task AssignRole_NoToken_Returns401()
+    {
+        var response = await PostJsonAsync("/api/admin/users/1/roles", new { roleName = UserRoleNames.ManageUsers });
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task AssignRole_CallerLacksManageUsers_Returns403()
+    {
+        // Seed user WITHOUT ManageUsers role
+        var (hash, salt) = PasswordHasher.Hash("regularPass");
+        var customerId   = await _builder.InsertCustomerAsync("AssignRole Forbidden Customer");
+        var userId       = await _builder.InsertUserAsync(new() { Email = "ar-forbidden@test.local", PasswordHash = hash, PasswordSalt = salt });
+        await _builder.InsertUserCustomerMembershipAsync(userId, customerId);
+        var profileId = await _builder.InsertProfileAsync(customerId, userId, "AR Forbidden Profile");
+        var token = TestJwtHelper.CreateToken(userId, customerId, new ProfileId(profileId), "ar-forbidden@test.local");
+
+        var response = await PostJsonAsync(
+            $"/api/admin/users/{userId.Value}/roles",
+            new { roleName = UserRoleNames.ManageUsers },
+            token);
+
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
     // =========================================================================
     // ASSIGN PROFILE — POST /api/admin/users/{id}/profiles
     // =========================================================================
@@ -291,5 +317,31 @@ public sealed class AdminLightTests : IClassFixture<GreenAiWebApplicationFactory
             token);
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task AssignProfile_NoToken_Returns401()
+    {
+        var response = await PostJsonAsync("/api/admin/users/1/profiles", new { profileId = 1 });
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task AssignProfile_CallerLacksManageProfiles_Returns403()
+    {
+        // Seed user WITHOUT ManageProfiles role
+        var (hash, salt) = PasswordHasher.Hash("noProfilePass");
+        var customerId   = await _builder.InsertCustomerAsync("AP Forbidden Customer");
+        var userId       = await _builder.InsertUserAsync(new() { Email = "ap-forbidden@test.local", PasswordHash = hash, PasswordSalt = salt });
+        await _builder.InsertUserCustomerMembershipAsync(userId, customerId);
+        var profileId = await _builder.InsertProfileAsync(customerId, userId, "AP Forbidden Profile");
+        var token = TestJwtHelper.CreateToken(userId, customerId, new ProfileId(profileId), "ap-forbidden@test.local");
+
+        var response = await PostJsonAsync(
+            $"/api/admin/users/{userId.Value}/profiles",
+            new { profileId },
+            token);
+
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
 }

@@ -125,4 +125,35 @@ MUST NOT:
   how: Scan *.razor for "class=\"btn " / "class=\"container" / "<MudChip " without T=
 ```
 
-**Last Updated:** 2026-04-03
+---
+
+## detail_navigation_architecture
+
+```yaml
+pattern: "Page navigation for detail views"
+decision: >
+  green-ai uses routable pages for entity detail views.
+  MudDrawer is ONLY used in MainLayout.razor for the navigation sidebar.
+
+detail_view_pattern:
+  - Entity list page: /[entity]  (e.g., /customer-admin)
+  - Entity detail page: /[entity]/{id}  (e.g., /customer-admin/users/{id})
+  - Navigation: MudLink Href or MudButton Href to detail page URL
+
+NOT used:
+  - Slide-in drawers for entity editing (NeeoBovisWeb LDOS pattern)
+  - Modal dialogs for entity editing (except confirm-delete dialogs)
+  - Inline row editing (MudTable does NOT use EditTrigger)
+
+why:
+  - Routable pages are bookmarkable and browser-history friendly
+  - No iframe/Angular complexity
+  - Simpler Playwright test selectors (Page.Locator, not iframe.Locator)
+
+confirm_delete_exception:
+  - Delete confirmation uses MudDialogService (IDialogService.ShowAsync)
+  - Pattern: ConfirmDeleteAsync → dialog → OnDelete EventCallback
+  - data-testid: dialog-confirmed-delete button inside the dialog component
+```
+
+**Last Updated:** 2026-04-04

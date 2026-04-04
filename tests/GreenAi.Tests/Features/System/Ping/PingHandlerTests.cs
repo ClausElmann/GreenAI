@@ -9,7 +9,7 @@ public class PingHandlerTests
     {
         var handler = new PingHandler();
 
-        var result = await handler.Handle(new PingCommand(), CancellationToken.None);
+        var result = await handler.Handle(new PingQuery(), CancellationToken.None);
 
         Assert.True(result.IsSuccess);
         Assert.Equal("pong", result.Value!.Message);

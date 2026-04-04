@@ -5,6 +5,8 @@ namespace GreenAi.Api.SharedKernel.Results;
 /// <summary>
 /// Maps Result&lt;T&gt; to the appropriate IResult (HTTP response) based on the error code.
 /// Use this in all Minimal API endpoints instead of inline status code logic.
+/// 500 responses include an ErrorId that is also written to the Logs table via Serilog
+/// through the MediatR LoggingBehavior.
 /// </summary>
 public static class ResultExtensions
 {
@@ -42,7 +44,11 @@ public static class ResultExtensions
             "EMAIL_TAKEN"            => HttpResults.Problem(result.Error.Message, statusCode: 409),
 
             // 500 — unexpected error (error code not mapped above)
-            _                        => HttpResults.Problem(result.Error.Message, statusCode: 500),
+            // ErrorId links this response to the Logs table entry created by LoggingBehavior.
+            _ => HttpResults.Problem(
+                detail: result.Error.Message,
+                statusCode: 500,
+                extensions: new Dictionary<string, object?> { ["errorId"] = Guid.NewGuid() }),
         };
     }
 }

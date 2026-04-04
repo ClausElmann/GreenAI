@@ -1,0 +1,272 @@
+# AI Tool Registry — green-ai
+#
+# Purpose: Define ALL tools AI may use. Nothing else allowed.
+# Authority: ABSOLUTE — using an unregistered tool is a governance violation.
+# Last Updated: 2026-04-04
+#
+# Context:
+#   Runtime:  .NET 10, Blazor Server, port 5057 (http, NOT https)
+#   Database: GreenAI_DEV on (localdb)\MSSQLLocalDB
+#   Auth:     POST /api/auth/login → JWT (dev: admin@dev.local / dev123)
+#   Health:   GET /api/ping → 200 OK
+
+---
+
+version: "1.0"
+enforced: true
+
+---
+
+# ── Build Tools ──────────────────────────────────────────────────────────────
+
+build_tools:
+  build_solution:
+    command: "dotnet build src/GreenAi.Api/GreenAi.Api.csproj -v q"
+    purpose: "Compile entire solution"
+    timeout_seconds: 60
+    success_criteria: "0 errors, 0 warnings"
+    failure_action: "stop — fix build errors first"
+    cwd: "c:\\Udvikling\\green-ai"
+
+---
+
+# ── Test Runners ─────────────────────────────────────────────────────────────
+
+test_runners:
+  unit_and_db_tests:
+    command: "dotnet test tests/GreenAi.Tests -v q"
+    purpose: "Run all xUnit tests (unit + DB integration)"
+    timeout_seconds: 120
+    output_location: "tests/GreenAi.Tests/TestResults/"
+    cwd: "c:\\Udvikling\\green-ai"
+    notes: "dotnet test IS correct here — no Playwright, no Angular shell, no backend needed"
+    mandatory_rules:
+      - "Run with --logger trx to get TRX output"
+      - "After test run: pwsh -File scripts/testing/Get-FailedTestsFromTrx.ps1 to parse failures"
+
+  run_with_trx:
+    command: "dotnet test tests/GreenAi.Tests --logger trx -v q"
+    purpose: "Run tests with TRX output for failure parsing"
+    timeout_seconds: 120
+    output_location: "tests/GreenAi.Tests/TestResults/*.trx"
+
+  filter_test:
+    command: "dotnet test tests/GreenAi.Tests --filter \"FullyQualifiedName~<TestName>\" -v n"
+    purpose: "Run specific test by name"
+    timeout_seconds: 60
+
+---
+
+# ── Debug Tools ───────────────────────────────────────────────────────────────
+
+debug_tools:
+  sql_validator:
+    command: "pwsh -File scripts/debug/Test-SqlStatement.ps1"
+    parameters:
+      - name: "SqlStatement"
+        description: "SQL query to validate (select/insert/update/delete)"
+        required: false  # OR use SqlFile
+        example: "-SqlStatement \"SELECT * FROM Users WHERE Id = @Id\""
+      - name: "SqlFile"
+        description: "Path to .sql embedded resource file"
+        required: false
+        example: "-SqlFile src/GreenAi.Api/Features/Auth/Login/Login.sql"
+      - name: "Parameters"
+        description: "Hashtable of @{ ParamName = SampleValue }"
+        required: false
+        example: "-Parameters @{ Id = 1; Email = \"test@test.com\" }"
+      - name: "ShowDetails"
+        description: "Show full SQL with parameter DECLARE statements"
+        required: false
+        example: "-ShowDetails"
+    purpose: >
+      ⚡ SQL PRE-VALIDATION: When handler/test fails with SQL error →
+      extract SQL from .sql file → validate against GreenAI_DEV → get EXACT error in 5 seconds.
+      10x faster than trial-and-error via dotnet test.
+    timeout_seconds: 10
+    exit_codes:
+      0: "✓ SQL valid — query executed successfully"
+      1: "✗ SQL invalid — diagnosis + fix options shown in output"
+    ai_workflow:
+      trigger_patterns:
+        - "Test fails with 400/500 and SQL-related error"
+        - "Handler throws 'Invalid column name' / 'NULL constraint' / 'CHECK constraint'"
+        - "After adding new columns to a migration"
+        - "Before committing SQL changes"
+      execution_sequence:
+        - "STEP 1: Identify failing .sql file (in Features/<Domain>/<Feature>/)"
+        - "STEP 2: Extract representative @Parameters from test arrange section"
+        - "STEP 3: Run: pwsh -File scripts/debug/Test-SqlStatement.ps1 -SqlFile <path> -Parameters @{...}"
+        - "STEP 4: Read diagnosis + fix options"
+        - "STEP 5: Fix SQL / schema / handler"
+        - "STEP 6: Rerun validator → green → run dotnet test"
+    mandatory_rules:
+      - "⚡ ALWAYS use this before adding diagnostic logging for SQL errors"
+      - "⚡ ALWAYS extract real @Params from test code — don't guess values"
+      - "⚡ Read ALL fix options before acting"
+      - "NEVER skip this to save time — 5 seconds now vs 5 minutes later"
+
+  get_latest_errors:
+    command: "pwsh -File scripts/testing/Get-Latest-Errors.ps1"
+    parameters:
+      - name: "LastMinutes"
+        default: 10
+        example: "-LastMinutes 30"
+      - name: "Level"
+        options: ["All", "Warning", "Error"]
+        default: "Error"
+        example: "-Level Warning"
+    purpose: "Query [dbo].[Logs] in GreenAI_DEV for recent backend errors"
+    timeout_seconds: 10
+    ai_workflow:
+      trigger_patterns:
+        - "Test fails but no exception in test output"
+        - "HTTP 500 with no visible error message"
+        - "After running tests — check for backend-side errors"
+      notes: "Backend must have been running recently (Serilog writes to Logs table)"
+
+  get_failed_tests:
+    command: "pwsh -File scripts/testing/Get-FailedTestsFromTrx.ps1"
+    purpose: "Parse newest TRX file and show failing tests with error messages"
+    timeout_seconds: 5
+    notes: "Run after: dotnet test tests/GreenAi.Tests --logger trx"
+
+---
+
+# ── PowerShell Modules ────────────────────────────────────────────────────────
+# Location: scripts/modules/
+# Import pattern: Import-Module (Join-Path $PSScriptRoot "..\modules\Core.psm1") -Force
+
+modules:
+  Core.psm1:
+    functions:
+      - Get-Timestamp       # Formatted timestamp string
+      - Get-AppSettings     # Read appsettings.Development.json (cached)
+      - Get-ConnectionString  # Return (localdb)\MSSQLLocalDB;GreenAI_DEV
+      - Get-BaseUrl         # "http://localhost:5057"
+      - Get-Credentials     # @{ Email="admin@dev.local"; Password="dev123" }
+    dependencies: []
+
+  Backend.psm1:
+    functions:
+      - Stop-BackendProcesses  # Kill running GreenAi.Api processes
+      - Clear-Port5057         # Kill process on port 5057
+      - Build-Backend          # dotnet build GreenAi.Api.csproj
+      - Start-BackendAsync     # Start backend as PS background job
+      - Wait-ForBackendReady   # Poll /api/ping until 200 or timeout (45s)
+      - Stop-Backend           # Stop background job + processes
+      - Test-BackendHealth     # Single health check → bool
+    dependencies: [Core.psm1]
+
+  Http.psm1:
+    functions:
+      - Get-AuthToken          # POST /api/auth/login → JWT string
+      - Get-AuthHeaders        # @{ Authorization = "Bearer <token>" }
+      - Invoke-HttpRequest     # Generic (all methods), returns @{Success; StatusCode; Body; Raw; Error}
+      - Invoke-GetRequest      # GET wrapper
+      - Invoke-PostRequest     # POST wrapper
+      - Invoke-PutRequest      # PUT wrapper
+      - Invoke-DeleteRequest   # DELETE wrapper
+    dependencies: [Core.psm1]
+
+  Database.psm1:
+    functions:
+      - Test-DatabaseConnection  # Quick ping → bool
+      - Invoke-DatabaseQuery     # Run SELECT → PSObject[]
+      - Invoke-DatabaseNonQuery  # Run INSERT/UPDATE/DELETE → rows affected (int)
+    dependencies: []
+    notes: "Uses sqlcmd CLI — no Invoke-Sqlcmd dependency"
+
+  Output.psm1:
+    functions:
+      - Write-Header      # ═══ Section header box
+      - Write-Success     # ✓ green
+      - Write-Failure     # ✗ red
+      - Write-Info        # ℹ cyan
+      - Write-Warning     # ⚠ yellow
+      - Write-Step        # [N] numbered step
+      - Write-Detail      # indented DarkGray
+      - Write-Separator   # ─── line
+    dependencies: []
+
+---
+
+# ── Localization Tools ────────────────────────────────────────────────────────
+
+localization_tools:
+  get_labels:
+    command: "pwsh -File scripts/localization/Get-Labels.ps1"
+    purpose: "List all labels from GreenAI_DEV.LocaleStringResources"
+
+  sync_labels:
+    command: "pwsh -File scripts/localization/Sync-Labels.ps1"
+    purpose: "Sync labels from JSON/CSV to dev database"
+
+  add_labels:
+    command: "pwsh -File scripts/localization/Add-Labels.ps1"
+    purpose: "Add new label keys to the database"
+
+---
+
+# ── Governance Scripts ────────────────────────────────────────────────────────
+
+governance_tools:
+  compliance_scan:
+    command: "pwsh -File scripts/governance/Validate-GreenAiCompliance.ps1"
+    purpose: "Check SSOT rules, file size limits, forbidden patterns"
+    mandatory_rules:
+      - "Run after any structural changes"
+
+  file_sizes:
+    command: "pwsh -File scripts/governance/check-file-sizes.ps1"
+    purpose: "Verify no SSOT doc exceeds 600-line limit"
+
+---
+
+# ── Artifact Readers ─────────────────────────────────────────────────────────
+
+artifact_readers:
+  test_trx:
+    location: "tests/GreenAi.Tests/TestResults/*.trx"
+    format: "XML"
+    parse_with: "scripts/testing/Get-FailedTestsFromTrx.ps1"
+
+  db_logs:
+    location: "GreenAI_DEV.[dbo].[Logs]"
+    parse_with: "scripts/testing/Get-Latest-Errors.ps1"
+    notes: "Query last 10 min errors — Serilog writes here"
+
+---
+
+# ── Execution Rules ───────────────────────────────────────────────────────────
+
+execution_rules:
+  mandatory:
+    - "Build before running tests: dotnet build src/GreenAi.Api/GreenAi.Api.csproj"
+    - "0 compiler warnings after any change"
+    - "SQL error → use sql_validator FIRST (5 sec vs 5 min)"
+    - "Read file before editing (always)"
+    - "Use --logger trx to enable TRX failure parsing"
+
+  forbidden:
+    - "Start-Process (opens new window) — run commands inline"
+    - "Editing files without reading them first"
+    - "Guessing SQL column names — validate against schema"
+    - "git commit/push without explicit user approval"
+    - "Copying code from sms-service or NeeoBovisWeb verbatim"
+
+  db_server: "(localdb)\\MSSQLLocalDB"
+  db_name: "GreenAI_DEV"
+  api_url: "http://localhost:5057"
+  health_url: "http://localhost:5057/api/ping"
+  login_url: "http://localhost:5057/api/auth/login"
+
+---
+
+# ── References ────────────────────────────────────────────────────────────────
+
+references:
+  ssot_map: "docs/SSOT/governance/GOVERNANCE_MAP.md"
+  ai_contract: "AI_WORK_CONTRACT.md"
+  backend_patterns: "docs/SSOT/backend/patterns/"
+  test_patterns: "docs/SSOT/testing/"

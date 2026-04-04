@@ -19,6 +19,8 @@ param(
     [string]$OutputFormat = "Table"
 )
 
+$ErrorActionPreference = "Stop"
+
 # Resolve TRX path — default to newest file in standard location
 if (-not $TrxPath) {
     $repoRoot  = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent

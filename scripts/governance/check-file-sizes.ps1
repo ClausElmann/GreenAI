@@ -22,6 +22,7 @@ param(
     [switch]$Detailed
 )
 
+$ErrorActionPreference = "Stop"
 $repoRoot = (Get-Item $PSScriptRoot).Parent.Parent.FullName
 $ssotRoot = Join-Path $repoRoot "docs\SSOT"
 

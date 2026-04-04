@@ -234,9 +234,39 @@ try
     }
     else
     {
-        app.UseExceptionHandler("/Error", createScopeForErrors: true);
         app.UseHsts();
     }
+
+    // API exception handler — active in all environments.
+    // Returns JSON ProblemDetails with ErrorId for /api/** routes.
+    // ErrorId correlates the HTTP response to the [Logs] table entry written by LoggingBehavior.
+    // Blazor routes use the standard circuit error boundary (ReconnectModal / Error.razor).
+    app.UseExceptionHandler(exApp => exApp.Run(async context =>
+    {
+        var feature  = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>();
+        var errorId  = Guid.NewGuid();
+        var logger   = context.RequestServices.GetRequiredService<ILogger<Program>>();
+        logger.LogError(feature?.Error, "[UnhandledException] ErrorId: {ErrorId} Path: {Path}",
+            errorId, context.Request.Path);
+
+        if (context.Request.Path.StartsWithSegments("/api"))
+        {
+            context.Response.StatusCode  = 500;
+            context.Response.ContentType = "application/problem+json";
+            await context.Response.WriteAsJsonAsync(new
+            {
+                type    = "https://tools.ietf.org/html/rfc9110#section-15.6.1",
+                title   = "An unexpected error occurred.",
+                status  = 500,
+                errorId = errorId.ToString()
+            });
+        }
+        else if (!app.Environment.IsDevelopment())
+        {
+            context.Response.Redirect("/Error");
+        }
+        // Development non-API: let ASP.NET developer exception page handle it
+    }));
 
     // Skip in WebApplicationFactory test host to prevent Blazor rendering interference.
     // Production: always active. Tests: disabled via Testing:SkipStatusCodePages=true.

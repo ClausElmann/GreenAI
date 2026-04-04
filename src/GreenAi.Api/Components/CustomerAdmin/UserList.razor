@@ -37,10 +37,12 @@
             <MudStack Row="true" Spacing="0">
                 <MudIconButton Icon="@Icons.Material.Filled.OpenInNew"
                                Size="Size.Small"
+                               data-testid="@($"open-user-{context.Id}")"
                                OnClick="@(() => Nav.NavigateTo("/customer-admin/users/" + context.Id))" />
                 <MudIconButton Icon="@Icons.Material.Filled.Delete"
                                Size="Size.Small"
                                Color="Color.Error"
+                               data-testid="@($"delete-user-{context.Id}")"
                                OnClick="() => ConfirmDeleteAsync(context)" />
             </MudStack>
         </MudTd>

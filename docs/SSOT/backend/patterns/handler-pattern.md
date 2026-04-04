@@ -118,6 +118,32 @@ public sealed record [Feature]Response(List<[Feature]Row> Items);
 
 ---
 
+## Naming Convention (enforced)
+
+```yaml
+command_type:     "[Feature]Command"   # write operations (INSERT/UPDATE/DELETE)
+query_type:       "[Feature]Query"     # read operations (SELECT) — never Command for pure reads
+response_type:    "[Feature]Response"  # output from Command or complex Query — separate file
+row_type:         "[Feature]Row"       # lightweight read projection for list/table rendering
+                                       # declared inline in Handler.cs (not a separate file)
+
+examples:
+  write: LoginCommand → LoginResponse
+  read_simple: GetProfilesQuery → List<ProfileRow>   (Row inline in Handler.cs)
+  read_complex: MeQuery → MeResponse                 (Response has its own file)
+
+decision_rule:
+  - Result is a flat projection used by a table/list → use XxxRow (inline)
+  - Result is a structured response with multiple fields → use XxxResponse (separate file)
+  - Side effects involved (DB write, email, token issuance) → Command, not Query
+  - Pure read, no side effects → Query, not Command
+
+violations_fixed_2026-04-04:
+  - PingCommand → PingQuery (was Command, is pure read)
+```
+
+---
+
 ## Repository (when applicable)
 
 ```csharp

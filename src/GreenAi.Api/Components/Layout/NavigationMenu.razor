@@ -5,6 +5,7 @@
 *@
 
 @inject ILocalizationContext Loc
+@inject ICurrentUser CurrentUser
 
 <MudNavMenu>
 
@@ -55,3 +56,15 @@
     </AuthorizeView>
 
 </MudNavMenu>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        // Load labels for NavigationMenu independently so nav.Home (rendered outside
+        // AuthorizeView) gets correct labels even before MainLayout.OnInitializedAsync
+        // completes. Uses the same scoped ILocalizationContext — _loaded flag prevents
+        // double-load if MainLayout already called EnsureLoadedAsync.
+        var languageId = CurrentUser.IsAuthenticated ? CurrentUser.LanguageId : 1;
+        await Loc.EnsureLoadedAsync(languageId);
+    }
+}

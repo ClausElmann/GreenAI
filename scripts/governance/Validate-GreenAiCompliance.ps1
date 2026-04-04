@@ -27,6 +27,7 @@ param(
     [switch]$Fix
 )
 
+$ErrorActionPreference = "Stop"
 $repoRoot    = (Get-Item $PSScriptRoot).Parent.Parent.FullName
 $scanPath    = Join-Path $repoRoot $Path
 $violations  = @()

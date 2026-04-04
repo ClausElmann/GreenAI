@@ -1,13 +1,11 @@
-using GreenAi.Api.Database;
 using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Logging.Abstractions;
 using Respawn;
 
 namespace GreenAi.Tests;
 
 /// <summary>
-/// Shared fixture that runs DbUp migrations on GreenAI_DEV once per test run,
-/// then resets data (not schema) between individual tests via Respawn.
+/// Shared fixture for HTTP integration tests.
+/// Schema is managed by the DB project — this fixture only resets data between tests via Respawn.
 /// No separate test database — tests run against the shared dev database.
 /// </summary>
 public sealed class DatabaseFixture : IAsyncLifetime
@@ -19,9 +17,7 @@ public sealed class DatabaseFixture : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        // Ensure schema is up to date (idempotent — safe to run on existing DB)
-        DatabaseMigrator.Run(ConnectionString, NullLogger.Instance);
-
+        // Schema is managed by the DB project — no migration step needed here.
         await using var conn = new SqlConnection(ConnectionString);
         await conn.OpenAsync();
 

@@ -19,7 +19,9 @@
 
 @if (_user is null)
 {
-    <MudAlert Severity="Severity.Warning">@string.Format(Loc.Get("feature.user.NotFound"), UserId)</MudAlert>
+    <MudAlert Severity="@(_errorMessage is not null ? Severity.Error : Severity.Warning)">
+        @(_errorMessage ?? string.Format(Loc.Get("feature.user.NotFound"), UserId))
+    </MudAlert>
     <MudButton Variant="Variant.Text"
                StartIcon="@Icons.Material.Filled.ArrowBack"
                Href="/customer-admin"
@@ -40,7 +42,8 @@
     <MudSpacer />
     <MudChip T="string"
              Color="@(_user.IsActive ? Color.Success : Color.Default)"
-             Size="Size.Small">
+             Size="Size.Small"
+             data-testid="user-status-chip">
         @(_user.IsActive ? Loc.Get("shared.Active") : Loc.Get("shared.Inactive"))
     </MudChip>
 </MudStack>
@@ -53,7 +56,7 @@
         }
         else
         {
-            <MudTable Items="_user.Profiles" Dense="true" Hover="true">
+            <MudTable Items="_user.Profiles" Dense="true" Hover="true" data-testid="user-profiles-table">
                 <HeaderContent>
                     <MudTh>@Loc.Get("feature.user.ColumnProfile")</MudTh>
                 </HeaderContent>
@@ -75,7 +78,7 @@
         }
         else
         {
-            <MudTable Items="_user.Roles" Dense="true" Hover="true">
+            <MudTable Items="_user.Roles" Dense="true" Hover="true" data-testid="user-roles-table">
                 <HeaderContent>
                     <MudTh>@Loc.Get("feature.user.ColumnRole")</MudTh>
                     <MudTh>@Loc.Get("feature.user.ColumnProfile")</MudTh>
@@ -95,6 +98,7 @@
 
     private UserDetailsResult? _user;
     private bool _loading = true;
+    private string? _errorMessage;
     private List<BreadcrumbItem> _breadcrumbs = [];
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -113,7 +117,14 @@
 
         _loading = true;
         var result = await Mediator.Send(new GetUserDetailsQuery(new UserId(UserId)));
-        _user = result.IsSuccess ? result.Value : null;
+        if (!result.IsSuccess)
+        {
+            _errorMessage = result.Error!.Message;
+            _loading      = false;
+            StateHasChanged();
+            return;
+        }
+        _user = result.Value;
         _breadcrumbs =
         [
             new(Loc.Get("nav.CustomerAdmin"), href: "/customer-admin"),

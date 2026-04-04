@@ -151,4 +151,51 @@ public sealed class Slice002Tests : IClassFixture<GreenAiWebApplicationFactory>,
         var response = await _client.DeleteAsync("/api/auth/logout", TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
+
+    [Fact]
+    public async Task Logout_ValidToken_NoExistingRefreshTokens_Returns204()
+    {
+        // Logout is idempotent — no tokens to delete is still OK
+        var customerId = await _builder.InsertCustomerAsync("Logout NoToken Customer");
+        var userId     = await _builder.InsertUserAsync(new() { Email = "logout-empty@test.local" });
+        await _builder.InsertUserCustomerMembershipAsync(userId, customerId);
+        var profileId  = await _builder.InsertProfileAsync(customerId, userId, "Logout Empty Profile");
+        var token      = TestJwtHelper.CreateToken(userId, customerId, new ProfileId(profileId));
+
+        var request = new HttpRequestMessage(HttpMethod.Delete, "/api/auth/logout");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        var response = await _client.SendAsync(request, TestContext.Current.CancellationToken);
+
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Logout_DeletesOnlyCurrentUserTokens()
+    {
+        // Seed two users with refresh tokens — logout of user A should not affect user B
+        var customerId = await _builder.InsertCustomerAsync("Logout Isolation Customer");
+
+        var userA     = await _builder.InsertUserAsync(new() { Email = "logout-a@test.local" });
+        await _builder.InsertUserCustomerMembershipAsync(userA, customerId);
+        var profileA  = await _builder.InsertProfileAsync(customerId, userA, "Logout Profile A");
+        await _builder.InsertRefreshTokenAsync(customerId, userA, new() { Token = "token-of-a", ProfileId = profileA });
+
+        var userB     = await _builder.InsertUserAsync(new() { Email = "logout-b@test.local" });
+        await _builder.InsertUserCustomerMembershipAsync(userB, customerId);
+        var profileB  = await _builder.InsertProfileAsync(customerId, userB, "Logout Profile B");
+        await _builder.InsertRefreshTokenAsync(customerId, userB, new() { Token = "token-of-b", ProfileId = profileB });
+
+        // Logout as user A
+        var accessToken = TestJwtHelper.CreateToken(userA, customerId, new ProfileId(profileA));
+        var request = new HttpRequestMessage(HttpMethod.Delete, "/api/auth/logout");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+        await _client.SendAsync(request, TestContext.Current.CancellationToken);
+
+        // User B's token must still exist
+        await using var conn = new SqlConnection(DatabaseFixture.ConnectionString);
+        var countB = await conn.ExecuteScalarAsync<int>(
+            "SELECT COUNT(*) FROM UserRefreshTokens WHERE UserId = @UserId",
+            new { UserId = userB.Value });
+        Assert.Equal(1, countB);
+    }
 }

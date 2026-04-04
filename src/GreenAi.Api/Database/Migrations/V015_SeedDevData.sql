@@ -66,11 +66,15 @@ IF NOT EXISTS (SELECT 1 FROM [dbo].[UserCustomerMemberships] WHERE [UserId] = @S
     INSERT INTO [dbo].[UserCustomerMemberships] ([UserId], [CustomerId], [LanguageId]) VALUES (@SenderId, @CustomerId, 1);
 
 -- -------------------------------------------------------------------------
--- UserRoles — give admin ManageUsers + ManageProfiles + CustomerSetup
+-- UserRoles — give admin ManageUsers + ManageProfiles + CustomerSetup + SuperAdmin
+-- NOTE: GuardedBy IS NOT NULL — roles may not exist yet if UserRoles is seeded
+-- in a later migration. In that case these inserts are skipped silently.
+-- The E2EDatabaseFixture handles role re-seeding for E2E tests to be safe.
 -- -------------------------------------------------------------------------
 DECLARE @RoleManageUsers    INT = (SELECT [Id] FROM [dbo].[UserRoles] WHERE [Name] = 'ManageUsers');
 DECLARE @RoleManageProfiles INT = (SELECT [Id] FROM [dbo].[UserRoles] WHERE [Name] = 'ManageProfiles');
 DECLARE @RoleCustomerSetup  INT = (SELECT [Id] FROM [dbo].[UserRoles] WHERE [Name] = 'CustomerSetup');
+DECLARE @RoleSuperAdmin     INT = (SELECT [Id] FROM [dbo].[UserRoles] WHERE [Name] = 'SuperAdmin');
 
 IF @RoleManageUsers IS NOT NULL AND NOT EXISTS (SELECT 1 FROM [dbo].[UserRoleMappings] WHERE [UserId] = @AdminId AND [UserRoleId] = @RoleManageUsers)
     INSERT INTO [dbo].[UserRoleMappings] ([UserId], [UserRoleId]) VALUES (@AdminId, @RoleManageUsers);
@@ -80,6 +84,9 @@ IF @RoleManageProfiles IS NOT NULL AND NOT EXISTS (SELECT 1 FROM [dbo].[UserRole
 
 IF @RoleCustomerSetup IS NOT NULL AND NOT EXISTS (SELECT 1 FROM [dbo].[UserRoleMappings] WHERE [UserId] = @AdminId AND [UserRoleId] = @RoleCustomerSetup)
     INSERT INTO [dbo].[UserRoleMappings] ([UserId], [UserRoleId]) VALUES (@AdminId, @RoleCustomerSetup);
+
+IF @RoleSuperAdmin IS NOT NULL AND NOT EXISTS (SELECT 1 FROM [dbo].[UserRoleMappings] WHERE [UserId] = @AdminId AND [UserRoleId] = @RoleSuperAdmin)
+    INSERT INTO [dbo].[UserRoleMappings] ([UserId], [UserRoleId]) VALUES (@AdminId, @RoleSuperAdmin);
 
 -- -------------------------------------------------------------------------
 -- Profiles

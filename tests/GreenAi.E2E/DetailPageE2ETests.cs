@@ -33,8 +33,8 @@ public sealed class DetailPageE2ETests : E2ETestBase
         await WaitOrFailAsync("[data-testid='customer-admin-heading']", timeoutMs: 20_000,
             hint: "customer-admin-heading must be visible after login");
 
-        // Click the Profiles tab (3rd tab — Settings, Users, Profiles)
-        await Page.ClickAsync(".mud-tabs .mud-tab:nth-of-type(3)");
+        // Click the Profiles tab
+        await Page.ClickAsync("text=Profiler");
         await WaitOrFailAsync("[data-testid='profile-table']", timeoutMs: 10_000,
             hint: "Profile table should appear after clicking Profiles tab");
 
@@ -57,7 +57,7 @@ public sealed class DetailPageE2ETests : E2ETestBase
         await LoginAsync();
         await Page.GotoAsync($"{BaseUrl}/customer-admin");
         await WaitOrFailAsync("[data-testid='customer-admin-heading']", timeoutMs: 20_000);
-        await Page.ClickAsync(".mud-tabs .mud-tab:nth-of-type(3)");
+        await Page.ClickAsync("text=Profiler");
         await WaitOrFailAsync("[data-testid='profile-table']", timeoutMs: 10_000);
         await WaitOrFailAsync("[data-testid='profile-table'] a", timeoutMs: 10_000);
         await Page.ClickAsync("[data-testid='profile-table'] a");
@@ -81,8 +81,8 @@ public sealed class DetailPageE2ETests : E2ETestBase
         await WaitOrFailAsync("[data-testid='customer-admin-heading']", timeoutMs: 20_000,
             hint: "customer-admin-heading must be visible after login");
 
-        // Navigate to Users tab (2nd tab)
-        await Page.ClickAsync(".mud-tabs .mud-tab:nth-of-type(2)");
+        // Navigate to Users tab
+        await Page.ClickAsync("text=Brugere");
         await WaitOrFailAsync("[data-testid='user-table']", timeoutMs: 10_000,
             hint: "User table should appear after clicking Users tab");
 
@@ -112,7 +112,7 @@ public sealed class DetailPageE2ETests : E2ETestBase
         await WaitOrFailAsync("[data-testid='customer-admin-heading']", timeoutMs: 20_000);
 
         // Navigate via users tab
-        await Page.ClickAsync(".mud-tabs .mud-tab:nth-of-type(2)");
+        await Page.ClickAsync("text=Brugere");
         await WaitOrFailAsync("[data-testid='user-table']", timeoutMs: 10_000);
         await Page.ClickAsync("[data-testid='user-table'] a");
 
@@ -141,7 +141,7 @@ public sealed class DetailPageE2ETests : E2ETestBase
         await LoginAsync();
         await Page.GotoAsync($"{BaseUrl}/customer-admin");
         await WaitOrFailAsync("[data-testid='customer-admin-heading']", timeoutMs: 20_000);
-        await Page.ClickAsync(".mud-tabs .mud-tab:nth-of-type(3)");
+        await Page.ClickAsync("text=Profiler");
         await WaitOrFailAsync("[data-testid='profile-table'] a", timeoutMs: 10_000);
         await Page.ClickAsync("[data-testid='profile-table'] a");
         await WaitOrFailAsync("[data-testid='profile-save']", timeoutMs: 15_000);
@@ -154,7 +154,7 @@ public sealed class DetailPageE2ETests : E2ETestBase
         await LoginAsync();
         await Page.GotoAsync($"{BaseUrl}/customer-admin");
         await WaitOrFailAsync("[data-testid='customer-admin-heading']", timeoutMs: 20_000);
-        await Page.ClickAsync(".mud-tabs .mud-tab:nth-of-type(2)");
+        await Page.ClickAsync("text=Brugere");
         await WaitOrFailAsync("[data-testid='user-table'] a", timeoutMs: 10_000);
         await Page.ClickAsync("[data-testid='user-table'] a");
         await WaitOrFailAsync(".mud-breadcrumbs", timeoutMs: 15_000);

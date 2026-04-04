@@ -40,6 +40,8 @@
 | "test automation" / "hvornår test" / "test regel"       | `read_file docs/SSOT/testing/test-automation-rules.md`                    | Trigger table → required tests      |
 | "test fejler" / "debug" / "fix E2E" / "fix test"       | `read_file docs/SSOT/testing/debug-protocol.md`                           | OBSERVE→ACT, fix-layer-lock         |
 | "DB fejl" / "logs" / "hvad skete der"                  | `Invoke-Sqlcmd -ServerInstance "(localdb)\MSSQLLocalDB" -Database "GreenAI_DEV" -TrustServerCertificate -Query "SELECT TOP 20 TimeStamp,Level,Message,Exception FROM Logs ORDER BY TimeStamp DESC"` | Klassificér lag fra output |
+| "sql fejl" / "invalid column" / "null constraint" / "sql fejler" | `pwsh -File scripts/debug/Test-SqlStatement.ps1 -SqlFile <path> -Parameters @{...}` | 5 sek → EKSAKT fejl + fix options |
+| "tool registry" / "hvilke scripts" / "hvilke tools" / "ps modul" | `read_file docs/ai-governance/tool-registry.yaml`                         | AI tool authority — alle tilladte tools |
 | "auth" / "JWT" / "permission" / "ICurrentUser"         | `read_file docs/SSOT/identity/README.md`                                  | Custom JWT, ingen ASP.NET Identity  |
 | "Blazor" / "razor" / "komponent" / "side"              | `semantic_search "lignende komponent"` → find eksempel                    | OnAfterRenderAsync + PrincipalHolder|
 | "byg" / "build" / "compile" / "0 warnings"             | `dotnet build src/GreenAi.Api/GreenAi.Api.csproj -v q`                    | Fix alle warnings                   |
@@ -51,6 +53,32 @@
 | \"feature contract\" / \"feature map\" / \"hvilke features\" / \"EXEC_\" | `read_file docs/SSOT/_system/feature-contract-map.json`          | feature → handler → endpoint → tests || "hvad skal jeg huske" / "ny session" / "resumé"        | `read_file docs/SSOT/governance/EXECUTION_MEMORY.md`                      | Se seneste log-entries              |
 | "fejl signal" / "kompile fejl" / "SIG_"                | `read_file docs/SSOT/governance/ERROR_DETECTION.md`                       | Klassificér → fix → log             |
 | ANYTHING ELSE                                          | `grep_search "<emne>" docs/SSOT/`                                         | Læs → implementér                   |
+
+---
+
+## 🔴 VERIFY-FØR-ANTAG REGLEN (aldrig gæt DB-state)
+
+**FØR du siger "tabellen mangler" / "seed data mangler" / "migration ikke kørt":**
+
+```powershell
+# Verificer altid med SQL FØRSTE — aldrig antagelser
+Invoke-Sqlcmd -ServerInstance "(localdb)\MSSQLLocalDB" -Database "GreenAI_DEV" `
+  -TrustServerCertificate `
+  -Query "SELECT TABLE_NAME, (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS c2 WHERE c2.TABLE_NAME = t.TABLE_NAME) AS Cols FROM INFORMATION_SCHEMA.TABLES t WHERE TABLE_TYPE='BASE TABLE' ORDER BY TABLE_NAME"
+
+# Check om specifikke rækker eksisterer:
+Invoke-Sqlcmd -ServerInstance "(localdb)\MSSQLLocalDB" -Database "GreenAI_DEV" `
+  -TrustServerCertificate -Query "SELECT COUNT(*) AS RowCount FROM [dbo].[Labels]"
+```
+
+**ALDRIG sig:**
+- ❌ "Tabellen eksisterer ikke" — RUN: `SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME='X'`
+- ❌ "Seed data mangler" — RUN: `SELECT COUNT(*) FROM TableName`
+- ❌ "Migration ikke kørt" — RUN: `SELECT * FROM SchemaVersions`
+
+**ALTID sig:**
+- ✅ "Lad mig verificere med SQL query..."
+- ✅ "VERIFICERET: 5 rækker i Labels tabel"
 
 ---
 
