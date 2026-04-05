@@ -10,13 +10,19 @@
 
 <MudAppBar Elevation="1" Dense="true" data-testid="top-bar">
 
-    @* Left: Overlay nav toggle *@
+    @* Left: Overlay nav toggle — icon only on mobile, icon+label on desktop (M3 affordance) *@
     <MudIconButton Icon="@Icons.Material.Filled.GridView"
                    Color="Color.Inherit"
                    Edge="Edge.Start"
                    OnClick="AppState.ToggleOverlayNav"
                    data-testid="top-bar-nav-toggle"
                    aria-label="@Loc.Get("nav.OpenMenu")" />
+    <MudText Typo="Typo.body2"
+             Class="ml-n1 mr-1 d-none d-sm-inline top-bar-nav-label"
+             Style="cursor:pointer;user-select:none"
+             @onclick="AppState.ToggleOverlayNav">
+        @Loc.Get("nav.Menu")
+    </MudText>
 
     @* Left: Brand *@
     <MudText Typo="Typo.h6" Class="ml-1" data-testid="top-bar-brand">GreenAI</MudText>
@@ -40,22 +46,24 @@
                    data-testid="top-bar-send-icon"
                    aria-label="@Loc.Get("nav.Send")" />
 
-    @* Right: Active context (profile + customer) *@
+    @* Right: Active context — truncated to prevent overflow on small viewports (M5) *@
     @if (AppState.ActiveProfileName is not null)
     {
-        <MudText Typo="Typo.body2"
-                 Class="mr-1"
-                 data-testid="top-bar-profile-name">
-            @AppState.ActiveProfileName
-        </MudText>
-        @if (AppState.ActiveCustomerName is not null)
-        {
-            <MudText Typo="Typo.caption"
-                     Class="mr-2 mud-text-secondary"
-                     data-testid="top-bar-customer-name">
-                (@AppState.ActiveCustomerName)
+        <span class="top-bar-context d-none d-sm-flex">
+            <MudText Typo="Typo.body2"
+                     Class="top-bar-context-name"
+                     data-testid="top-bar-profile-name">
+                @AppState.ActiveProfileName
             </MudText>
-        }
+            @if (AppState.ActiveCustomerName is not null)
+            {
+                <MudText Typo="Typo.caption"
+                         Class="ml-1 mud-text-secondary top-bar-context-customer"
+                         data-testid="top-bar-customer-name">
+                    (@AppState.ActiveCustomerName)
+                </MudText>
+            }
+        </span>
     }
 
     @* Right: User identity (hidden on mobile — too wide for small viewports) *@

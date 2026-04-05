@@ -18,9 +18,21 @@ public sealed class LocalizationContext : ILocalizationContext
         _loaded = true;
     }
 
-    public string Get(string key)
-        => _labels.TryGetValue(key.ToUpperInvariant(), out var value) ? value : key;
+    public string Get(string key, params string[] args)
+    {
+        if (!_labels.TryGetValue(key.ToUpperInvariant(), out var value))
+        {
+            // Never silently return the raw key — [?key?] is immediately visible and
+            // searchable in browser DevTools. Include args for debuggability.
+            return args.Length > 0
+                ? $"[?{key}({string.Join(", ", args)})?]"
+                : $"[?{key}?]";
+        }
 
-    public string Get(string key, string arg0)
-        => Get(key).Replace("{0}", arg0, StringComparison.Ordinal);
+        // string.Format convention: {0}, {1}, {2} — same as every .NET developer expects
+        for (var i = 0; i < args.Length; i++)
+            value = value.Replace($"{{{i}}}", args[i], StringComparison.Ordinal);
+
+        return value;
+    }
 }

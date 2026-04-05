@@ -4,9 +4,9 @@
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.65);
-    z-index: 1500;
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
+    z-index: var(--ga-z-palette);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
 }
 
 .cmd-panel {
@@ -17,10 +17,10 @@
     width: min(600px, 92vw);
     max-height: 480px;
     background: var(--mud-palette-surface);
-    border-radius: 10px;
-    box-shadow: var(--mud-elevation-16), 0 0 0 1px rgba(0,0,0,0.12);
+    border-radius: var(--ga-radius-lg);
+    box-shadow: var(--ga-shadow-overlay), 0 0 0 1px rgba(0,0,0,0.12), 0 24px 64px rgba(0,0,0,0.22);
     border: 1px solid var(--mud-palette-divider);
-    z-index: 1501;
+    z-index: calc(var(--ga-z-palette) + 1);
     display: flex;
     flex-direction: column;
     overflow: hidden;

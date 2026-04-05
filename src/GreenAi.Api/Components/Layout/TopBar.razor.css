@@ -1,0 +1,36 @@
+/* TopBar scoped styles */
+
+/* Nav trigger label — subtle, inherits AppBar color */
+.top-bar-nav-label {
+    opacity: 0.85;
+    transition: opacity 120ms;
+}
+
+.top-bar-nav-label:hover {
+    opacity: 1;
+}
+
+/* Active context — flex row, truncates on narrow viewports */
+.top-bar-context {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    max-width: 200px;
+    margin-right: 8px;
+    overflow: hidden;
+}
+
+.top-bar-context-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 130px;
+}
+
+.top-bar-context-customer {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90px;
+    flex-shrink: 0;
+}

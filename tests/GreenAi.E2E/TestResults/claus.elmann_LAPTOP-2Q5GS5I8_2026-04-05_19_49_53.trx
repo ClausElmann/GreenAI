@@ -1,0 +1,286 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="5407b4bd-adb1-45ff-bf4e-70513486b285" name="claus.elmann@LAPTOP-2Q5GS5I8 2026-04-05 19:49:53" runUser="F24\claus.elmann" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-04-05T19:49:53.1047964+02:00" queuing="2026-04-05T19:49:53.1047971+02:00" start="2026-04-05T19:49:40.3293557+02:00" finish="2026-04-05T19:53:07.7639899+02:00" />
+  <TestSettings name="default" id="fc29b870-1117-477f-a393-12351860238e">
+    <Deployment runDeploymentRoot="claus.elmann_LAPTOP-2Q5GS5I8_2026-04-05_19_49_53" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="64aa1298-524d-4506-9030-829977c22732" testId="5b779511-9be5-cf31-092f-55c5c416231f" testName="GreenAi.E2E.LabelCoverageE2ETests.StatusDetail_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.3475435" startTime="2026-04-05T19:51:48.4086258+02:00" endTime="2026-04-05T19:51:51.7562776+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="64aa1298-524d-4506-9030-829977c22732" />
+    <UnitTestResult executionId="fa829717-5fc4-4a42-8b2f-931f23a1656a" testId="17cafc69-f9be-418f-1b43-5f32a7971675" testName="GreenAi.E2E.LoginFlowE2ETests.Login_SingleCustomerMultipleProfiles_SelectProfile_NavigatesToBroadcasting" computerName="LAPTOP-2Q5GS5I8" duration="00:00:02.8758751" startTime="2026-04-05T19:51:32.6175192+02:00" endTime="2026-04-05T19:51:35.4935026+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fa829717-5fc4-4a42-8b2f-931f23a1656a" />
+    <UnitTestResult executionId="e3003f51-58c7-4832-9b4b-51c00ad4a9ac" testId="2bcbdf26-1e64-d41a-6ccc-bc2ad133021d" testName="GreenAi.E2E.LabelCoverageE2ETests.Drafts_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.3364586" startTime="2026-04-05T19:51:38.1319131+02:00" endTime="2026-04-05T19:51:41.4684425+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e3003f51-58c7-4832-9b4b-51c00ad4a9ac" />
+    <UnitTestResult executionId="4f810c1c-1e5c-4845-839c-4311996ddb00" testId="6199eddb-75c8-d2ac-d687-af1e81ecfa20" testName="GreenAi.E2E.LabelCoverageE2ETests.SelectProfile_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.2741769" startTime="2026-04-05T19:52:14.9531103+02:00" endTime="2026-04-05T19:52:18.2273425+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4f810c1c-1e5c-4845-839c-4311996ddb00" />
+    <UnitTestResult executionId="1aa9ded7-4f6c-44cf-9380-4f6ed61e59f3" testId="6ef24e1e-b7bc-9663-bee8-23a7da386fd1" testName="GreenAi.E2E.DetailPageE2ETests.UserDetail_ActiveStatusChip_IsVisible" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.4974544" startTime="2026-04-05T19:52:32.6981146+02:00" endTime="2026-04-05T19:52:36.1956459+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1aa9ded7-4f6c-44cf-9380-4f6ed61e59f3" />
+    <UnitTestResult executionId="1f380d2e-3880-4622-ba07-ff113d07e22f" testId="901cfdbc-ffaa-a154-7559-0ada183f3a9d" testName="GreenAi.E2E.Visual.NavigationVisualTests.WizardLayout_IsAccessible_AllDevices" computerName="LAPTOP-2Q5GS5I8" duration="00:00:11.1543397" startTime="2026-04-05T19:50:04.2625428+02:00" endTime="2026-04-05T19:50:15.4170631+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1f380d2e-3880-4622-ba07-ff113d07e22f" />
+    <UnitTestResult executionId="1a5e4a12-a7a7-48f9-8dd3-855161f48ca5" testId="ecbc3c83-a864-026a-57fc-8ef120975fa0" testName="GreenAi.E2E.Visual.NavigationVisualTests.CommandPalette_TypeFilters_AndNavigates_AllDevices" computerName="LAPTOP-2Q5GS5I8" duration="00:00:10.7744927" startTime="2026-04-05T19:50:46.5580497+02:00" endTime="2026-04-05T19:50:57.3326774+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1a5e4a12-a7a7-48f9-8dd3-855161f48ca5" />
+    <UnitTestResult executionId="10686c86-5b9f-4de9-8160-2427814ad5e4" testId="ec1af9c9-b214-e604-7895-76f112d24f37" testName="GreenAi.E2E.DetailPageE2ETests.ProfileDetail_ProfileNameField_IsPresentAndEditable" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.5506369" startTime="2026-04-05T19:52:36.1961523+02:00" endTime="2026-04-05T19:52:39.7468441+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="10686c86-5b9f-4de9-8160-2427814ad5e4" />
+    <UnitTestResult executionId="838e4151-099f-4d4f-94bb-2ada2598e090" testId="211a7750-3056-af95-4b2d-6c37ac077778" testName="GreenAi.E2E.LabelCoverageE2ETests.Dashboard_RedirectsToBroadcasting" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.2668477" startTime="2026-04-05T19:52:08.4588169+02:00" endTime="2026-04-05T19:52:11.7257204+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="838e4151-099f-4d4f-94bb-2ada2598e090" />
+    <UnitTestResult executionId="80b5e231-84d2-4d2a-a04e-cbf7df7b223e" testId="fef5af75-593f-4da4-fc26-afb5afa64846" testName="GreenAi.E2E.Visual.NavigationVisualTests.UserProfile_AllDevices" computerName="LAPTOP-2Q5GS5I8" duration="00:00:11.2545425" startTime="2026-04-05T19:50:35.3018153+02:00" endTime="2026-04-05T19:50:46.5564732+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="80b5e231-84d2-4d2a-a04e-cbf7df7b223e" />
+    <UnitTestResult executionId="86712525-766c-47fe-989a-f5995ea57804" testId="eed0a7dd-ec50-5488-8971-769c9adcd555" testName="GreenAi.E2E.LabelCoverageE2ETests.SendWizard_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.2736789" startTime="2026-04-05T19:51:55.0087482+02:00" endTime="2026-04-05T19:51:58.2824890+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="86712525-766c-47fe-989a-f5995ea57804" />
+    <UnitTestResult executionId="415ecfb0-e4f5-48f8-9086-21ee81897639" testId="681e72a1-64f9-086a-a8bc-60707ce83b03" testName="GreenAi.E2E.Visual.NavigationVisualTests.OverlayNav_BackdropClick_Closes_NonMobile" computerName="LAPTOP-2Q5GS5I8" duration="00:00:07.3343171" startTime="2026-04-05T19:51:03.7728792+02:00" endTime="2026-04-05T19:51:11.1073015+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="415ecfb0-e4f5-48f8-9086-21ee81897639" />
+    <UnitTestResult executionId="b6ada15d-3ff0-4156-87f2-872a8c096d76" testId="a3d4b2d4-68d8-743e-8f21-b9ca19f8b1b2" testName="GreenAi.E2E.Visual.NavigationVisualTests.Dashboard_AllDevices" computerName="LAPTOP-2Q5GS5I8" duration="00:00:11.1821293" startTime="2026-04-05T19:49:41.8650734+02:00" endTime="2026-04-05T19:49:53.0610862+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b6ada15d-3ff0-4156-87f2-872a8c096d76" />
+    <UnitTestResult executionId="7dac5556-d86e-45a4-a187-537fb7985561" testId="6f21fb76-c1c9-fe83-8cea-7b8af6e1da1a" testName="GreenAi.E2E.CustomerAdminE2ETests.CustomerAdmin_UsersTab_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.5598647" startTime="2026-04-05T19:53:01.2750382+02:00" endTime="2026-04-05T19:53:04.8349564+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7dac5556-d86e-45a4-a187-537fb7985561" />
+    <UnitTestResult executionId="d40ecec3-84b3-4421-9b2e-9b66a4bda44d" testId="ba8430a0-b50f-156f-34eb-0fff2cbc4b2f" testName="GreenAi.E2E.CustomerAdminE2ETests.CustomerAdmin_ProfilesTab_ShowsSeedProfiles" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.2894302" startTime="2026-04-05T19:52:51.0631310+02:00" endTime="2026-04-05T19:52:54.3526105+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d40ecec3-84b3-4421-9b2e-9b66a4bda44d" />
+    <UnitTestResult executionId="79a0695f-4d88-45ae-a77c-3b4611170a9e" testId="351495f3-09f6-f48f-f99f-3f5a835dc9be" testName="GreenAi.E2E.CustomerAdminE2ETests.Login_WithWrongPassword_ShowsError" computerName="LAPTOP-2Q5GS5I8" duration="00:00:02.9670994" startTime="2026-04-05T19:52:43.0404575+02:00" endTime="2026-04-05T19:52:46.0076134+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="79a0695f-4d88-45ae-a77c-3b4611170a9e" />
+    <UnitTestResult executionId="0f9a105e-717c-4bac-b3eb-f3bbcb18b82f" testId="38110dbb-4c54-c00d-67ec-d8c709fc0bd6" testName="GreenAi.E2E.CustomerAdminE2ETests.CustomerAdmin_SettingsTab_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.2905946" startTime="2026-04-05T19:52:39.7491121+02:00" endTime="2026-04-05T19:52:43.0398109+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0f9a105e-717c-4bac-b3eb-f3bbcb18b82f" />
+    <UnitTestResult executionId="90cf9823-2cd0-4621-a3ec-ff970b579421" testId="c7ab239f-b07a-4f94-a384-baa074b37d98" testName="GreenAi.E2E.LabelCoverageE2ETests.SuperAdmin_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.4243270" startTime="2026-04-05T19:51:58.2835964+02:00" endTime="2026-04-05T19:52:01.7079881+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="90cf9823-2cd0-4621-a3ec-ff970b579421" />
+    <UnitTestResult executionId="efb535d6-930c-4b27-b7f0-f57fe68f7f5e" testId="d185c56f-05f8-ea55-f119-8e96d680bae6" testName="GreenAi.E2E.CustomerAdminE2ETests.Login_WithValidCredentials_RedirectsToHome" computerName="LAPTOP-2Q5GS5I8" duration="00:00:02.7942177" startTime="2026-04-05T19:53:04.8355061+02:00" endTime="2026-04-05T19:53:07.6297801+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="efb535d6-930c-4b27-b7f0-f57fe68f7f5e" />
+    <UnitTestResult executionId="dfd80091-b12d-465a-9db8-0f4a0b88902d" testId="24013c7e-979c-08e4-9cb8-c3b861d94655" testName="GreenAi.E2E.Visual.NavigationVisualTests.Resize_Desktop_To_Mobile" computerName="LAPTOP-2Q5GS5I8" duration="00:00:04.6468379" startTime="2026-04-05T19:51:19.8270678+02:00" endTime="2026-04-05T19:51:24.4740330+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="dfd80091-b12d-465a-9db8-0f4a0b88902d" />
+    <UnitTestResult executionId="3bce4ac8-c507-45c9-ba02-663c3f9871f9" testId="c362e506-522f-27ea-1c8e-3e3a2223bd99" testName="GreenAi.E2E.DetailPageE2ETests.ProfileDetail_NavigateFromTable_LoadsProfileInfoForm" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.4668974" startTime="2026-04-05T19:52:25.3813580+02:00" endTime="2026-04-05T19:52:28.8484094+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3bce4ac8-c507-45c9-ba02-663c3f9871f9" />
+    <UnitTestResult executionId="d505a8a6-109d-4ae1-84af-6509f4dc0955" testId="e8d40798-e1e7-c63b-5d8e-567fdc8c6f5b" testName="GreenAi.E2E.LabelCoverageE2ETests.SelectCustomer_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.3270898" startTime="2026-04-05T19:52:05.1305304+02:00" endTime="2026-04-05T19:52:08.4577104+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d505a8a6-109d-4ae1-84af-6509f4dc0955" />
+    <UnitTestResult executionId="702f043b-52c0-408e-976d-72d56a1e35ac" testId="794ce17b-ba8c-ab7d-5fb9-401bad973950" testName="GreenAi.E2E.Visual.NavigationVisualTests.OverlayNav_ESCCloses_AllDevices" computerName="LAPTOP-2Q5GS5I8" duration="00:00:08.7173164" startTime="2026-04-05T19:51:11.1084082+02:00" endTime="2026-04-05T19:51:19.8258905+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="702f043b-52c0-408e-976d-72d56a1e35ac" />
+    <UnitTestResult executionId="8bb60dc1-c07c-48c9-8e5f-df2325106d5f" testId="1514c7e3-cdd5-81ac-92e5-2e342423b454" testName="GreenAi.E2E.LoginFlowE2ETests.Login_MultipleCustomers_SelectCustomer_NavigatesToBroadcasting" computerName="LAPTOP-2Q5GS5I8" duration="00:00:02.8112097" startTime="2026-04-05T19:51:27.1406176+02:00" endTime="2026-04-05T19:51:29.9519095+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8bb60dc1-c07c-48c9-8e5f-df2325106d5f" />
+    <UnitTestResult executionId="9e2766a6-575a-4e5c-8617-a3f51bbd9c3c" testId="96413178-20ad-3567-b3cf-bdf5a1a7df69" testName="GreenAi.E2E.LoginFlowE2ETests.Login_MultipleCustomers_ShowsSelectCustomerPage" computerName="LAPTOP-2Q5GS5I8" duration="00:00:02.6644049" startTime="2026-04-05T19:51:29.9524765+02:00" endTime="2026-04-05T19:51:32.6169679+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9e2766a6-575a-4e5c-8617-a3f51bbd9c3c" />
+    <UnitTestResult executionId="eb3c6458-6a98-4db3-9dad-0ec57b4d6fbe" testId="7c3d8fb4-a440-8d7b-6a19-d8d74ff3a163" testName="GreenAi.E2E.CustomerAdminE2ETests.CustomerAdmin_UsersTab_ShowsSeedUsers" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.3056354" startTime="2026-04-05T19:52:47.7568913+02:00" endTime="2026-04-05T19:52:51.0625901+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="eb3c6458-6a98-4db3-9dad-0ec57b4d6fbe" />
+    <UnitTestResult executionId="fb9239b3-3ff1-4f4e-b088-f98195adf193" testId="c0565992-6d34-3a4a-b8ad-8f6f597c45bc" testName="GreenAi.E2E.Visual.NavigationVisualTests.CommandPalette_Open_AllDevices" computerName="LAPTOP-2Q5GS5I8" duration="00:00:10.4929127" startTime="2026-04-05T19:50:15.4219030+02:00" endTime="2026-04-05T19:50:25.9149293+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fb9239b3-3ff1-4f4e-b088-f98195adf193" />
+    <UnitTestResult executionId="fd486bbb-2ced-4327-ad67-57634b49e01b" testId="bd93d7f1-b86f-5210-2589-b66ec3e8eb32" testName="GreenAi.E2E.CustomerAdminE2ETests.CustomerAdmin_ProfilesTab_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.5443814" startTime="2026-04-05T19:52:57.7300892+02:00" endTime="2026-04-05T19:53:01.2745229+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fd486bbb-2ced-4327-ad67-57634b49e01b" />
+    <UnitTestResult executionId="b93c00e6-6f2a-41ce-a395-5b335d7165a5" testId="c3c1f6f6-7342-6d4b-6c96-97baf002d2e9" testName="GreenAi.E2E.LabelCoverageE2ETests.AdminUsers_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.2503012" startTime="2026-04-05T19:51:51.7574355+02:00" endTime="2026-04-05T19:51:55.0078230+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b93c00e6-6f2a-41ce-a395-5b335d7165a5" />
+    <UnitTestResult executionId="88f76eda-8b88-4766-9eab-55c13eb3e6c7" testId="2bcc4490-32d9-3d90-8f0e-6079ba9e345a" testName="GreenAi.E2E.Visual.NavigationVisualTests.TopBar_ShowsUserEmail_WhenAuthenticated" computerName="LAPTOP-2Q5GS5I8" duration="00:00:06.4377655" startTime="2026-04-05T19:50:57.3338819+02:00" endTime="2026-04-05T19:51:03.7718018+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="88f76eda-8b88-4766-9eab-55c13eb3e6c7" />
+    <UnitTestResult executionId="33481320-364c-4d52-b84c-67252ee59870" testId="e5df468f-097d-4e93-2215-fb6b4187bbf4" testName="GreenAi.E2E.LabelCoverageE2ETests.UserProfile_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.5077688" startTime="2026-04-05T19:51:41.4694636+02:00" endTime="2026-04-05T19:51:44.9773200+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="33481320-364c-4d52-b84c-67252ee59870" />
+    <UnitTestResult executionId="018f600b-2737-45df-83e4-fb7df2aee3d4" testId="4ee67fd7-6259-1087-5ba8-4702a82477af" testName="GreenAi.E2E.LabelCoverageE2ETests.Status_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.4208054" startTime="2026-04-05T19:52:01.7090183+02:00" endTime="2026-04-05T19:52:05.1298930+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="018f600b-2737-45df-83e4-fb7df2aee3d4" />
+    <UnitTestResult executionId="2885c688-5e2b-4851-b3ea-d818655b5439" testId="69e3b573-07a4-c60c-20b5-b5ee3ecbe577" testName="GreenAi.E2E.Visual.NavigationVisualTests.OverlayNav_Open_AllDevices" computerName="LAPTOP-2Q5GS5I8" duration="00:00:11.1898435" startTime="2026-04-05T19:49:53.0718259+02:00" endTime="2026-04-05T19:50:04.2619255+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2885c688-5e2b-4851-b3ea-d818655b5439" />
+    <UnitTestResult executionId="99883b80-0561-4d03-912d-66b15160f928" testId="f3951272-e2dc-f90e-d27c-b6b1ed03d55c" testName="GreenAi.E2E.LabelCoverageE2ETests.Broadcasting_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.4296557" startTime="2026-04-05T19:51:44.9784212+02:00" endTime="2026-04-05T19:51:48.4081407+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="99883b80-0561-4d03-912d-66b15160f928" />
+    <UnitTestResult executionId="447ca9de-3e2c-4048-ba7f-0602132777d3" testId="8414f684-09c2-ad79-b35b-8d18b03ee549" testName="GreenAi.E2E.DetailPageE2ETests.UserDetail_NavigateFromTable_LoadsBreadcrumbs" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.5691339" startTime="2026-04-05T19:52:18.2285273+02:00" endTime="2026-04-05T19:52:21.7977189+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="447ca9de-3e2c-4048-ba7f-0602132777d3" />
+    <UnitTestResult executionId="d6ede2ee-2cc3-460f-a684-da5140a39751" testId="4e45b4d7-79cb-6286-febd-551e60c646f9" testName="GreenAi.E2E.LabelCoverageE2ETests.AdminSettings_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.2252893" startTime="2026-04-05T19:52:11.7267947+02:00" endTime="2026-04-05T19:52:14.9521601+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d6ede2ee-2cc3-460f-a684-da5140a39751" />
+    <UnitTestResult executionId="8ffd36df-369f-4737-a75f-e779072c6d92" testId="28c743a2-ed50-21c2-6e55-5516582e7db7" testName="GreenAi.E2E.DetailPageE2ETests.ProfileDetail_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.8476948" startTime="2026-04-05T19:52:28.8497148+02:00" endTime="2026-04-05T19:52:32.6974977+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8ffd36df-369f-4737-a75f-e779072c6d92" />
+    <UnitTestResult executionId="daf4ba29-71a9-429f-9722-c57931deb4f4" testId="52d31b75-c007-42f6-e556-3ae1101d7eb2" testName="GreenAi.E2E.CustomerAdminE2ETests.CustomerAdmin_AfterLogin_ShowsHeading" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.3749804" startTime="2026-04-05T19:52:54.3538642+02:00" endTime="2026-04-05T19:52:57.7289056+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="daf4ba29-71a9-429f-9722-c57931deb4f4" />
+    <UnitTestResult executionId="88c324ac-246d-4f1e-b7df-cce72ddb201e" testId="5de81687-9c3b-540b-46e1-53e6f61f68f4" testName="GreenAi.E2E.Visual.NavigationVisualTests.OverlayNav_NavLinks_NavigateCorrectly" computerName="LAPTOP-2Q5GS5I8" duration="00:00:09.3841044" startTime="2026-04-05T19:50:25.9163655+02:00" endTime="2026-04-05T19:50:35.3006062+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="88c324ac-246d-4f1e-b7df-cce72ddb201e" />
+    <UnitTestResult executionId="14932563-f725-4d08-ac9f-63291d561543" testId="c451d1bb-122e-0d08-c606-cf27abf33f7c" testName="GreenAi.E2E.CustomerAdminE2ETests.CustomerAdmin_UnauthenticatedAccess_RedirectsToLogin" computerName="LAPTOP-2Q5GS5I8" duration="00:00:01.7481529" startTime="2026-04-05T19:52:46.0080318+02:00" endTime="2026-04-05T19:52:47.7562460+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="14932563-f725-4d08-ac9f-63291d561543" />
+    <UnitTestResult executionId="e5aca9a3-12a7-46d9-95b2-94c832228d3b" testId="e3c1a298-9885-4920-d800-f1a4820fd194" testName="GreenAi.E2E.DetailPageE2ETests.UserDetail_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.5818481" startTime="2026-04-05T19:52:21.7982391+02:00" endTime="2026-04-05T19:52:25.3801536+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e5aca9a3-12a7-46d9-95b2-94c832228d3b" />
+    <UnitTestResult executionId="4dd1e63a-8bc2-47ad-9bc5-b264d4924e2a" testId="93844514-1118-c739-0606-7aef5cbaaba2" testName="GreenAi.E2E.LoginFlowE2ETests.Login_SingleCustomerSingleProfile_NavigatesDirectlyToBroadcasting" computerName="LAPTOP-2Q5GS5I8" duration="00:00:02.6356221" startTime="2026-04-05T19:51:35.4946001+02:00" endTime="2026-04-05T19:51:38.1303752+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4dd1e63a-8bc2-47ad-9bc5-b264d4924e2a" />
+    <UnitTestResult executionId="92fc7193-80a1-4c83-a086-85cc907c2fbe" testId="c2477602-a002-2a10-b8fe-d98b639cb2e5" testName="GreenAi.E2E.LoginFlowE2ETests.Login_SingleCustomerMultipleProfiles_ShowsSelectProfilePage" computerName="LAPTOP-2Q5GS5I8" duration="00:00:02.6582676" startTime="2026-04-05T19:51:24.4814545+02:00" endTime="2026-04-05T19:51:27.1398280+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="92fc7193-80a1-4c83-a086-85cc907c2fbe" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="GreenAi.E2E.DetailPageE2ETests.UserDetail_ActiveStatusChip_IsVisible" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="6ef24e1e-b7bc-9663-bee8-23a7da386fd1">
+      <Execution id="1aa9ded7-4f6c-44cf-9380-4f6ed61e59f3" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.DetailPageE2ETests" name="UserDetail_ActiveStatusChip_IsVisible" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.Visual.NavigationVisualTests.OverlayNav_BackdropClick_Closes_NonMobile" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="681e72a1-64f9-086a-a8bc-60707ce83b03">
+      <Execution id="415ecfb0-e4f5-48f8-9086-21ee81897639" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.Visual.NavigationVisualTests" name="OverlayNav_BackdropClick_Closes_NonMobile" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.DetailPageE2ETests.ProfileDetail_NavigateFromTable_LoadsProfileInfoForm" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="c362e506-522f-27ea-1c8e-3e3a2223bd99">
+      <Execution id="3bce4ac8-c507-45c9-ba02-663c3f9871f9" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.DetailPageE2ETests" name="ProfileDetail_NavigateFromTable_LoadsProfileInfoForm" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.Visual.NavigationVisualTests.TopBar_ShowsUserEmail_WhenAuthenticated" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="2bcc4490-32d9-3d90-8f0e-6079ba9e345a">
+      <Execution id="88f76eda-8b88-4766-9eab-55c13eb3e6c7" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.Visual.NavigationVisualTests" name="TopBar_ShowsUserEmail_WhenAuthenticated" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LabelCoverageE2ETests.SendWizard_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="eed0a7dd-ec50-5488-8971-769c9adcd555">
+      <Execution id="86712525-766c-47fe-989a-f5995ea57804" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LabelCoverageE2ETests" name="SendWizard_NoMissingLabels" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.Visual.NavigationVisualTests.CommandPalette_Open_AllDevices" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="c0565992-6d34-3a4a-b8ad-8f6f597c45bc">
+      <Execution id="fb9239b3-3ff1-4f4e-b088-f98195adf193" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.Visual.NavigationVisualTests" name="CommandPalette_Open_AllDevices" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.CustomerAdminE2ETests.CustomerAdmin_UsersTab_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="6f21fb76-c1c9-fe83-8cea-7b8af6e1da1a">
+      <Execution id="7dac5556-d86e-45a4-a187-537fb7985561" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.CustomerAdminE2ETests" name="CustomerAdmin_UsersTab_NoMissingLabels" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LoginFlowE2ETests.Login_SingleCustomerMultipleProfiles_SelectProfile_NavigatesToBroadcasting" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="17cafc69-f9be-418f-1b43-5f32a7971675">
+      <Execution id="fa829717-5fc4-4a42-8b2f-931f23a1656a" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LoginFlowE2ETests" name="Login_SingleCustomerMultipleProfiles_SelectProfile_NavigatesToBroadcasting" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.CustomerAdminE2ETests.Login_WithValidCredentials_RedirectsToHome" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="d185c56f-05f8-ea55-f119-8e96d680bae6">
+      <Execution id="efb535d6-930c-4b27-b7f0-f57fe68f7f5e" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.CustomerAdminE2ETests" name="Login_WithValidCredentials_RedirectsToHome" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LabelCoverageE2ETests.SelectCustomer_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="e8d40798-e1e7-c63b-5d8e-567fdc8c6f5b">
+      <Execution id="d505a8a6-109d-4ae1-84af-6509f4dc0955" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LabelCoverageE2ETests" name="SelectCustomer_NoMissingLabels" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LabelCoverageE2ETests.SuperAdmin_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="c7ab239f-b07a-4f94-a384-baa074b37d98">
+      <Execution id="90cf9823-2cd0-4621-a3ec-ff970b579421" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LabelCoverageE2ETests" name="SuperAdmin_NoMissingLabels" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.DetailPageE2ETests.ProfileDetail_ProfileNameField_IsPresentAndEditable" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="ec1af9c9-b214-e604-7895-76f112d24f37">
+      <Execution id="10686c86-5b9f-4de9-8160-2427814ad5e4" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.DetailPageE2ETests" name="ProfileDetail_ProfileNameField_IsPresentAndEditable" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.Visual.NavigationVisualTests.Dashboard_AllDevices" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="a3d4b2d4-68d8-743e-8f21-b9ca19f8b1b2">
+      <Execution id="b6ada15d-3ff0-4156-87f2-872a8c096d76" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.Visual.NavigationVisualTests" name="Dashboard_AllDevices" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LoginFlowE2ETests.Login_MultipleCustomers_ShowsSelectCustomerPage" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="96413178-20ad-3567-b3cf-bdf5a1a7df69">
+      <Execution id="9e2766a6-575a-4e5c-8617-a3f51bbd9c3c" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LoginFlowE2ETests" name="Login_MultipleCustomers_ShowsSelectCustomerPage" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.DetailPageE2ETests.ProfileDetail_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="28c743a2-ed50-21c2-6e55-5516582e7db7">
+      <Execution id="8ffd36df-369f-4737-a75f-e779072c6d92" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.DetailPageE2ETests" name="ProfileDetail_NoMissingLabels" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.CustomerAdminE2ETests.CustomerAdmin_UnauthenticatedAccess_RedirectsToLogin" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="c451d1bb-122e-0d08-c606-cf27abf33f7c">
+      <Execution id="14932563-f725-4d08-ac9f-63291d561543" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.CustomerAdminE2ETests" name="CustomerAdmin_UnauthenticatedAccess_RedirectsToLogin" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LabelCoverageE2ETests.StatusDetail_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="5b779511-9be5-cf31-092f-55c5c416231f">
+      <Execution id="64aa1298-524d-4506-9030-829977c22732" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LabelCoverageE2ETests" name="StatusDetail_NoMissingLabels" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.CustomerAdminE2ETests.CustomerAdmin_AfterLogin_ShowsHeading" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="52d31b75-c007-42f6-e556-3ae1101d7eb2">
+      <Execution id="daf4ba29-71a9-429f-9722-c57931deb4f4" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.CustomerAdminE2ETests" name="CustomerAdmin_AfterLogin_ShowsHeading" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.Visual.NavigationVisualTests.UserProfile_AllDevices" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="fef5af75-593f-4da4-fc26-afb5afa64846">
+      <Execution id="80b5e231-84d2-4d2a-a04e-cbf7df7b223e" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.Visual.NavigationVisualTests" name="UserProfile_AllDevices" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.CustomerAdminE2ETests.Login_WithWrongPassword_ShowsError" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="351495f3-09f6-f48f-f99f-3f5a835dc9be">
+      <Execution id="79a0695f-4d88-45ae-a77c-3b4611170a9e" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.CustomerAdminE2ETests" name="Login_WithWrongPassword_ShowsError" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LoginFlowE2ETests.Login_MultipleCustomers_SelectCustomer_NavigatesToBroadcasting" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="1514c7e3-cdd5-81ac-92e5-2e342423b454">
+      <Execution id="8bb60dc1-c07c-48c9-8e5f-df2325106d5f" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LoginFlowE2ETests" name="Login_MultipleCustomers_SelectCustomer_NavigatesToBroadcasting" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.Visual.NavigationVisualTests.CommandPalette_TypeFilters_AndNavigates_AllDevices" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="ecbc3c83-a864-026a-57fc-8ef120975fa0">
+      <Execution id="1a5e4a12-a7a7-48f9-8dd3-855161f48ca5" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.Visual.NavigationVisualTests" name="CommandPalette_TypeFilters_AndNavigates_AllDevices" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LabelCoverageE2ETests.SelectProfile_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="6199eddb-75c8-d2ac-d687-af1e81ecfa20">
+      <Execution id="4f810c1c-1e5c-4845-839c-4311996ddb00" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LabelCoverageE2ETests" name="SelectProfile_NoMissingLabels" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LoginFlowE2ETests.Login_SingleCustomerSingleProfile_NavigatesDirectlyToBroadcasting" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="93844514-1118-c739-0606-7aef5cbaaba2">
+      <Execution id="4dd1e63a-8bc2-47ad-9bc5-b264d4924e2a" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LoginFlowE2ETests" name="Login_SingleCustomerSingleProfile_NavigatesDirectlyToBroadcasting" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.DetailPageE2ETests.UserDetail_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="e3c1a298-9885-4920-d800-f1a4820fd194">
+      <Execution id="e5aca9a3-12a7-46d9-95b2-94c832228d3b" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.DetailPageE2ETests" name="UserDetail_NoMissingLabels" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LoginFlowE2ETests.Login_SingleCustomerMultipleProfiles_ShowsSelectProfilePage" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="c2477602-a002-2a10-b8fe-d98b639cb2e5">
+      <Execution id="92fc7193-80a1-4c83-a086-85cc907c2fbe" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LoginFlowE2ETests" name="Login_SingleCustomerMultipleProfiles_ShowsSelectProfilePage" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LabelCoverageE2ETests.UserProfile_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="e5df468f-097d-4e93-2215-fb6b4187bbf4">
+      <Execution id="33481320-364c-4d52-b84c-67252ee59870" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LabelCoverageE2ETests" name="UserProfile_NoMissingLabels" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LabelCoverageE2ETests.AdminSettings_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="4e45b4d7-79cb-6286-febd-551e60c646f9">
+      <Execution id="d6ede2ee-2cc3-460f-a684-da5140a39751" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LabelCoverageE2ETests" name="AdminSettings_NoMissingLabels" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.CustomerAdminE2ETests.CustomerAdmin_ProfilesTab_ShowsSeedProfiles" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="ba8430a0-b50f-156f-34eb-0fff2cbc4b2f">
+      <Execution id="d40ecec3-84b3-4421-9b2e-9b66a4bda44d" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.CustomerAdminE2ETests" name="CustomerAdmin_ProfilesTab_ShowsSeedProfiles" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.DetailPageE2ETests.UserDetail_NavigateFromTable_LoadsBreadcrumbs" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="8414f684-09c2-ad79-b35b-8d18b03ee549">
+      <Execution id="447ca9de-3e2c-4048-ba7f-0602132777d3" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.DetailPageE2ETests" name="UserDetail_NavigateFromTable_LoadsBreadcrumbs" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.CustomerAdminE2ETests.CustomerAdmin_SettingsTab_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="38110dbb-4c54-c00d-67ec-d8c709fc0bd6">
+      <Execution id="0f9a105e-717c-4bac-b3eb-f3bbcb18b82f" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.CustomerAdminE2ETests" name="CustomerAdmin_SettingsTab_NoMissingLabels" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LabelCoverageE2ETests.Dashboard_RedirectsToBroadcasting" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="211a7750-3056-af95-4b2d-6c37ac077778">
+      <Execution id="838e4151-099f-4d4f-94bb-2ada2598e090" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LabelCoverageE2ETests" name="Dashboard_RedirectsToBroadcasting" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LabelCoverageE2ETests.Drafts_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="2bcbdf26-1e64-d41a-6ccc-bc2ad133021d">
+      <Execution id="e3003f51-58c7-4832-9b4b-51c00ad4a9ac" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LabelCoverageE2ETests" name="Drafts_NoMissingLabels" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LabelCoverageE2ETests.AdminUsers_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="c3c1f6f6-7342-6d4b-6c96-97baf002d2e9">
+      <Execution id="b93c00e6-6f2a-41ce-a395-5b335d7165a5" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LabelCoverageE2ETests" name="AdminUsers_NoMissingLabels" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.Visual.NavigationVisualTests.Resize_Desktop_To_Mobile" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="24013c7e-979c-08e4-9cb8-c3b861d94655">
+      <Execution id="dfd80091-b12d-465a-9db8-0f4a0b88902d" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.Visual.NavigationVisualTests" name="Resize_Desktop_To_Mobile" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.CustomerAdminE2ETests.CustomerAdmin_UsersTab_ShowsSeedUsers" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="7c3d8fb4-a440-8d7b-6a19-d8d74ff3a163">
+      <Execution id="eb3c6458-6a98-4db3-9dad-0ec57b4d6fbe" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.CustomerAdminE2ETests" name="CustomerAdmin_UsersTab_ShowsSeedUsers" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LabelCoverageE2ETests.Status_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="4ee67fd7-6259-1087-5ba8-4702a82477af">
+      <Execution id="018f600b-2737-45df-83e4-fb7df2aee3d4" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LabelCoverageE2ETests" name="Status_NoMissingLabels" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LabelCoverageE2ETests.Broadcasting_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="f3951272-e2dc-f90e-d27c-b6b1ed03d55c">
+      <Execution id="99883b80-0561-4d03-912d-66b15160f928" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LabelCoverageE2ETests" name="Broadcasting_NoMissingLabels" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.Visual.NavigationVisualTests.OverlayNav_ESCCloses_AllDevices" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="794ce17b-ba8c-ab7d-5fb9-401bad973950">
+      <Execution id="702f043b-52c0-408e-976d-72d56a1e35ac" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.Visual.NavigationVisualTests" name="OverlayNav_ESCCloses_AllDevices" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.Visual.NavigationVisualTests.WizardLayout_IsAccessible_AllDevices" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="901cfdbc-ffaa-a154-7559-0ada183f3a9d">
+      <Execution id="1f380d2e-3880-4622-ba07-ff113d07e22f" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.Visual.NavigationVisualTests" name="WizardLayout_IsAccessible_AllDevices" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.Visual.NavigationVisualTests.OverlayNav_Open_AllDevices" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="69e3b573-07a4-c60c-20b5-b5ee3ecbe577">
+      <Execution id="2885c688-5e2b-4851-b3ea-d818655b5439" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.Visual.NavigationVisualTests" name="OverlayNav_Open_AllDevices" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.Visual.NavigationVisualTests.OverlayNav_NavLinks_NavigateCorrectly" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="5de81687-9c3b-540b-46e1-53e6f61f68f4">
+      <Execution id="88c324ac-246d-4f1e-b7df-cce72ddb201e" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.Visual.NavigationVisualTests" name="OverlayNav_NavLinks_NavigateCorrectly" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.CustomerAdminE2ETests.CustomerAdmin_ProfilesTab_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="bd93d7f1-b86f-5210-2589-b66ec3e8eb32">
+      <Execution id="fd486bbb-2ced-4327-ad67-57634b49e01b" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.CustomerAdminE2ETests" name="CustomerAdmin_ProfilesTab_NoMissingLabels" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="5b779511-9be5-cf31-092f-55c5c416231f" executionId="64aa1298-524d-4506-9030-829977c22732" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="17cafc69-f9be-418f-1b43-5f32a7971675" executionId="fa829717-5fc4-4a42-8b2f-931f23a1656a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2bcbdf26-1e64-d41a-6ccc-bc2ad133021d" executionId="e3003f51-58c7-4832-9b4b-51c00ad4a9ac" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6199eddb-75c8-d2ac-d687-af1e81ecfa20" executionId="4f810c1c-1e5c-4845-839c-4311996ddb00" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6ef24e1e-b7bc-9663-bee8-23a7da386fd1" executionId="1aa9ded7-4f6c-44cf-9380-4f6ed61e59f3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="901cfdbc-ffaa-a154-7559-0ada183f3a9d" executionId="1f380d2e-3880-4622-ba07-ff113d07e22f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ecbc3c83-a864-026a-57fc-8ef120975fa0" executionId="1a5e4a12-a7a7-48f9-8dd3-855161f48ca5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ec1af9c9-b214-e604-7895-76f112d24f37" executionId="10686c86-5b9f-4de9-8160-2427814ad5e4" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="211a7750-3056-af95-4b2d-6c37ac077778" executionId="838e4151-099f-4d4f-94bb-2ada2598e090" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="fef5af75-593f-4da4-fc26-afb5afa64846" executionId="80b5e231-84d2-4d2a-a04e-cbf7df7b223e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="eed0a7dd-ec50-5488-8971-769c9adcd555" executionId="86712525-766c-47fe-989a-f5995ea57804" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="681e72a1-64f9-086a-a8bc-60707ce83b03" executionId="415ecfb0-e4f5-48f8-9086-21ee81897639" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a3d4b2d4-68d8-743e-8f21-b9ca19f8b1b2" executionId="b6ada15d-3ff0-4156-87f2-872a8c096d76" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6f21fb76-c1c9-fe83-8cea-7b8af6e1da1a" executionId="7dac5556-d86e-45a4-a187-537fb7985561" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ba8430a0-b50f-156f-34eb-0fff2cbc4b2f" executionId="d40ecec3-84b3-4421-9b2e-9b66a4bda44d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="351495f3-09f6-f48f-f99f-3f5a835dc9be" executionId="79a0695f-4d88-45ae-a77c-3b4611170a9e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="38110dbb-4c54-c00d-67ec-d8c709fc0bd6" executionId="0f9a105e-717c-4bac-b3eb-f3bbcb18b82f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c7ab239f-b07a-4f94-a384-baa074b37d98" executionId="90cf9823-2cd0-4621-a3ec-ff970b579421" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d185c56f-05f8-ea55-f119-8e96d680bae6" executionId="efb535d6-930c-4b27-b7f0-f57fe68f7f5e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="24013c7e-979c-08e4-9cb8-c3b861d94655" executionId="dfd80091-b12d-465a-9db8-0f4a0b88902d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c362e506-522f-27ea-1c8e-3e3a2223bd99" executionId="3bce4ac8-c507-45c9-ba02-663c3f9871f9" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e8d40798-e1e7-c63b-5d8e-567fdc8c6f5b" executionId="d505a8a6-109d-4ae1-84af-6509f4dc0955" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="794ce17b-ba8c-ab7d-5fb9-401bad973950" executionId="702f043b-52c0-408e-976d-72d56a1e35ac" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="1514c7e3-cdd5-81ac-92e5-2e342423b454" executionId="8bb60dc1-c07c-48c9-8e5f-df2325106d5f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="96413178-20ad-3567-b3cf-bdf5a1a7df69" executionId="9e2766a6-575a-4e5c-8617-a3f51bbd9c3c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7c3d8fb4-a440-8d7b-6a19-d8d74ff3a163" executionId="eb3c6458-6a98-4db3-9dad-0ec57b4d6fbe" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c0565992-6d34-3a4a-b8ad-8f6f597c45bc" executionId="fb9239b3-3ff1-4f4e-b088-f98195adf193" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="bd93d7f1-b86f-5210-2589-b66ec3e8eb32" executionId="fd486bbb-2ced-4327-ad67-57634b49e01b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c3c1f6f6-7342-6d4b-6c96-97baf002d2e9" executionId="b93c00e6-6f2a-41ce-a395-5b335d7165a5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2bcc4490-32d9-3d90-8f0e-6079ba9e345a" executionId="88f76eda-8b88-4766-9eab-55c13eb3e6c7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e5df468f-097d-4e93-2215-fb6b4187bbf4" executionId="33481320-364c-4d52-b84c-67252ee59870" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4ee67fd7-6259-1087-5ba8-4702a82477af" executionId="018f600b-2737-45df-83e4-fb7df2aee3d4" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="69e3b573-07a4-c60c-20b5-b5ee3ecbe577" executionId="2885c688-5e2b-4851-b3ea-d818655b5439" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f3951272-e2dc-f90e-d27c-b6b1ed03d55c" executionId="99883b80-0561-4d03-912d-66b15160f928" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8414f684-09c2-ad79-b35b-8d18b03ee549" executionId="447ca9de-3e2c-4048-ba7f-0602132777d3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4e45b4d7-79cb-6286-febd-551e60c646f9" executionId="d6ede2ee-2cc3-460f-a684-da5140a39751" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="28c743a2-ed50-21c2-6e55-5516582e7db7" executionId="8ffd36df-369f-4737-a75f-e779072c6d92" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="52d31b75-c007-42f6-e556-3ae1101d7eb2" executionId="daf4ba29-71a9-429f-9722-c57931deb4f4" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5de81687-9c3b-540b-46e1-53e6f61f68f4" executionId="88c324ac-246d-4f1e-b7df-cce72ddb201e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c451d1bb-122e-0d08-c606-cf27abf33f7c" executionId="14932563-f725-4d08-ac9f-63291d561543" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e3c1a298-9885-4920-d800-f1a4820fd194" executionId="e5aca9a3-12a7-46d9-95b2-94c832228d3b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="93844514-1118-c739-0606-7aef5cbaaba2" executionId="4dd1e63a-8bc2-47ad-9bc5-b264d4924e2a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c2477602-a002-2a10-b8fe-d98b639cb2e5" executionId="92fc7193-80a1-4c83-a086-85cc907c2fbe" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="43" executed="43" passed="43" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.5+1b188a7b0a (64-bit .NET 10.0.5)&#xD;
+[xUnit.net 00:00:00.26]   Discovering: GreenAi.E2E&#xD;
+[xUnit.net 00:00:00.49]   Discovered:  GreenAi.E2E&#xD;
+[xUnit.net 00:00:00.71]   Starting:    GreenAi.E2E&#xD;
+[xUnit.net 00:03:26.81]   Finished:    GreenAi.E2E (ID = 'b22c8369b1bbe770defd711cb8a9268ada6d4b894a82e516ae76dd9d44f93e08')&#xD;
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>

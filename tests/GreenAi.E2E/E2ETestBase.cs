@@ -184,7 +184,9 @@ public abstract class E2ETestBase : IAsyncLifetime
         const string js = """
             (() => {
                 const missing = new Set();
-                const pattern = /\b(shared|feature|nav)\.[A-Z][a-zA-Z0-9]+/g;
+                // LocalizationContext.Get() returns [?key?] for any missing label.
+                // This is the single authoritative format — never the raw key.
+                const pattern = /\[\?[^\]]+\?\]/g;
 
                 function scan(node) {
                     if (node.nodeType === 3) {

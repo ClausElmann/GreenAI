@@ -2,7 +2,7 @@
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.65);
-    z-index: 1299;
+    z-index: var(--ga-z-overlay);
 }
 
 .overlay-nav-panel {
@@ -12,8 +12,8 @@
     width: 280px;
     height: 100vh;
     background: var(--mud-palette-surface);
-    box-shadow: var(--mud-elevation-8);
-    z-index: 1300;
+    box-shadow: var(--ga-shadow-overlay);
+    z-index: calc(var(--ga-z-overlay) + 1);
     overflow-y: auto;
     padding: 0;
     display: flex;
