@@ -1,0 +1,254 @@
+@page "/admin/super"
+@inject NavigationManager Nav
+@inject ILocalizationContext Loc
+@inject ISnackbar Snackbar
+
+<AppShell Title='@Loc.Get("page.superAdmin.Title")' IsLoading="false">
+
+    @* ── Context selector ────────────────────────────────────────────────────── *@
+    <MudPaper Elevation="1" Class="pa-4 mb-5" data-testid="super-admin-context-selector">
+        <MudText Typo="Typo.overline" Color="Color.Secondary" Class="mb-3 d-block">
+            @Loc.Get("page.superAdmin.ContextSelectorTitle")
+        </MudText>
+        <MudGrid Spacing="3" Class="align-items-end">
+            @* Country *@
+            <MudItem xs="12" sm="4">
+                <MudSelect T="CountryMock"
+                           Value="_selectedCountry"
+                           ValueChanged="OnCountryChanged"
+                           ToStringFunc='c => c?.Name ?? ""'
+                           Label='@Loc.Get("page.superAdmin.CountryLabel")'
+                           Variant="Variant.Outlined"
+                           Margin="Margin.Dense"
+                           AnchorOrigin="Origin.BottomLeft"
+                           data-testid="country-select">
+                    @foreach (var c in MockData.Countries)
+                    {
+                        <MudSelectItem Value="@c">@c.Name</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+
+            @* Customer (filtered by country) *@
+            <MudItem xs="12" sm="4">
+                <MudSelect T="CustomerContextMock"
+                           Value="_selectedCustomer"
+                           ValueChanged="OnCustomerChanged"
+                           ToStringFunc='c => c?.Name ?? ""'
+                           Label='@Loc.Get("page.superAdmin.CustomerLabel")'
+                           Variant="Variant.Outlined"
+                           Margin="Margin.Dense"
+                           Disabled="@(_selectedCountry is null)"
+                           AnchorOrigin="Origin.BottomLeft"
+                           data-testid="customer-select">
+                    @foreach (var c in CustomersForCountry)
+                    {
+                        <MudSelectItem Value="@c">@c.Name</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+
+            @* Profile (filtered by customer) *@
+            <MudItem xs="12" sm="3">
+                <MudSelect T="ProfileContextMock"
+                           @bind-Value="_selectedProfile"
+                           ToStringFunc='p => p?.Name ?? ""'
+                           Label='@Loc.Get("page.superAdmin.ProfileLabel")'
+                           Variant="Variant.Outlined"
+                           Margin="Margin.Dense"
+                           Disabled="@(_selectedCustomer is null)"
+                           AnchorOrigin="Origin.BottomLeft"
+                           data-testid="profile-select">
+                    <MudSelectItem T="ProfileContextMock" Value="null">
+                        @Loc.Get("page.superAdmin.AllProfiles")
+                    </MudSelectItem>
+                    @foreach (var p in ProfilesForCustomer)
+                    {
+                        <MudSelectItem Value="@p">@p.Name</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+
+            <MudItem xs="12" sm="1">
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           OnClick="LoadContext"
+                           Disabled="@(_selectedCustomer is null)"
+                           FullWidth="true"
+                           data-testid="context-ok-btn">
+                    OK
+                </MudButton>
+            </MudItem>
+        </MudGrid>
+
+        @if (_contextLoaded)
+        {
+            <MudAlert Severity="Severity.Success" Dense="true" Class="mt-3" data-testid="context-loaded-alert">
+                @Loc.Get("page.superAdmin.ContextActive"):
+                <b>@_selectedCountry!.Name</b> /
+                <b>@_selectedCustomer!.Name</b>
+                @if (_selectedProfile is not null) { <text> / <b>@_selectedProfile.Name</b></text> }
+            </MudAlert>
+        }
+    </MudPaper>
+
+    @* ── Content area (only shown when context is loaded) ────────────────────── *@
+    @if (!_contextLoaded)
+    {
+        <MudPaper Elevation="0" Class="pa-8 text-center" data-testid="context-placeholder">
+            <MudIcon Icon="@Icons.Material.Filled.ManageSearch"
+                     Style="font-size:5rem;opacity:.2" />
+            <MudText Typo="Typo.body1" Color="Color.Secondary" Class="mt-2">
+                @Loc.Get("page.superAdmin.SelectContextHint")
+            </MudText>
+        </MudPaper>
+    }
+    else
+    {
+        @* ── Super-admin section tabs ─────────────────────────────────────────── *@
+        <MudTabs Elevation="1" Rounded="true" PanelClass="pa-4"
+                 data-testid="super-admin-tabs">
+
+            @* Customers overview *@
+            <MudTabPanel Text='@Loc.Get("page.superAdmin.TabCustomers")'
+                         Icon="@Icons.Material.Filled.Business">
+                <MudTable T="CustomerContextMock"
+                          Items="CustomersForCountry"
+                          Dense="true" Hover="true"
+                          data-testid="customers-table">
+                    <HeaderContent>
+                        <MudTh>@Loc.Get("page.superAdmin.ColCustomerName")</MudTh>
+                        <MudTh Style="text-align:right">@Loc.Get("page.superAdmin.ColUsers")</MudTh>
+                        <MudTh Style="text-align:right">@Loc.Get("page.superAdmin.ColProfiles")</MudTh>
+                        <MudTh>@Loc.Get("page.superAdmin.ColLastActivity")</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd>
+                            <MudText Typo="Typo.body2">
+                                <b>@context.Name</b>
+                                @if (context.Id == _selectedCustomer?.Id)
+                                {
+                                    <MudChip T="string" Size="Size.Small" Color="Color.Primary"
+                                             Variant="Variant.Filled" Class="ml-2">
+                                        @Loc.Get("page.superAdmin.ActiveContext")
+                                    </MudChip>
+                                }
+                            </MudText>
+                        </MudTd>
+                        <MudTd Style="text-align:right">@context.UserCount</MudTd>
+                        <MudTd Style="text-align:right">@context.ProfileCount</MudTd>
+                        <MudTd>
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                @context.LastActivity.ToString("d. MMM HH:mm")
+                            </MudText>
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </MudTabPanel>
+
+            @* Users for selected customer *@
+            <MudTabPanel Text='@Loc.Get("page.superAdmin.TabUsers")'
+                         Icon="@Icons.Material.Filled.People">
+                <MudAlert Severity="Severity.Info" Dense="true" Class="mb-3" Variant="Variant.Outlined">
+                    @Loc.Get("page.superAdmin.ContextNote"): <b>@_selectedCustomer!.Name</b>
+                    @if (_selectedProfile is not null) { <text> · <b>@_selectedProfile.Name</b></text> }
+                </MudAlert>
+                <MudTable T="UserMock"
+                          Items="MockData.Users"
+                          Dense="true" Hover="true"
+                          data-testid="super-users-table">
+                    <HeaderContent>
+                        <MudTh>@Loc.Get("page.superAdmin.ColUserEmail")</MudTh>
+                        <MudTh>@Loc.Get("page.superAdmin.ColUserName")</MudTh>
+                        <MudTh>@Loc.Get("page.superAdmin.ColUserRole")</MudTh>
+                        <MudTh>@Loc.Get("page.superAdmin.ColUserStatus")</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd>@context.Email</MudTd>
+                        <MudTd>@context.DisplayName</MudTd>
+                        <MudTd>
+                            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Style="margin:0">
+                                @context.Role
+                            </MudChip>
+                        </MudTd>
+                        <MudTd>
+                            <MudChip T="string" Size="Size.Small"
+                                     Color="@(context.Status == "Active" ? Color.Success : context.Status == "Pending" ? Color.Warning : Color.Default)"
+                                     Variant="Variant.Filled" Style="margin:0">
+                                @context.Status
+                            </MudChip>
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </MudTabPanel>
+
+            @* Broadcasts for selected customer *@
+            <MudTabPanel Text='@Loc.Get("page.superAdmin.TabBroadcasts")'
+                         Icon="@Icons.Material.Filled.Send">
+                <MudTable T="BroadcastMock"
+                          Items="MockData.SentBroadcasts"
+                          Dense="true" Hover="true"
+                          data-testid="super-broadcasts-table">
+                    <HeaderContent>
+                        <MudTh>@Loc.Get("page.superAdmin.ColBroadcastSubject")</MudTh>
+                        <MudTh Style="text-align:right">@Loc.Get("page.superAdmin.ColBroadcastRecipients")</MudTh>
+                        <MudTh>@Loc.Get("page.superAdmin.ColBroadcastDate")</MudTh>
+                        <MudTh></MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd>
+                            <MudText Typo="Typo.body2">@context.Subject</MudText>
+                        </MudTd>
+                        <MudTd Style="text-align:right">@context.Recipients.ToString("N0")</MudTd>
+                        <MudTd>
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                @context.CreatedAt.ToString("d. MMM HH:mm")
+                            </MudText>
+                        </MudTd>
+                        <MudTd>
+                            <MudLink Href='@($"/status/{context.Id}")' Typo="Typo.caption">
+                                @Loc.Get("page.superAdmin.ViewDetail") →
+                            </MudLink>
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </MudTabPanel>
+
+        </MudTabs>
+    }
+
+</AppShell>
+
+@code {
+    private CountryMock?          _selectedCountry;
+    private CustomerContextMock?  _selectedCustomer;
+    private ProfileContextMock?   _selectedProfile;
+    private bool                  _contextLoaded;
+
+    private IReadOnlyList<CustomerContextMock> CustomersForCountry =>
+        _selectedCountry is null
+            ? []
+            : MockData.GetCustomersForCountry(_selectedCountry.Id);
+
+    private IReadOnlyList<ProfileContextMock> ProfilesForCustomer =>
+        _selectedCustomer is null
+            ? []
+            : MockData.GetProfilesForCustomer(_selectedCustomer.Id);
+
+    private void OnCountryChanged(CountryMock? value)
+    {
+        _selectedCountry  = value;
+        _selectedCustomer = null;
+        _selectedProfile  = null;
+        _contextLoaded    = false;
+    }
+
+    private void OnCustomerChanged(CustomerContextMock? value)
+    {
+        _selectedCustomer = value;
+        _selectedProfile  = null;
+        _contextLoaded    = false;
+    }
+
+    private void LoadContext() => _contextLoaded = _selectedCustomer is not null;
+}

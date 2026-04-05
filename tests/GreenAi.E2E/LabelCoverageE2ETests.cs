@@ -6,7 +6,10 @@ namespace GreenAi.E2E;
 /// Pages covered here:
 ///   /dashboard             — DashboardPage (dashboard.*, nav.*, shared.*)
 ///   /send/wizard           — SendWizardPage (nav.Send, page.wizard.*)
-///   /status                — StatusPage (nav.Status, page.status.*)
+///   /status                — StatusPage (page.statusList.*)
+///   /status/1              — StatusDetailPage (page.statusDetail.*)
+///   /broadcasting          — BroadcastingHubPage (page.broadcasting.*)
+///   /admin/super           — SuperAdminPage (page.superAdmin.*)
 ///   /drafts                — DraftsPage (nav.Drafts, page.drafts.*)
 ///   /user/profile          — UserProfilePage (feature.userProfile.*)
 ///   /admin/users           — AdminUserListPage (feature.adminUsers.*)
@@ -40,9 +43,39 @@ public sealed class LabelCoverageE2ETests : E2ETestBase
     {
         await LoginAsync();
         await Page.GotoAsync($"{BaseUrl}/status");
-        await WaitOrFailAsync("[data-testid='status-tabs']", timeoutMs: 15_000);
+        await WaitOrFailAsync("[data-testid='status-list-table']", timeoutMs: 15_000);
         await AssertNoVisibleErrorsAsync("Status page");
         await AssertNoMissingLabelsAsync("Status page");
+    }
+
+    [Fact]
+    public async Task StatusDetail_NoMissingLabels()
+    {
+        await LoginAsync();
+        await Page.GotoAsync($"{BaseUrl}/status/1");
+        await WaitOrFailAsync("[data-testid='stat-cards']", timeoutMs: 15_000);
+        await AssertNoVisibleErrorsAsync("StatusDetail page");
+        await AssertNoMissingLabelsAsync("StatusDetail page");
+    }
+
+    [Fact]
+    public async Task Broadcasting_NoMissingLabels()
+    {
+        await LoginAsync();
+        await Page.GotoAsync($"{BaseUrl}/broadcasting");
+        await WaitOrFailAsync("[data-testid='send-methods-grid']", timeoutMs: 15_000);
+        await AssertNoVisibleErrorsAsync("Broadcasting hub page");
+        await AssertNoMissingLabelsAsync("Broadcasting hub page");
+    }
+
+    [Fact]
+    public async Task SuperAdmin_NoMissingLabels()
+    {
+        await LoginAsync();
+        await Page.GotoAsync($"{BaseUrl}/admin/super");
+        await WaitOrFailAsync("[data-testid='super-admin-context-selector']", timeoutMs: 15_000);
+        await AssertNoVisibleErrorsAsync("SuperAdmin page");
+        await AssertNoMissingLabelsAsync("SuperAdmin page");
     }
 
     [Fact]

@@ -51,6 +51,13 @@
                         data-testid="nav-dashboard">
                 @Loc.Get("nav.Home")
             </MudNavLink>
+            <MudNavLink Href="/broadcasting"
+                        Icon="@Icons.Material.Outlined.Hub"
+                        Match="NavLinkMatch.Prefix"
+                        OnClick="AppState.CloseOverlayNav"
+                        data-testid="nav-broadcasting">
+                @Loc.Get("nav.Broadcasting")
+            </MudNavLink>
             <MudNavLink Href="/send/wizard"
                         Icon="@Icons.Material.Filled.Send"
                         Match="NavLinkMatch.Prefix"
@@ -115,6 +122,13 @@
                                     OnClick="AppState.CloseOverlayNav"
                                     data-testid="nav-admin-users">
                             @Loc.Get("nav.AdminUsers")
+                        </MudNavLink>
+                        <MudNavLink Href="/admin/super"
+                                    Icon="@Icons.Material.Filled.AdminPanelSettings"
+                                    Match="NavLinkMatch.Prefix"
+                                    OnClick="AppState.CloseOverlayNav"
+                                    data-testid="nav-super-admin">
+                            @Loc.Get("nav.SuperAdmin")
                         </MudNavLink>
                     }
                 </div>

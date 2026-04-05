@@ -1,0 +1,345 @@
+@page "/broadcasting"
+@inject NavigationManager Nav
+@inject ILocalizationContext Loc
+
+<AppShell Title="@Loc.Get("page.broadcasting.Title")" IsLoading="false">
+
+    @* ── 1. Send methods icon-grid ──────────────────────────────────────────── *@
+    <MudText Typo="Typo.overline" Color="Color.Secondary" Class="mb-2 d-block">
+        @Loc.Get("page.broadcasting.SendMethodsTitle")
+    </MudText>
+    <MudGrid Spacing="2" Class="mb-5" data-testid="send-methods-grid">
+        @foreach (var m in _sendMethods)
+        {
+            <MudItem xs="6" sm="4" md="2">
+                <MudPaper Class="send-method-card"
+                          Elevation="1"
+                          @onclick="() => StartWizard(m.Key)"
+                          tabindex="0"
+                          data-testid="@($"send-method-{m.Key}")">
+                    <MudIcon Icon="@m.Icon" Color="Color.Primary" Size="Size.Large" />
+                    <MudText Typo="Typo.body2" Class="text-center mt-1">@Loc.Get(m.LabelKey)</MudText>
+                </MudPaper>
+            </MudItem>
+        }
+    </MudGrid>
+
+    @* ── 2. Scenarios + Quick-send ──────────────────────────────────────────── *@
+    <MudGrid Spacing="3" Class="mb-5">
+
+        @* Scenarios panel *@
+        <MudItem xs="12" md="7">
+            <MudPaper Elevation="1" Class="hub-panel" data-testid="scenarios-panel">
+                <div class="hub-panel-header">
+                    <MudText Typo="Typo.subtitle2"><b>@Loc.Get("page.broadcasting.ScenariosTitle")</b></MudText>
+                    <MudButton Variant="Variant.Text"
+                               Size="Size.Small"
+                               StartIcon="@Icons.Material.Filled.Add"
+                               data-testid="create-scenario-btn">
+                        @Loc.Get("page.broadcasting.CreateScenario")
+                    </MudButton>
+                </div>
+                @if (MockData.Scenarios.Count == 0)
+                {
+                    <div class="pa-4">
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">
+                            @Loc.Get("page.broadcasting.ScenariosEmpty")
+                        </MudText>
+                    </div>
+                }
+                else
+                {
+                    <MudList T="ScenarioMock" Dense="true">
+                        @foreach (var s in MockData.Scenarios)
+                        {
+                            <MudListItem T="ScenarioMock"
+                                         OnClick="() => StartScenario(s)"
+                                         data-testid="@($"scenario-{s.Id}")">
+                                <div class="d-flex justify-space-between align-center w-100">
+                                    <div>
+                                        <MudText Typo="Typo.body2"><b>@s.Name</b></MudText>
+                                        <MudText Typo="Typo.caption" Color="Color.Secondary">@s.Description</MudText>
+                                    </div>
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary" Class="flex-shrink-0 ml-2">
+                                        @(s.LastUsedDaysAgo == 0 ? "I dag" : $"for {s.LastUsedDaysAgo} dage siden")
+                                    </MudText>
+                                </div>
+                            </MudListItem>
+                        }
+                    </MudList>
+                }
+            </MudPaper>
+        </MudItem>
+
+        @* Quick-send panel *@
+        <MudItem xs="12" md="5">
+            <MudPaper Elevation="1" Class="hub-panel" data-testid="quick-send-panel">
+                <div class="hub-panel-header">
+                    <MudText Typo="Typo.subtitle2"><b>@Loc.Get("page.broadcasting.QuickSendTitle")</b></MudText>
+                </div>
+                <div class="pa-3">
+                    <MudTabs Elevation="0" Class="mb-2" data-testid="quick-send-tabs">
+                        <MudTabPanel Text="@Loc.Get("page.broadcasting.QuickSendSmsTab")" Icon="@Icons.Material.Filled.Sms">
+                            <MudTextField @bind-Value="_qsPhone"
+                                          Label="@Loc.Get("page.broadcasting.QuickSendPhone")"
+                                          Variant="Variant.Outlined"
+                                          InputType="InputType.Telephone"
+                                          Placeholder="+4512345678"
+                                          Margin="Margin.Dense"
+                                          Class="mb-2"
+                                          data-testid="quick-send-phone" />
+                            <MudTextField @bind-Value="_qsMessage"
+                                          Label="@Loc.Get("page.broadcasting.QuickSendMessage")"
+                                          Variant="Variant.Outlined"
+                                          Lines="3"
+                                          MaxLength="160"
+                                          HelperText="@($"{_qsMessage.Length}/160")"
+                                          HelperTextOnFocus="false"
+                                          Class="mb-3"
+                                          data-testid="quick-send-message" />
+                            <MudButton Variant="Variant.Filled"
+                                       Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.Send"
+                                       Disabled="@(!CanQuickSend)"
+                                       OnClick="QuickSendAsync"
+                                       FullWidth="true"
+                                       data-testid="quick-send-button">
+                                @Loc.Get("page.broadcasting.QuickSendButton")
+                            </MudButton>
+                            @if (_qsSent)
+                            {
+                                <MudAlert Severity="Severity.Success" Dense="true" Class="mt-2" data-testid="quick-send-success">
+                                    @Loc.Get("page.broadcasting.QuickSendSuccess")
+                                </MudAlert>
+                            }
+                        </MudTabPanel>
+                        <MudTabPanel Text="@Loc.Get("page.broadcasting.QuickSendEmailTab")" Icon="@Icons.Material.Filled.Email">
+                            <MudTextField @bind-Value="_qsEmail"
+                                          Label="@Loc.Get("page.broadcasting.QuickSendEmailAddress")"
+                                          Variant="Variant.Outlined"
+                                          InputType="InputType.Email"
+                                          Margin="Margin.Dense"
+                                          Class="mb-2"
+                                          data-testid="quick-send-email" />
+                            <MudTextField @bind-Value="_qsSubject"
+                                          Label="@Loc.Get("page.broadcasting.QuickSendSubject")"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense"
+                                          Class="mb-2"
+                                          data-testid="quick-send-subject" />
+                            <MudTextField @bind-Value="_qsMessage"
+                                          Label="@Loc.Get("page.broadcasting.QuickSendMessage")"
+                                          Variant="Variant.Outlined"
+                                          Lines="3"
+                                          Class="mb-3" />
+                            <MudButton Variant="Variant.Filled"
+                                       Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.Send"
+                                       FullWidth="true">
+                                @Loc.Get("page.broadcasting.QuickSendButton")
+                            </MudButton>
+                        </MudTabPanel>
+                    </MudTabs>
+                </div>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+    @* ── 3. Recent status panels ─────────────────────────────────────────────── *@
+    <MudText Typo="Typo.overline" Color="Color.Secondary" Class="mb-2 d-block">
+        @Loc.Get("page.broadcasting.RecentTitle")
+    </MudText>
+    <MudGrid Spacing="3" data-testid="recent-panels">
+
+        @* Sent panel *@
+        <MudItem xs="12" md="4">
+            <MudPaper Elevation="1" Class="hub-panel" data-testid="recent-sent-panel">
+                <div class="hub-panel-header">
+                    <div class="d-flex align-center gap-1">
+                        <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Size="Size.Small" />
+                        <MudText Typo="Typo.subtitle2"><b>@Loc.Get("page.broadcasting.RecentSentTitle")</b></MudText>
+                    </div>
+                    <MudChip T="string" Size="Size.Small" Color="Color.Success" Variant="Variant.Filled">
+                        @MockData.SentBroadcasts.Count
+                    </MudChip>
+                </div>
+                @foreach (var b in MockData.SentBroadcasts.Take(5))
+                {
+                    <div class="status-mini-item" @onclick='() => GoToDetail(b.Id)'
+                         data-testid="@($"sent-item-{b.Id}")">
+                        <div class="overflow-hidden mr-2">
+                            <MudText Typo="Typo.body2" Class="text-truncate">@b.Subject</MudText>
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">@b.Profile</MudText>
+                        </div>
+                        <MudText Typo="Typo.caption" Color="Color.Secondary" Class="flex-shrink-0">
+                            @FormatRelative(b.CreatedAt)
+                        </MudText>
+                    </div>
+                }
+                <div class="hub-panel-footer">
+                    <MudLink Href="/status" Typo="Typo.caption" Color="Color.Primary">
+                        @Loc.Get("page.broadcasting.ViewAll") →
+                    </MudLink>
+                </div>
+            </MudPaper>
+        </MudItem>
+
+        @* Scheduled panel *@
+        <MudItem xs="12" md="4">
+            <MudPaper Elevation="1" Class="hub-panel" data-testid="recent-planned-panel">
+                <div class="hub-panel-header">
+                    <div class="d-flex align-center gap-1">
+                        <MudIcon Icon="@Icons.Material.Filled.Schedule" Color="Color.Info" Size="Size.Small" />
+                        <MudText Typo="Typo.subtitle2"><b>@Loc.Get("page.broadcasting.RecentPlannedTitle")</b></MudText>
+                    </div>
+                    <MudChip T="string" Size="Size.Small" Color="Color.Info" Variant="Variant.Filled">
+                        @MockData.ScheduledBroadcasts.Count
+                    </MudChip>
+                </div>
+                @foreach (var b in MockData.ScheduledBroadcasts.Take(5))
+                {
+                    <div class="status-mini-item d-flex justify-space-between align-center"
+                         data-testid="@($"planned-item-{b.Id}")">
+                        <div class="overflow-hidden mr-2" style="cursor:pointer"
+                             @onclick='() => GoToDetail(b.Id)'>
+                            <MudText Typo="Typo.body2" Class="text-truncate">@b.Subject</MudText>
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                @(b.ScheduledAt.HasValue ? b.ScheduledAt.Value.ToString("d. MMM HH:mm") : b.Profile)
+                            </MudText>
+                        </div>
+                        <MudIconButton Icon="@Icons.Material.Filled.DeleteOutline"
+                                       Size="Size.Small"
+                                       Color="Color.Error"
+                                       aria-label="@Loc.Get("page.broadcasting.DeletePlanned")"
+                                       OnClick="() => DeletePlanned(b)"
+                                       data-testid="@($"delete-planned-{b.Id}")" />
+                    </div>
+                }
+                <div class="hub-panel-footer">
+                    <MudLink Href="/status" Typo="Typo.caption" Color="Color.Primary">
+                        @Loc.Get("page.broadcasting.ViewAll") →
+                    </MudLink>
+                </div>
+            </MudPaper>
+        </MudItem>
+
+        @* Unapproved panel *@
+        <MudItem xs="12" md="4">
+            <MudPaper Elevation="1" Class="hub-panel" data-testid="unapproved-panel">
+                <div class="hub-panel-header">
+                    <div class="d-flex align-center gap-1">
+                        <MudIcon Icon="@Icons.Material.Filled.Pending" Color="Color.Warning" Size="Size.Small" />
+                        <MudText Typo="Typo.subtitle2"><b>@Loc.Get("page.broadcasting.UnapprovedTitle")</b></MudText>
+                    </div>
+                    <MudChip T="string" Size="Size.Small" Color="Color.Warning" Variant="Variant.Filled">
+                        @_unapproved.Count
+                    </MudChip>
+                </div>
+                @if (_unapproved.Count == 0)
+                {
+                    <div class="pa-4">
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">
+                            @Loc.Get("page.broadcasting.UnapprovedEmpty")
+                        </MudText>
+                    </div>
+                }
+                else
+                {
+                    @foreach (var b in _unapproved)
+                    {
+                        <div class="status-mini-item flex-column align-start pa-2"
+                             data-testid="@($"unapproved-item-{b.Id}")">
+                            <MudText Typo="Typo.body2" Class="mb-1">@b.Subject</MudText>
+                            <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mb-2">
+                                @b.Recipients.ToString("N0") @Loc.Get("page.broadcasting.Recipients") · @b.Profile
+                            </MudText>
+                            <MudStack Row="true" Spacing="1">
+                                <MudButton Variant="Variant.Filled"
+                                           Color="Color.Success"
+                                           Size="Size.Small"
+                                           StartIcon="@Icons.Material.Filled.Check"
+                                           OnClick="() => Approve(b)"
+                                           data-testid="@($"approve-btn-{b.Id}")">
+                                    @Loc.Get("page.broadcasting.ApproveAction")
+                                </MudButton>
+                                <MudButton Variant="Variant.Outlined"
+                                           Color="Color.Error"
+                                           Size="Size.Small"
+                                           StartIcon="@Icons.Material.Filled.Close"
+                                           OnClick="() => Reject(b)"
+                                           data-testid="@($"reject-btn-{b.Id}")">
+                                    @Loc.Get("page.broadcasting.RejectAction")
+                                </MudButton>
+                            </MudStack>
+                        </div>
+                    }
+                }
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+</AppShell>
+
+@code {
+    // ── Send method definitions ──────────────────────────────────────────────
+    private record SendMethodOption(string Key, string LabelKey, string Icon);
+
+    private readonly IReadOnlyList<SendMethodOption> _sendMethods =
+    [
+        new("by-address",      "page.broadcasting.MethodByAddress",      Icons.Material.Filled.LocationOn),
+        new("by-map",          "page.broadcasting.MethodByMap",          Icons.Material.Filled.Map),
+        new("by-excel",        "page.broadcasting.MethodByExcel",        Icons.Material.Filled.TableChart),
+        new("by-level",        "page.broadcasting.MethodByLevel",        Icons.Material.Filled.AccountTree),
+        new("by-municipality", "page.broadcasting.MethodByMunicipality", Icons.Material.Filled.LocationCity),
+        new("std-receivers",   "page.broadcasting.MethodStdReceivers",   Icons.Material.Filled.Groups),
+    ];
+
+    // ── Unapproved list (mutable — items removed when approved/rejected) ─────
+    private List<BroadcastMock> _unapproved = MockData.UnapprovedBroadcasts.ToList();
+
+    // ── Quick-send state ─────────────────────────────────────────────────────
+    private string _qsPhone   = string.Empty;
+    private string _qsEmail   = string.Empty;
+    private string _qsSubject = string.Empty;
+    private string _qsMessage = string.Empty;
+    private bool   _qsSent;
+
+    private bool CanQuickSend =>
+        _qsPhone.Length >= 8 && _qsMessage.Trim().Length >= 3;
+
+    // ── Actions ──────────────────────────────────────────────────────────────
+    private void GoToDetail(int id) => Nav.NavigateTo($"/status/{id}");
+
+    private void StartWizard(string method) =>
+        Nav.NavigateTo($"/send/wizard?method={method}");
+
+    private void StartScenario(ScenarioMock s) =>
+        Nav.NavigateTo($"/send/wizard?scenarioId={s.Id}");
+
+    private void DeletePlanned(BroadcastMock b) { /* mock: no-op */ }
+
+    private void Approve(BroadcastMock b) =>
+        _unapproved.RemoveAll(x => x.Id == b.Id);
+
+    private void Reject(BroadcastMock b) =>
+        _unapproved.RemoveAll(x => x.Id == b.Id);
+
+    private async Task QuickSendAsync()
+    {
+        await Task.Delay(800); // mock network delay
+        _qsSent   = true;
+        _qsPhone  = string.Empty;
+        _qsMessage = string.Empty;
+        await Task.Delay(3000);
+        _qsSent   = false;
+    }
+
+    private static string FormatRelative(DateTime dt)
+    {
+        var diff = DateTime.Now - dt;
+        if (diff.TotalMinutes < 60)  return $"{(int)diff.TotalMinutes} min";
+        if (diff.TotalHours   < 24)  return $"{(int)diff.TotalHours} t";
+        if (diff.TotalDays    < 7)   return $"{(int)diff.TotalDays} d";
+        return dt.ToString("d. MMM");
+    }
+}

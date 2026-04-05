@@ -1,66 +1,182 @@
-@page "/send/wizard"
+﻿@page "/send/wizard"
 @layout WizardLayout
 @using GreenAi.Api.Components.Layout
 @using Microsoft.AspNetCore.Components.Authorization
 @inject NavigationManager Nav
 @inject ILocalizationContext Loc
 
-@* ── Step indicator ────────────────────────────────────────────────────────── *@
+@* ── Step indicator (4 steps) ───────────────────────────────────────────────── *@
 <div class="wizard-step-row" data-testid="wizard-step-indicator">
-    <div class="wizard-step @(_step > 1 ? "wizard-step--done" : "wizard-step--active")"
-         data-testid="wizard-step-1">
-        <span class="wizard-step-num">@(_step > 1 ? "✓" : "1")</span>
-        <span class="wizard-step-label">@Loc.Get("page.wizard.StepRecipients")</span>
-    </div>
-    <div class="wizard-step-connector @(_step > 1 ? "wizard-step-connector--done" : "")"></div>
-    <div class="wizard-step @(_step == 2 ? "wizard-step--active" : _step > 2 ? "wizard-step--done" : "wizard-step--pending")"
-         data-testid="wizard-step-2">
-        <span class="wizard-step-num">@(_step > 2 ? "✓" : "2")</span>
-        <span class="wizard-step-label">@Loc.Get("page.wizard.StepContent")</span>
-    </div>
-    <div class="wizard-step-connector @(_step > 2 ? "wizard-step-connector--done" : "")"></div>
-    <div class="wizard-step @(_step == 3 ? "wizard-step--active" : "wizard-step--pending")"
-         data-testid="wizard-step-3">
-        <span class="wizard-step-num">3</span>
-        <span class="wizard-step-label">@Loc.Get("page.wizard.StepConfirm")</span>
-    </div>
+    @for (int i = 1; i <= 4; i++)
+    {
+        var step  = i;
+        var state = _step > step ? "done" : _step == step ? "active" : "pending";
+        <div class="wizard-step wizard-step--@state" data-testid="@($"wizard-step-{step}")">
+            <span class="wizard-step-num">@(_step > step ? "✓" : step.ToString())</span>
+            <span class="wizard-step-label">@StepLabel(step)</span>
+        </div>
+        @if (step < 4)
+        {
+            <div class="wizard-step-connector @(_step > step ? "wizard-step-connector--done" : "")"></div>
+        }
+    }
 </div>
 
 <MudDivider Class="my-4" />
 
-@* ── Step 1: Recipients ──────────────────────────────────────────────────────── *@
+@* ── Step 1: Method selection ────────────────────────────────────────────────── *@
 @if (_step == 1)
 {
-    <MudText Typo="Typo.h5" Class="mb-1" data-testid="wizard-heading">
-        @Loc.Get("page.wizard.StepRecipients")
-    </MudText>
+    <MudText Typo="Typo.h5" Class="mb-1" data-testid="wizard-heading">@Loc.Get("page.wizard.StepMethod")</MudText>
+    <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-4">@Loc.Get("page.wizard.MethodHint")</MudText>
+
+    <MudGrid Spacing="3" data-testid="wizard-method-grid">
+        @foreach (var m in _methods)
+        {
+            var isSelected = _selectedMethod == m.Key;
+            <MudItem xs="12" sm="6" md="4">
+                <MudPaper Class="@($"wizard-method-card {(isSelected ? "wizard-method-card--selected" : "")}")"
+                          Elevation="@(isSelected ? 3 : 1)"
+                          @onclick="() => SelectMethod(m.Key)"
+                          tabindex="0"
+                          data-testid="@($"method-card-{m.Key}")">
+                    <MudIcon Icon="@m.Icon"
+                             Color="@(isSelected ? Color.Primary : Color.Default)"
+                             Size="Size.Large" />
+                    <MudText Typo="Typo.subtitle2" Class="mt-2">@Loc.Get(m.LabelKey)</MudText>
+                    <MudText Typo="Typo.caption" Color="Color.Secondary" Class="text-center">
+                        @Loc.Get(m.DescKey)
+                    </MudText>
+                    @if (isSelected)
+                    {
+                        <MudIcon Icon="@Icons.Material.Filled.CheckCircle"
+                                 Color="Color.Primary"
+                                 Size="Size.Small"
+                                 Class="wizard-method-check" />
+                    }
+                </MudPaper>
+            </MudItem>
+        }
+    </MudGrid>
+}
+
+@* ── Step 2: Recipient input (varies by method) ─────────────────────────────── *@
+@if (_step == 2)
+{
+    <MudText Typo="Typo.h5" Class="mb-1" data-testid="wizard-heading">@Loc.Get("page.wizard.StepRecipients")</MudText>
     <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-3">
-        @Loc.Get("page.wizard.RecipientsHint")
+        @Loc.Get(SelectedMethodObj?.LabelKey ?? "page.wizard.StepRecipients")
     </MudText>
-    <MudTextField @bind-Value="_recipientsText"
-                  Label="@Loc.Get("page.wizard.RecipientsLabel")"
-                  Lines="10"
-                  Variant="Variant.Outlined"
-                  Placeholder="+4512345678&#10;+4587654321&#10;+4598765432"
-                  Class="mb-3"
-                  data-testid="wizard-recipients-input" />
-    @if (RecipientCount > 0)
+
+    @* by-address: address search *@
+    @if (_selectedMethod == "by-address")
     {
-        <MudAlert Severity="Severity.Info" Dense="true" Class="mb-2" data-testid="wizard-recipient-count">
-            <b>@RecipientCount</b> @Loc.Get("page.wizard.RecipientsCount")
+        <MudTextField @bind-Value="_addressSearch"
+                      Label="@Loc.Get("page.wizard.AddressSearch")"
+                      Variant="Variant.Outlined"
+                      Adornment="Adornment.End"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      Placeholder="F.eks. Nørrebrogade 20, 2200 København"
+                      Immediate="true"
+                      Class="mb-3"
+                      data-testid="wizard-address-input" />
+        <MudPaper Outlined="true" Class="pa-3" data-testid="wizard-address-results">
+            <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mb-2 d-block">
+                @Loc.Get("page.wizard.AddressResults")
+            </MudText>
+            @foreach (var a in _mockAddresses.Where(x =>
+                string.IsNullOrEmpty(_addressSearch)
+                || x.Contains(_addressSearch, StringComparison.OrdinalIgnoreCase)).Take(5))
+            {
+                <MudCheckBox T="bool" Label="@a" Dense="true" Class="d-block" data-testid="address-item" />
+            }
+        </MudPaper>
+        <MudAlert Severity="Severity.Info" Dense="true" Class="mt-2">
+            @Loc.Get("page.wizard.AddressHint")
+        </MudAlert>
+    }
+
+    @* by-excel: file upload *@
+    else if (_selectedMethod == "by-excel")
+    {
+        <MudPaper Class="wizard-upload-area pa-6" data-testid="wizard-upload-area">
+            <MudIcon Icon="@Icons.Material.Filled.CloudUpload" Color="Color.Primary" Style="font-size:3rem" />
+            <MudText Typo="Typo.subtitle2" Class="mt-2">@Loc.Get("page.wizard.ExcelDropHere")</MudText>
+            <MudText Typo="Typo.caption" Color="Color.Secondary">@Loc.Get("page.wizard.ExcelFormats")</MudText>
+            <InputFile id="wizard-file-input" OnChange="HandleFileSelected" accept=".xlsx,.xls,.csv" style="display:none" />
+            <MudButton Variant="Variant.Outlined" Color="Color.Primary" HtmlTag="label"
+                       for="wizard-file-input" Class="mt-3" data-testid="wizard-choose-file">
+                @Loc.Get("page.wizard.ExcelChooseFile")
+            </MudButton>
+            @if (_uploadedFileName is not null)
+            {
+                <MudAlert Severity="Severity.Success" Dense="true" Class="mt-3">
+                    @_uploadedFileName — @_uploadedRowCount @Loc.Get("page.wizard.ExcelRowsFound")
+                </MudAlert>
+            }
+        </MudPaper>
+    }
+
+    @* by-map: map placeholder *@
+    else if (_selectedMethod == "by-map")
+    {
+        <MudPaper Class="wizard-map-placeholder" data-testid="wizard-map-area">
+            <MudIcon Icon="@Icons.Material.Filled.Map" Color="Color.Primary" Style="font-size:4rem;opacity:.4" />
+            <MudText Typo="Typo.subtitle2" Color="Color.Secondary" Class="mt-2">
+                @Loc.Get("page.wizard.MapPlaceholder")
+            </MudText>
+        </MudPaper>
+        <MudAlert Severity="Severity.Info" Dense="true" Class="mt-3">
+            @Loc.Get("page.wizard.MapHint")
+        </MudAlert>
+    }
+
+    @* std-receivers: checkbox list *@
+    else if (_selectedMethod == "std-receivers")
+    {
+        <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mb-2 d-block">
+            @Loc.Get("page.wizard.StdReceiversHint")
+        </MudText>
+        @foreach (var g in MockData.StdReceivers)
+        {
+            <MudCheckBox T="bool"
+                         @bind-Value="@_selectedStdReceivers[g.Id]"
+                         Dense="true"
+                         Class="d-block mb-1"
+                         data-testid="@($"std-receiver-{g.Id}")">
+                @g.Name <MudText Typo="Typo.caption" Color="Color.Secondary">(@g.RecipientCount.ToString("N0") modtagere)</MudText>
+            </MudCheckBox>
+        }
+    }
+
+    @* by-level / by-municipality: dropdown *@
+    else
+    {
+        <MudSelect T="string" @bind-Value="_selectedArea"
+                   Label="@Loc.Get(_selectedMethod == "by-municipality" ? "page.wizard.SelectMunicipality" : "page.wizard.SelectLevel")"
+                   Variant="Variant.Outlined"
+                   data-testid="wizard-area-select">
+            @foreach (var o in AreaOptions)
+            {
+                <MudSelectItem Value="@o">@o</MudSelectItem>
+            }
+        </MudSelect>
+    }
+
+    @if (RecipientEstimate > 0)
+    {
+        <MudAlert Severity="Severity.Info" Dense="true" Class="mt-3" data-testid="wizard-recipient-count">
+            <b>~@RecipientEstimate.ToString("N0")</b> @Loc.Get("page.wizard.RecipientsEstimate")
         </MudAlert>
     }
 }
 
-@* ── Step 2: Message ────────────────────────────────────────────────────────── *@
-@if (_step == 2)
+@* ── Step 3: Compose message ─────────────────────────────────────────────────── *@
+@if (_step == 3)
 {
-    <MudText Typo="Typo.h5" Class="mb-1" data-testid="wizard-heading">
-        @Loc.Get("page.wizard.StepContent")
-    </MudText>
-    <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-3">
-        @Loc.Get("page.wizard.MessageHint")
-    </MudText>
+    <MudText Typo="Typo.h5" Class="mb-1" data-testid="wizard-heading">@Loc.Get("page.wizard.StepContent")</MudText>
+    <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-3">@Loc.Get("page.wizard.MessageHint")</MudText>
+
     <MudGrid Spacing="3">
         <MudItem xs="12">
             <MudTextField @bind-Value="_message"
@@ -68,7 +184,7 @@
                           Lines="5"
                           Variant="Variant.Outlined"
                           MaxLength="160"
-                          HelperText="@($"{_message.Length}/160 {Loc.Get("page.wizard.MessageChars")}")"
+                          HelperText="@($"{_message.Length}/160 tegn")"
                           HelperTextOnFocus="false"
                           data-testid="wizard-message-input" />
         </MudItem>
@@ -81,185 +197,280 @@
                           HelperTextOnFocus="false"
                           data-testid="wizard-senderid-input" />
         </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudSelect T="string" @bind-Value="_channel"
+                       Label="@Loc.Get("page.wizard.ChannelLabel")"
+                       Variant="Variant.Outlined"
+                       data-testid="wizard-channel-select">
+                <MudSelectItem Value='"SMS"'>SMS</MudSelectItem>
+                <MudSelectItem Value='"E-mail"'>E-mail</MudSelectItem>
+                <MudSelectItem Value='"SMS + E-mail"'>SMS + E-mail</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12">
+            <MudPaper Outlined="true" Class="pa-2">
+                <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mb-1 d-block">
+                    @Loc.Get("page.wizard.MergeFieldsHint")
+                </MudText>
+                <MudChip T="string" Size="Size.Small" OnClick='() => _message += " {{navn}}"'>{{navn}}</MudChip>
+                <MudChip T="string" Size="Size.Small" OnClick='() => _message += " {{adresse}}"'>{{adresse}}</MudChip>
+                <MudChip T="string" Size="Size.Small" OnClick='() => _message += " {{dato}}"'>{{dato}}</MudChip>
+            </MudPaper>
+        </MudItem>
     </MudGrid>
 }
 
-@* ── Step 3: Confirm ────────────────────────────────────────────────────────── *@
-@if (_step == 3)
+@* ── Step 4: Confirm & Send ──────────────────────────────────────────────────── *@
+@if (_step == 4)
 {
-    <MudText Typo="Typo.h5" Class="mb-4" data-testid="wizard-heading">
-        @Loc.Get("page.wizard.SummaryTitle")
-    </MudText>
+    @if (!_sent)
+    {
+        <MudText Typo="Typo.h5" Class="mb-4" data-testid="wizard-heading">@Loc.Get("page.wizard.StepConfirm")</MudText>
 
-    @if (_sent)
-    {
-        <MudAlert Severity="Severity.Success" Class="mb-4" data-testid="wizard-sent-confirmation">
-            <MudText><b>Sendt!</b> @RecipientCount @Loc.Get("page.wizard.RecipientsCount") · @DateTime.Now.ToString("HH:mm")</MudText>
-        </MudAlert>
-    }
-    else
-    {
         <MudCard Elevation="1" Class="mb-4" data-testid="wizard-summary-card">
             <MudCardContent>
-                <MudGrid Spacing="4">
-                    <MudItem xs="6" sm="3">
-                        <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mb-1">@Loc.Get("page.wizard.SummaryRecipients")</MudText>
-                        <MudText Typo="Typo.h5" Color="Color.Primary"><b>@RecipientCount</b></MudText>
+                <MudGrid Spacing="3">
+                    <MudItem xs="12" sm="4">
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">@Loc.Get("page.wizard.SummaryMethod")</MudText>
+                        <div class="d-flex align-center gap-1 mt-1">
+                            <MudIcon Icon="@(SelectedMethodObj?.Icon ?? Icons.Material.Filled.Send)"
+                                     Color="Color.Primary" Size="Size.Small" />
+                            <MudText Typo="Typo.body2"><b>@Loc.Get(SelectedMethodObj?.LabelKey ?? "")</b></MudText>
+                        </div>
                     </MudItem>
-                    <MudItem xs="6" sm="3">
-                        <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mb-1">@Loc.Get("page.wizard.SummarySender")</MudText>
-                        <MudText Typo="Typo.body1"><b>@_senderId</b></MudText>
+                    <MudItem xs="12" sm="4">
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">@Loc.Get("page.wizard.SummaryRecipients")</MudText>
+                        <MudText Typo="Typo.h5" Color="Color.Primary" Class="mt-1">
+                            <b>~@RecipientEstimate.ToString("N0")</b>
+                        </MudText>
+                    </MudItem>
+                    <MudItem xs="12" sm="4">
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">@Loc.Get("page.wizard.SummarySender")</MudText>
+                        <MudText Typo="Typo.body1" Class="mt-1"><b>@_senderId</b> · @_channel</MudText>
                     </MudItem>
                     <MudItem xs="12">
-                        <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mb-1">@Loc.Get("page.wizard.SummaryMessage")</MudText>
-                        <MudPaper Outlined="true" Class="pa-3">
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">@Loc.Get("page.wizard.SummaryMessage")</MudText>
+                        <MudPaper Outlined="true" Class="pa-3 mt-1">
                             <MudText Typo="Typo.body2">@_message</MudText>
                         </MudPaper>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mb-1 d-block">
+                            @Loc.Get("page.wizard.SendTime")
+                        </MudText>
+                        <MudRadioGroup T="string" @bind-Value="_sendTiming">
+                            <MudRadio T="string" Value='"now"'>@Loc.Get("page.wizard.SendNow")</MudRadio>
+                            <MudRadio T="string" Value='"scheduled"'>@Loc.Get("page.wizard.SendScheduled")</MudRadio>
+                        </MudRadioGroup>
+                        @if (_sendTiming == "scheduled")
+                        {
+                            <MudDatePicker @bind-Date="_scheduledAt"
+                                               Label="@Loc.Get("page.wizard.ScheduledAt")"
+                                               Variant="Variant.Outlined"
+                                               Class="mt-2"
+                                               data-testid="wizard-schedule-picker" />
+                        }
                     </MudItem>
                 </MudGrid>
             </MudCardContent>
         </MudCard>
     }
+    else
+    {
+        @* Complete / success terminal *@
+        <div class="wizard-complete" data-testid="wizard-complete">
+            <MudIcon Icon="@Icons.Material.Filled.CheckCircle"
+                     Color="Color.Success"
+                     Style="font-size:5rem" />
+            <MudText Typo="Typo.h5" Class="mt-3">@Loc.Get("page.wizard.CompleteTitle")</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-4">
+                @($"~{RecipientEstimate:N0} {Loc.Get("page.wizard.RecipientsEstimate")} · {_channel}")
+            </MudText>
+            <MudStack Row="true" Spacing="2" Justify="Justify.Center">
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           StartIcon="@Icons.Material.Filled.BarChart"
+                           Href="/status"
+                           data-testid="wizard-view-status">
+                    @Loc.Get("page.wizard.ViewStatus")
+                </MudButton>
+                <MudButton Variant="Variant.Outlined"
+                           Color="Color.Default"
+                           StartIcon="@Icons.Material.Filled.Add"
+                           Href="/broadcasting"
+                           data-testid="wizard-new-send">
+                    @Loc.Get("page.wizard.NewSend")
+                </MudButton>
+            </MudStack>
+        </div>
+    }
 }
 
-@* ── Navigation footer ────────────────────────────────────────────────────────── *@
-<div class="wizard-footer" data-testid="wizard-footer">
-    @if (_step == 1)
-    {
-        <MudButton Variant="Variant.Outlined"
-                   Color="Color.Default"
-                   Href="/dashboard"
-                   data-testid="wizard-cancel">
-            @Loc.Get("shared.Cancel")
-        </MudButton>
-    }
-    else
-    {
-        <MudButton Variant="Variant.Outlined"
-                   Color="Color.Default"
-                   OnClick="Back"
-                   Disabled="_sent"
-                   data-testid="wizard-back">
-            @Loc.Get("page.wizard.Back")
-        </MudButton>
-    }
-    <MudSpacer />
-    @if (_step < 3)
-    {
-        <MudButton Variant="Variant.Filled"
-                   Color="Color.Primary"
-                   Disabled="@(!CanProceed)"
-                   OnClick="Next"
-                   data-testid="wizard-next">
-            @Loc.Get("page.wizard.Next") →
-        </MudButton>
-    }
-    else if (!_sent)
-    {
-        <MudButton Variant="Variant.Filled"
-                   Color="Color.Success"
-                   Disabled="@_sending"
-                   OnClick="SendAsync"
-                   StartIcon="@Icons.Material.Filled.Send"
-                   data-testid="wizard-send">
-            @(_sending ? Loc.Get("page.wizard.Sending") : Loc.Get("page.wizard.Send"))
-        </MudButton>
-    }
-    else
-    {
-        <MudButton Variant="Variant.Filled"
-                   Color="Color.Primary"
-                   Href="/status"
-                   StartIcon="@Icons.Material.Filled.BarChart"
-                   data-testid="wizard-view-status">
-            @Loc.Get("page.wizard.ViewStatus")
-        </MudButton>
-    }
-</div>
+@* ── Navigation footer ──────────────────────────────────────────────────────── *@
+@if (!_sent)
+{
+    <div class="wizard-footer" data-testid="wizard-footer">
+        @if (_step == 1)
+        {
+            <MudButton Variant="Variant.Outlined" Color="Color.Default"
+                       Href="/broadcasting" data-testid="wizard-cancel">
+                @Loc.Get("shared.Cancel")
+            </MudButton>
+        }
+        else
+        {
+            <MudButton Variant="Variant.Outlined" Color="Color.Default"
+                       OnClick="Back" data-testid="wizard-back">
+                @Loc.Get("page.wizard.Back")
+            </MudButton>
+        }
+        <MudSpacer />
+        @if (_step < 4)
+        {
+            <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                       Disabled="@(!CanProceed)" OnClick="Next"
+                       data-testid="wizard-next">
+                @Loc.Get("page.wizard.Next") →
+            </MudButton>
+        }
+        else
+        {
+            <MudButton Variant="Variant.Filled"
+                       Color="@(_sendTiming == "scheduled" ? Color.Info : Color.Success)"
+                       Disabled="@_sending"
+                       OnClick="SendAsync"
+                       StartIcon="@Icons.Material.Filled.Send"
+                       data-testid="wizard-send">
+                @(_sending
+                    ? Loc.Get("page.wizard.Sending")
+                    : _sendTiming == "scheduled"
+                        ? Loc.Get("page.wizard.Schedule")
+                        : Loc.Get("page.wizard.Send"))
+            </MudButton>
+        }
+    </div>
+}
 
 @code {
     [CascadingParameter] private Task<AuthenticationState> AuthStateTask { get; set; } = null!;
 
-    private int    _step          = 1;
-    private string _recipientsText = "+4512345678\n+4587654321\n+4598765432\n+4534567890\n+4521098765";
-    private string _message        = string.Empty;
-    private string _senderId       = "GreenAI";
-    private bool   _sending        = false;
-    private bool   _sent           = false;
+    // ── Method definitions ───────────────────────────────────────────────────
+    private record MethodOption(string Key, string LabelKey, string DescKey, string Icon);
 
-    private int RecipientCount => _recipientsText
-        .Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-        .Count(static l => l.Length >= 8);
+    private readonly IReadOnlyList<MethodOption> _methods =
+    [
+        new("by-address",      "page.broadcasting.MethodByAddress",         "page.wizard.MethodDescAddress",      Icons.Material.Filled.LocationOn),
+        new("by-map",          "page.broadcasting.MethodByMap",             "page.wizard.MethodDescMap",           Icons.Material.Filled.Map),
+        new("by-excel",        "page.broadcasting.MethodByExcel",           "page.wizard.MethodDescExcel",         Icons.Material.Filled.TableChart),
+        new("by-level",        "page.broadcasting.MethodByLevel",           "page.wizard.MethodDescLevel",         Icons.Material.Filled.AccountTree),
+        new("by-municipality", "page.broadcasting.MethodByMunicipality",    "page.wizard.MethodDescMunicipality",  Icons.Material.Filled.LocationCity),
+        new("std-receivers",   "page.broadcasting.MethodStdReceivers",      "page.wizard.MethodDescStdReceivers",  Icons.Material.Filled.Groups),
+    ];
+
+    // ── State ────────────────────────────────────────────────────────────────
+    private int     _step            = 1;
+    private string? _selectedMethod;
+    private string  _addressSearch   = string.Empty;
+    private string? _uploadedFileName;
+    private int     _uploadedRowCount;
+    private string? _selectedArea;
+    private string  _message         = string.Empty;
+    private string  _senderId        = "GreenAI";
+    private string  _channel         = "SMS";
+    private string  _sendTiming      = "now";
+    private DateTime? _scheduledAt;
+    private bool    _sending;
+    private bool    _sent;
+
+    private readonly Dictionary<int, bool> _selectedStdReceivers =
+        MockData.StdReceivers.ToDictionary(g => g.Id, _ => false);
+
+    private readonly IReadOnlyList<string> _mockAddresses =
+    [
+        "Nørrebrogade 1-99, 2200 København N",
+        "Vesterbrogade 1-150, 1620 København V",
+        "Østerbrogade 1-100, 2100 København Ø",
+        "Amagerbrogade 1-80, 2300 København S",
+        "Amager Boulevard 1-50, 2300 København S",
+        "Frederikssundsvej 1-200, 2700 Brønshøj",
+        "Vangedevej 1-100, 2820 Gentofte",
+    ];
+
+    private IReadOnlyList<string> AreaOptions => _selectedMethod == "by-level"
+        ? (IReadOnlyList<string>)["Kommunalt niveau", "Regionniveau", "Landsniveau"]
+        : ["Aarhus Kommune", "København Kommune", "Odense Kommune", "Aalborg Kommune", "Esbjerg Kommune", "Randers Kommune", "Kolding Kommune"];
+
+    private MethodOption? SelectedMethodObj =>
+        _methods.FirstOrDefault(m => m.Key == _selectedMethod);
+
+    private int RecipientEstimate => _selectedMethod switch
+    {
+        "by-address"      => _mockAddresses.Count(x => string.IsNullOrEmpty(_addressSearch) || x.Contains(_addressSearch, StringComparison.OrdinalIgnoreCase)) * 47,
+        "by-excel"        => _uploadedRowCount,
+        "by-map"          => 1284,
+        "by-level"        => string.IsNullOrEmpty(_selectedArea) ? 0 : 8421,
+        "by-municipality" => string.IsNullOrEmpty(_selectedArea) ? 0 : 3218,
+        "std-receivers"   => _selectedStdReceivers.Where(x => x.Value).Sum(x => MockData.StdReceivers.FirstOrDefault(g => g.Id == x.Key)?.RecipientCount ?? 0),
+        _                 => 0,
+    };
 
     private bool CanProceed => _step switch
     {
-        1 => RecipientCount > 0,
-        2 => _message.Trim().Length >= 5 && _senderId.Trim().Length >= 2,
+        1 => _selectedMethod is not null,
+        2 => RecipientEstimate > 0 || _uploadedFileName is not null || _selectedArea is not null,
+        3 => _message.Trim().Length >= 5 && _senderId.Trim().Length >= 2,
         _ => false,
     };
 
-    private void Next() { if (_step < 3) _step++; }
+    // ── Helpers ──────────────────────────────────────────────────────────────
+    private string StepLabel(int step) => step switch
+    {
+        1 => Loc.Get("page.wizard.StepMethod"),
+        2 => Loc.Get("page.wizard.StepRecipients"),
+        3 => Loc.Get("page.wizard.StepContent"),
+        4 => Loc.Get("page.wizard.StepConfirm"),
+        _ => step.ToString(),
+    };
+
+    private void SelectMethod(string key)
+    {
+        _selectedMethod = key;
+        Next(); // auto-advance on method selection
+    }
+
+    private void Next() { if (_step < 4) _step++; }
     private void Back() { if (_step > 1) _step--; }
+
+    private void HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        _uploadedFileName  = e.File.Name;
+        _uploadedRowCount  = new Random().Next(50, 2000);
+    }
 
     private async Task SendAsync()
     {
         _sending = true;
-        await Task.Delay(1200);
+        await Task.Delay(1400); // mock network delay
         _sending = false;
         _sent    = true;
+    }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "method")]
+    public string? QueryMethod { get; set; }
+
+    protected override void OnInitialized()
+    {
+        // Pre-select method from query string if provided (entry from hub)
+        if (!string.IsNullOrWhiteSpace(QueryMethod))
+            _selectedMethod = QueryMethod;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender) return;
-        var authState = await AuthStateTask;
-        if (authState.User.Identity?.IsAuthenticated != true)
+        var auth = await AuthStateTask;
+        if (auth.User.Identity?.IsAuthenticated != true)
             Nav.NavigateTo("/login");
     }
 }
-
-
-@* ── Step indicator ────────────────────────────────────────────────────────── *@
-<div class="wizard-step-row" data-testid="wizard-step-indicator">
-    <div class="wizard-step wizard-step--active" data-testid="wizard-step-1">
-        <span class="wizard-step-num">1</span>
-        <span class="wizard-step-label">@Loc.Get("page.wizard.Step1")</span>
-    </div>
-    <div class="wizard-step-connector"></div>
-    <div class="wizard-step wizard-step--pending" data-testid="wizard-step-2">
-        <span class="wizard-step-num">2</span>
-        <span class="wizard-step-label">@Loc.Get("page.wizard.Step2")</span>
-    </div>
-    <div class="wizard-step-connector"></div>
-    <div class="wizard-step wizard-step--pending" data-testid="wizard-step-3">
-        <span class="wizard-step-num">3</span>
-        <span class="wizard-step-label">@Loc.Get("page.wizard.Step3")</span>
-    </div>
-</div>
-
-<MudDivider Class="my-4" />
-
-@* ── Step content (placeholder until steps are implemented) ──────────────── *@
-<MudText Typo="Typo.h5" Class="mb-2" data-testid="wizard-heading">
-    @Loc.Get("page.wizard.Step1") — @Loc.Get("nav.Send")
-</MudText>
-<MudText Typo="Typo.body2" Color="Color.Secondary" data-testid="wizard-placeholder">
-    @Loc.Get("page.wizard.Placeholder")
-</MudText>
-
-@* ── Navigation footer ────────────────────────────────────────────────────── *@
-<div class="wizard-footer" data-testid="wizard-footer">
-    <MudButton Variant="Variant.Outlined"
-               Color="Color.Default"
-               Href="/dashboard"
-               data-testid="wizard-cancel">
-        @Loc.Get("shared.Cancel")
-    </MudButton>
-    <MudSpacer />
-    <MudButton Variant="Variant.Filled"
-               Color="Color.Primary"
-               Disabled="true"
-               data-testid="wizard-next">
-        @Loc.Get("page.wizard.Next") →
-    </MudButton>
-</div>

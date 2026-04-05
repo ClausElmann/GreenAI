@@ -1,0 +1,263 @@
+@page "/status/{Id:int}"
+@inject NavigationManager Nav
+@inject ILocalizationContext Loc
+@inject ISnackbar Snackbar
+
+@{
+    var breadcrumbs = new List<BreadcrumbItem>
+    {
+        new(Loc.Get("page.statusList.Title"), href: "/status"),
+        new(_broadcast?.Subject ?? Loc.Get("page.statusDetail.NotFound"), href: null, disabled: true),
+    };
+}
+
+<AppShell Title="@(_broadcast?.Subject ?? Loc.Get("page.statusDetail.NotFound"))"
+          IsLoading="false"
+          Breadcrumbs="breadcrumbs">
+
+    @if (_broadcast is null)
+    {
+        <MudAlert Severity="Severity.Warning" data-testid="status-detail-not-found">
+            @Loc.Get("page.statusDetail.NotFound")
+        </MudAlert>
+        <MudButton Variant="Variant.Outlined" Href="/status" Class="mt-3"
+                   StartIcon="@Icons.Material.Filled.ArrowBack">
+            @Loc.Get("page.statusDetail.BackToList")
+        </MudButton>
+    }
+    else
+    {
+        @* ── Stat cards ──────────────────────────────────────────────────── *@
+        <MudGrid Spacing="2" Class="mb-4" data-testid="stat-cards">
+            <MudItem xs="6" sm="4" md="3">
+                <MudPaper Class="stat-card" Elevation="1" data-testid="stat-recipients">
+                    <MudIcon Icon="@Icons.Material.Filled.People" Color="Color.Primary" Size="Size.Medium" />
+                    <MudText Typo="Typo.h4" Class="stat-value">@_broadcast.Recipients.ToString("N0")</MudText>
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">@Loc.Get("page.statusDetail.StatRecipients")</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="6" sm="4" md="3">
+                <MudPaper Class="stat-card" Elevation="1" data-testid="stat-delivered">
+                    <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Size="Size.Medium" />
+                    <MudText Typo="Typo.h4" Class="stat-value">@_broadcast.Delivered.ToString("N0")</MudText>
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">@Loc.Get("page.statusDetail.StatDelivered")</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="6" sm="4" md="3">
+                @{ var failClass = _broadcast!.FailedCount > 0 ? "stat-card stat-card--error" : "stat-card"; }
+                <MudPaper Class="@failClass" Elevation="1" data-testid="stat-failed">
+                    <MudIcon Icon="@Icons.Material.Filled.Error"
+                             Color="@(_broadcast.FailedCount > 0 ? Color.Error : Color.Success)"
+                             Size="Size.Medium" />
+                    <MudText Typo="Typo.h4" Class="stat-value">@_broadcast.FailedCount.ToString("N0")</MudText>
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">@Loc.Get("page.statusDetail.StatFailed")</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="6" sm="4" md="3">
+                <MudPaper Class="stat-card" Elevation="1" data-testid="stat-rate">
+                    <MudIcon Icon="@Icons.Material.Filled.BarChart" Color="Color.Info" Size="Size.Medium" />
+                    <MudText Typo="Typo.h4" Class="stat-value">@DeliveryRate%</MudText>
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">@Loc.Get("page.statusDetail.DeliveryRateLabel")</MudText>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+
+        @* ── Tabs ─────────────────────────────────────────────────────────── *@
+        <MudTabs Elevation="1" Rounded="true" PanelClass="pa-4" data-testid="status-detail-tabs">
+
+            @* ── Tab 1: Overview ─────────────────────────────────────────── *@
+            <MudTabPanel Text="@Loc.Get("page.statusDetail.TabOverview")"
+                         Icon="@Icons.Material.Filled.Dashboard">
+
+                @* Message info *@
+                <MudPaper Outlined="true" Class="pa-4 mb-4" data-testid="message-info-panel">
+                    <MudGrid Spacing="3">
+                        <MudItem xs="12" sm="6">
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">@Loc.Get("page.statusDetail.InfoProfile")</MudText>
+                            <MudText Typo="Typo.body2" Class="mt-1"><b>@_broadcast.Profile</b></MudText>
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">@Loc.Get("page.statusDetail.InfoMethod")</MudText>
+                            <MudText Typo="Typo.body2" Class="mt-1">
+                                @MockData.GetSendMethodLabel(MockData.GetSendMethodKey(_broadcast.Id))
+                            </MudText>
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">@Loc.Get("page.statusDetail.InfoCreated")</MudText>
+                            <MudText Typo="Typo.body2" Class="mt-1">@_broadcast.CreatedAt.ToString("d. MMMM yyyy HH:mm")</MudText>
+                        </MudItem>
+                        @if (_broadcast.ScheduledAt.HasValue)
+                        {
+                            <MudItem xs="12" sm="6">
+                                <MudText Typo="Typo.caption" Color="Color.Secondary">@Loc.Get("page.statusDetail.InfoScheduled")</MudText>
+                                <MudText Typo="Typo.body2" Class="mt-1">@_broadcast.ScheduledAt.Value.ToString("d. MMMM yyyy HH:mm")</MudText>
+                            </MudItem>
+                        }
+                    </MudGrid>
+                </MudPaper>
+
+                @* Actions *@
+                <MudStack Row="true" Spacing="2" Wrap="Wrap.Wrap" data-testid="detail-actions">
+                    <MudButton Variant="Variant.Outlined"
+                               Color="Color.Primary"
+                               StartIcon="@Icons.Material.Filled.Replay"
+                               OnClick='() => _showResendDialog = true'
+                               data-testid="action-resend">
+                        @Loc.Get("page.statusDetail.ActionResend")
+                    </MudButton>
+                    <MudButton Variant="Variant.Outlined"
+                               Color="Color.Default"
+                               StartIcon="@Icons.Material.Filled.Download"
+                               OnClick="DownloadExcel"
+                               data-testid="action-download">
+                        @Loc.Get("page.statusDetail.ActionDownload")
+                    </MudButton>
+                    <MudButton Variant="Variant.Outlined"
+                               Color="Color.Error"
+                               StartIcon="@Icons.Material.Filled.DeleteOutline"
+                               OnClick='() => _showDeleteDialog = true'
+                               data-testid="action-delete">
+                        @Loc.Get("page.statusDetail.ActionDelete")
+                    </MudButton>
+                </MudStack>
+            </MudTabPanel>
+
+            @* ── Tab 2: Addresses ─────────────────────────────────────────── *@
+            <MudTabPanel Text="@Loc.Get("page.statusDetail.TabAddresses")"
+                         Icon="@Icons.Material.Filled.LocationOn">
+                @if (IsGeoLookup)
+                {
+                    <MudList T="string" Dense="true" data-testid="addresses-list">
+                        @foreach (var addr in _mockAddresses)
+                        {
+                            <MudListItem T="string" Icon="@Icons.Material.Filled.Home">
+                                <MudText Typo="Typo.body2">@addr</MudText>
+                            </MudListItem>
+                        }
+                    </MudList>
+                }
+                else
+                {
+                    <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" data-testid="addresses-not-geo">
+                        @Loc.Get("page.statusDetail.AddressesNotGeo")
+                    </MudAlert>
+                }
+            </MudTabPanel>
+
+            @* ── Tab 3: Status report ─────────────────────────────────────── *@
+            <MudTabPanel Text="@Loc.Get("page.statusDetail.TabStatusReport")"
+                         Icon="@Icons.Material.Filled.TableChart">
+                <MudTable T="StatusReportItemMock"
+                          Items="_statusReport"
+                          Dense="true"
+                          Hover="true"
+                          data-testid="status-report-table">
+                    <HeaderContent>
+                        <MudTh>@Loc.Get("page.statusDetail.ReportColName")</MudTh>
+                        <MudTh>@Loc.Get("page.statusDetail.ReportColPhone")</MudTh>
+                        <MudTh>@Loc.Get("page.statusDetail.ReportColChannel")</MudTh>
+                        <MudTh>@Loc.Get("page.statusDetail.ReportColStatus")</MudTh>
+                        <MudTh>@Loc.Get("page.statusDetail.ReportColDelivered")</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd>@context.RecipientName</MudTd>
+                        <MudTd>@context.PhoneNumber</MudTd>
+                        <MudTd>@context.Channel</MudTd>
+                        <MudTd>
+                            @{
+                                var rc = context.Status == "Leveret" ? Color.Success
+                                       : context.Status == "Fejlet"  ? Color.Error
+                                       : Color.Warning;
+                            }
+                            <MudChip T="string" Size="Size.Small" Color="@rc" Variant="Variant.Filled" Style="margin:0">
+                                @context.Status
+                            </MudChip>
+                        </MudTd>
+                        <MudTd>
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                @(context.DeliveredAt?.ToString("HH:mm:ss") ?? "—")
+                            </MudText>
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </MudTabPanel>
+
+        </MudTabs>
+    }
+
+</AppShell>
+
+@* ── Resend dialog ─────────────────────────────────────────────────────────── *@
+<MudDialog @bind-Visible="_showResendDialog" data-testid="resend-dialog">
+    <TitleContent><MudText Typo="Typo.h6">@Loc.Get("page.statusDetail.ResendDialogTitle")</MudText></TitleContent>
+    <DialogContent>
+        <MudText>@Loc.Get("page.statusDetail.ResendDialogText")</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick='() => _showResendDialog = false'>@Loc.Get("page.statusDetail.ResendCancel")</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                   OnClick="ConfirmResend" data-testid="resend-confirm">
+            @Loc.Get("page.statusDetail.ResendConfirm")
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@* ── Delete dialog ─────────────────────────────────────────────────────────── *@
+<MudDialog @bind-Visible="_showDeleteDialog">
+    <TitleContent><MudText Typo="Typo.h6">@Loc.Get("page.statusDetail.DeleteDialogTitle")</MudText></TitleContent>
+    <DialogContent>
+        <MudText>@Loc.Get("page.statusDetail.DeleteDialogText")</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick='() => _showDeleteDialog = false'>@Loc.Get("page.statusDetail.ResendCancel")</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="ConfirmDelete">
+            @Loc.Get("page.statusDetail.ActionDelete")
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private BroadcastMock?                 _broadcast;
+    private IReadOnlyList<StatusReportItemMock> _statusReport = [];
+    private bool _showResendDialog;
+    private bool _showDeleteDialog;
+
+    private int DeliveryRate => _broadcast is { Recipients: > 0 }
+        ? (int)Math.Round(_broadcast.Delivered * 100.0 / _broadcast.Recipients)
+        : 0;
+
+    private bool IsGeoLookup =>
+        _broadcast is not null &&
+        MockData.GetSendMethodKey(_broadcast.Id) is "by-address" or "by-map";
+
+    private readonly IReadOnlyList<string> _mockAddresses =
+    [
+        "Nørrebrogade 12, 2200 København N",  "Nørrebrogade 14, 2200 København N",
+        "Nørrebrogade 16, 2200 København N",  "Nørrebrogade 18, 2200 København N",
+        "Nørrebrogade 20, 2200 København N",  "Nørrebrogade 22, 2200 København N",
+        "Nørrebrogade 24, 2200 København N",
+    ];
+
+    protected override void OnParametersSet()
+    {
+        _broadcast    = MockData.GetBroadcast(Id);
+        _statusReport = _broadcast is not null ? MockData.GetStatusReport(Id) : [];
+    }
+
+    private void ConfirmResend()
+    {
+        _showResendDialog = false;
+        Snackbar.Add(Loc.Get("page.statusDetail.ResendStarted"), Severity.Success);
+    }
+
+    private void ConfirmDelete()
+    {
+        _showDeleteDialog = false;
+        Nav.NavigateTo("/status");
+    }
+
+    private void DownloadExcel() =>
+        Snackbar.Add(Loc.Get("page.statusDetail.DownloadStarted"), Severity.Info);
+}
