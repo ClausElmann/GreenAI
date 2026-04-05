@@ -14,9 +14,7 @@
           ErrorMessage="@_errorMessage">
 
     @* ── Account section ──────────────────────────────────────────────────── *@
-    <MudText Typo="Typo.overline" Color="Color.Secondary" Class="mb-2 d-block">
-        @Loc.Get("feature.userProfile.AccountSection")
-    </MudText>
+    <div class="ga-section-label">@Loc.Get("feature.userProfile.AccountSection")</div>
 
     <MudGrid Spacing="3" Class="mb-4 px-2 px-sm-0">
         <MudItem xs="12" sm="6">
@@ -49,9 +47,7 @@
     </MudGrid>
 
     @* ── Preferences section ──────────────────────────────────────────────── *@
-    <MudText Typo="Typo.overline" Color="Color.Secondary" Class="mb-2 d-block">
-        @Loc.Get("feature.userProfile.PreferencesSection")
-    </MudText>
+    <div class="ga-section-label">@Loc.Get("feature.userProfile.PreferencesSection")</div>
 
     <MudGrid Spacing="3" Class="mb-4 px-2 px-sm-0">
         <MudItem xs="12" sm="6">
@@ -81,6 +77,7 @@
             @Loc.Get("feature.userProfile.SaveSuccess")
         </MudAlert>
     }
+
 
 </AppShell>
 

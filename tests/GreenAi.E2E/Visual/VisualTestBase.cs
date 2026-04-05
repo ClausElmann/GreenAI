@@ -1,6 +1,7 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using Microsoft.Data.SqlClient;
 using Microsoft.Playwright;
+using GreenAi.E2E.Assertions;
 
 namespace GreenAi.E2E.Visual;
 
@@ -8,16 +9,16 @@ using GreenAi.E2E; // SharedAuth + LoginTokens
 
 /// <summary>
 /// Base class for multi-device visual tests.
-/// Independent lifecycle from E2ETestBase — creates a fresh Playwright browser per
+/// Independent lifecycle from E2ETestBase ÔÇö creates a fresh Playwright browser per
 /// test class, then one BrowserContext per device within each test method.
 ///
 /// Screenshot organisation:
-///   TestResults/Visual/baseline/{device}/{test}.png  — reference images
-///   TestResults/Visual/current/{device}/{test}.png   — latest run output
+///   TestResults/Visual/baseline/{device}/{test}.png  ÔÇö reference images
+///   TestResults/Visual/current/{device}/{test}.png   ÔÇö latest run output
 ///
-/// First run: no baseline → current screenshot IS saved as baseline automatically.
+/// First run: no baseline ÔåÆ current screenshot IS saved as baseline automatically.
 /// Update baselines (after intentional UI change):
-///   In terminal (inline — no .ps1 file):
+///   In terminal (inline ÔÇö no .ps1 file):
 ///   $env:GREENAI_UPDATE_BASELINE="true"
 ///   dotnet test tests/GreenAi.E2E --filter "FullyQualifiedName~Visual" --nologo
 ///   $env:GREENAI_UPDATE_BASELINE=$null
@@ -37,7 +38,7 @@ public abstract class VisualTestBase : IAsyncLifetime
     private IPlaywright _playwright = null!;
     private IBrowser    _browser    = null!;
 
-    // ── Lifecycle ────────────────────────────────────────────────────────────
+    // ÔöÇÔöÇ Lifecycle ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 
     public async ValueTask InitializeAsync()
     {
@@ -45,7 +46,7 @@ public abstract class VisualTestBase : IAsyncLifetime
 
         // HEADLESS NOTE: Blazor Server uses SignalR WebSockets for its circuit.
         // Headless Chromium shell has known issues with localhost WebSocket
-        // connections — the circuit fails to establish and @onclick handlers are
+        // connections ÔÇö the circuit fails to establish and @onclick handlers are
         // never wired. Running with Headless=false (same as E2ETestBase) is the
         // reliable fix for local runs. CI can use a virtual display (Xvfb) if
         // needed; for now green-ai CI does not run E2E tests (LocalDB unavailable).
@@ -63,7 +64,7 @@ public abstract class VisualTestBase : IAsyncLifetime
         _playwright.Dispose();
     }
 
-    // ── Multi-device runner ──────────────────────────────────────────────────
+    // ÔöÇÔöÇ Multi-device runner ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 
     /// <summary>
     /// Runs <paramref name="testAction"/> once per device in <see cref="DeviceProfile.All"/>.
@@ -92,15 +93,16 @@ public abstract class VisualTestBase : IAsyncLifetime
 
                 await testAction(page, device);
 
-                // Auto-check: test action passed layout assertions — now verify no
-                // backend error UI slipped through (Blazor error overlay, MudAlert errors).
+                // Auto-check: error state + UI quality gates (focus, touch targets, padding,
+                // design tokens). A11y gate (axe) is opt-in via GREENAI_ACCESSIBILITY_GATES=true.
                 await AssertNoVisibleErrorsAsync(page, device);
+                await RunQualityGatesAsync(page, device);
             }
             catch (Exception ex)
             {
                 // Capture a diagnostic screenshot before moving to the next device.
                 await CaptureErrorAsync(page, device, callerName);
-                failures.Add($"[{device.Name} {device.Width}×{device.Height}] {ex.Message}");
+                failures.Add($"[{device.Name} {device.Width}├ù{device.Height}] {ex.Message}");
             }
             finally
             {
@@ -115,12 +117,12 @@ public abstract class VisualTestBase : IAsyncLifetime
                 string.Join("\n", failures));
     }
 
-    // ── Failure diagnostics ──────────────────────────────────────────────────
+    // ÔöÇÔöÇ Failure diagnostics ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 
     /// <summary>
     /// Best-effort diagnostic screenshot taken when a test fails on a device.
     /// Saved alongside normal screenshots as <c>{callerName}-error.png</c>.
-    /// Any exception is swallowed — the error capture must never mask the original failure.
+    /// Any exception is swallowed ÔÇö the error capture must never mask the original failure.
     /// </summary>
     private async Task CaptureErrorAsync(IPage? page, DeviceProfile device, string callerName)
     {
@@ -138,11 +140,11 @@ public abstract class VisualTestBase : IAsyncLifetime
         }
         catch
         {
-            // Best-effort — never propagate from error handler.
+            // Best-effort ÔÇö never propagate from error handler.
         }
     }
 
-    // ── Auth ─────────────────────────────────────────────────────────────────
+    // ÔöÇÔöÇ Auth ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 
     /// <summary>
     /// Injects a cached JWT into this page's localStorage and navigates to /dashboard.
@@ -191,7 +193,7 @@ public abstract class VisualTestBase : IAsyncLifetime
     }
 
 
-    // ── Screenshots ──────────────────────────────────────────────────────────
+    // ÔöÇÔöÇ Screenshots ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 
     /// <summary>
     /// Waits for the page to reach a visually stable state, then takes a full-page screenshot.
@@ -225,11 +227,11 @@ public abstract class VisualTestBase : IAsyncLifetime
             File.Copy(currentPath, baselinePath, overwrite: true);
     }
 
-    // ── Layout assertions ────────────────────────────────────────────────────
+    // ÔöÇÔöÇ Layout assertions ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 
     /// <summary>
     /// Asserts that no horizontal scroll overflow exists on this page.
-    /// Horizontal overflow is always a layout regression — especially on mobile.
+    /// Horizontal overflow is always a layout regression ÔÇö especially on mobile.
     /// Tolerance of 2px for sub-pixel rendering artefacts.
     /// </summary>
     protected async Task AssertNoHorizontalOverflowAsync(IPage page, DeviceProfile device)
@@ -240,7 +242,7 @@ public abstract class VisualTestBase : IAsyncLifetime
         if (overflow > 2)
             throw new Exception(
                 $"Horizontal overflow: scrollWidth exceeds innerWidth by {overflow}px on {device.Name} " +
-                $"({device.Width}×{device.Height}) at {page.Url}. " +
+                $"({device.Width}├ù{device.Height}) at {page.Url}. " +
                 "Check for elements wider than viewport or missing max-width/overflow-x:hidden.");
     }
 
@@ -261,9 +263,9 @@ public abstract class VisualTestBase : IAsyncLifetime
             """);
 
         if (topBarBottom < 0)
-            return; // top-bar not present on this page (e.g. EmptyLayout) — skip
+            return; // top-bar not present on this page (e.g. EmptyLayout) ÔÇö skip
 
-        // MudMainContent uses padding-top = appbar height — check paddingTop ≥ topBarBottom.
+        // MudMainContent uses padding-top = appbar height ÔÇö check paddingTop ÔëÑ topBarBottom.
         // getBoundingClientRect().top is 0 (element is in normal flow, not offset by the fixed bar).
         var paddingTop = await page.EvaluateAsync<double>("""
             () => {
@@ -274,11 +276,11 @@ public abstract class VisualTestBase : IAsyncLifetime
             """);
 
         if (paddingTop < 0)
-            return; // mud-main-content not present — skip
+            return; // mud-main-content not present ÔÇö skip
 
         if (paddingTop < topBarBottom - 4)
             throw new Exception(
-                $"MudMainContent paddingTop ({paddingTop:F0}px) is less than TopBar bottom ({topBarBottom:F0}px) on {device.Name} — " +
+                $"MudMainContent paddingTop ({paddingTop:F0}px) is less than TopBar bottom ({topBarBottom:F0}px) on {device.Name} ÔÇö " +
                 "main content is being clipped by the app bar.");
     }
 
@@ -358,7 +360,7 @@ public abstract class VisualTestBase : IAsyncLifetime
                 (blocked.Length > 5 ? $"\n\u2026and {blocked.Length - 5} more." : ""));
     }
 
-    // ── Private helpers ──────────────────────────────────────────────────────
+    // ÔöÇÔöÇ Private helpers ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 
     /// <summary>
     /// Asserts layout consistency: every element whose bounding rect has non-zero size
@@ -414,7 +416,7 @@ public abstract class VisualTestBase : IAsyncLifetime
                     const r = el.getBoundingClientRect();
                     if (r.width === 0 || r.height === 0) continue; // display:none / truly invisible
                     // Skip MudBlazor internal elements (their rendering uses thin sizing
-                    // internally — popovers, slots, adornments) and SVG/HR structural elements.
+                    // internally ÔÇö popovers, slots, adornments) and SVG/HR structural elements.
                     // We only want to catch anomalies in our own layout containers.
                     const cls = typeof el.className === 'string' ? el.className : '';
                     const tag = el.tagName;
@@ -426,7 +428,7 @@ public abstract class VisualTestBase : IAsyncLifetime
                     const id = el.getAttribute('data-testid')
                              ?? el.id
                              ?? el.tagName.toLowerCase();
-                    // Extreme spacing — flag margin/padding > 200px on non-MudBlazor elements
+                    // Extreme spacing ÔÇö flag margin/padding > 200px on non-MudBlazor elements
                     const props = ['marginTop','marginBottom','marginLeft','marginRight',
                                    'paddingTop','paddingBottom','paddingLeft','paddingRight'];
                     for (const p of props) {
@@ -455,7 +457,7 @@ public abstract class VisualTestBase : IAsyncLifetime
     /// <item>Top-bar toggle button exists and is not covered.</item>
     /// <item>If the overlay-nav panel is open, it contains at least one visible link.</item>
     /// </list>
-    /// Does <em>not</em> open the panel — call after interactions that already opened it,
+    /// Does <em>not</em> open the panel ÔÇö call after interactions that already opened it,
     /// or use on the closed state to verify the toggle is reachable.
     /// </summary>
     protected async Task AssertNavigationUsableAsync(IPage page, DeviceProfile device)
@@ -479,7 +481,7 @@ public abstract class VisualTestBase : IAsyncLifetime
         var navLinkCount = await page.EvaluateAsync<int>("""
             () => {
                 const panel = document.querySelector('[data-testid="overlay-nav-panel"]');
-                if (!panel) return -1; // panel not open — skip
+                if (!panel) return -1; // panel not open ÔÇö skip
                 const r = panel.getBoundingClientRect();
                 if (r.width === 0 || r.height === 0) return -1; // closed/hidden
                 return panel.querySelectorAll('a[href], [role="menuitem"], .mud-nav-link').length;
@@ -494,7 +496,7 @@ public abstract class VisualTestBase : IAsyncLifetime
     /// <summary>
     /// Asserts that no text-bearing element has both <c>overflow:hidden</c>/<c>text-overflow:ellipsis</c>
     /// and a <c>scrollWidth</c> that exceeds its <c>clientWidth</c> by more than 4px.
-    /// That combination means text is actively being cut off — a sign that labels are too long
+    /// That combination means text is actively being cut off ÔÇö a sign that labels are too long
     /// for their allocated space or that the container has no minimum width.
     /// Only checks the first 200 visible text-bearing elements to bound execution time.
     /// </summary>
@@ -579,7 +581,7 @@ public abstract class VisualTestBase : IAsyncLifetime
         if (mudErrors.Length > 0)
             throw new Exception(
                 $"[{device.Name}] {mudErrors.Length} visible error alert(s) on {page.Url}:\n"
-                + string.Join("\n", mudErrors.Select(m => $"  • {m}")));
+                + string.Join("\n", mudErrors.Select(m => $"  ÔÇó {m}")));
 
         // 3. Blazor component-level error boundary (renders fallback UI on component exceptions)
         var errorBoundaryVisible = await page.EvaluateAsync<bool>("""
@@ -596,6 +598,216 @@ public abstract class VisualTestBase : IAsyncLifetime
             throw new Exception(
                 $"[{device.Name}] A Blazor error boundary is displaying fallback UI on {page.Url}. "
                 + "Check server logs for the component exception.");
+    }
+
+    // ── UI quality gates (auto-run inside ForEachDeviceAsync) ─────────────────────────
+
+    /// <summary>Runs design-token + layout quality gates after each test action.</summary>
+    private async Task RunQualityGatesAsync(IPage page, DeviceProfile device)
+    {
+        // Skip all quality gates if the page hasn't navigated (e.g. about:blank in
+        // tests that close a dialog/nav without an explicit next navigation).
+        if (page.Url is "about:blank" or "")
+            return;
+
+        await DesignSystemAssertions.AssertTokensDefinedAsync(page, $"{device.Name}/{page.Url}");
+        await DesignSystemAssertions.AssertSpacingScaleAsync(page, $"{device.Name}/{page.Url}");
+        await AssertFocusVisibleAsync(page, device);
+        await AssertMinimumTouchTargetAsync(page, device);
+        await AssertContentHasSafePaddingAsync(page, device);
+
+        var a11yMode = Environment.GetEnvironmentVariable("GREENAI_ACCESSIBILITY_GATES");
+        if (a11yMode is "true" or "strict")
+            await AccessibilityAssertions.AssertNoViolationsAsync(page, $"{device.Name}/{page.Url}");
+    }
+
+    /// <summary>
+    /// Asserts that the global focus ring fires on keyboard focus:
+    /// presses Tab once and verifies the active element's computed outline-width is >= 2px.
+    /// Skips if no focusable elements are present (e.g. empty page).
+    /// </summary>
+    protected async Task AssertFocusVisibleAsync(IPage page, DeviceProfile device)
+    {
+        var hasFocusable = await page.EvaluateAsync<bool>("""
+            () => {
+                return !!document.querySelector('button:not([disabled]):not([tabindex="-1"]), a[href]:not([tabindex="-1"]), input:not([type="hidden"]):not([disabled])');
+            }
+            """);
+
+        if (!hasFocusable) return;
+
+        await page.Keyboard.PressAsync("Tab");
+
+        var outlineWidth = await page.EvaluateAsync<double>("""
+            () => {
+                const el = document.activeElement;
+                if (!el || el === document.body) return -1;
+                return parseFloat(window.getComputedStyle(el).outlineWidth) || 0;
+            }
+            """);
+
+        if (outlineWidth == -1) return; // no element focused — skip
+
+        if (outlineWidth < 2)
+            throw new Exception(
+                $"[{device.Name}] Focus ring too thin or missing: outline-width={outlineWidth}px on "
+                + $"{page.Url} (spec: 3px solid var(--ga-focus)).");
+    }
+
+    /// <summary>
+    /// On mobile profiles (<c>IsMobile = true</c>), asserts that all visible interactive
+    /// elements meet the WCAG 2.5.5 minimum touch target of 44x44px.
+    /// Skipped on desktop where 40px minimum applies.
+    /// </summary>
+    protected async Task AssertMinimumTouchTargetAsync(IPage page, DeviceProfile device)
+    {
+        if (!device.IsMobile) return;
+
+        var violations = await page.EvaluateAsync<string[]>("""
+            () => {
+                const MIN = 44;
+                const out = [];
+                const selectors = [
+                    'button:not([disabled])',
+                    'a[href]:not([tabindex="-1"])',
+                    '[role="button"]:not([disabled])',
+                    'input[type="checkbox"]',
+                    'input[type="radio"]',
+                ];
+                for (const sel of selectors) {
+                    for (const el of document.querySelectorAll(sel)) {
+                        const cls = typeof el.className === 'string' ? el.className : '';
+                        if (cls.includes('mud-icon-root')) continue;
+                        const r = el.getBoundingClientRect();
+                        if (r.width === 0 || r.height === 0) continue;
+                        if (r.width < MIN || r.height < MIN) {
+                            const id = el.getAttribute('data-testid')
+                                     || (el.textContent || '').trim().slice(0, 30)
+                                     || el.tagName;
+                            out.push('"' + id + '" ' + r.width.toFixed(0) + 'x' + r.height.toFixed(0) + 'px (< ' + MIN + 'px)');
+                        }
+                    }
+                }
+                return out.slice(0, 10);
+            }
+            """);
+
+        if (violations is { Length: > 0 })
+            throw new Exception(
+                $"[{device.Name}] {violations.Length} touch target(s) below 44x44px minimum:\n"
+                + string.Join("\n", violations.Select(v => $"  - {v}")));
+    }
+
+    /// <summary>
+    /// Asserts that the main content area has safe horizontal padding (>= 12px mobile,
+    /// >= 16px desktop) so content never hugs the screen edge.
+    /// </summary>
+    protected async Task AssertContentHasSafePaddingAsync(IPage page, DeviceProfile device)
+    {
+        // Pass minPadding as a JS argument to avoid $""" / {{ brace escaping issues
+        var minPadding = device.IsMobile ? 12 : 16;
+
+        var result = await page.EvaluateAsync<string?>("""
+            (minPx) => {
+                const selectors = [
+                    '.mud-main-content .main-content-inner',
+                    '.ga-form-page',
+                    '.ga-form-card',
+                    '.select-context-page',
+                ];
+                for (const sel of selectors) {
+                    const el = document.querySelector(sel);
+                    if (!el) continue;
+                    const r = el.getBoundingClientRect();
+                    if (r.width === 0) continue;
+                    const cs = window.getComputedStyle(el);
+                    const pL = parseFloat(cs.paddingLeft)  || 0;
+                    const pR = parseFloat(cs.paddingRight) || 0;
+                    if (pL < minPx || pR < minPx) {
+                        return '"' + sel + '" paddingLeft=' + pL + 'px paddingRight=' + pR + 'px (< ' + minPx + 'px)';
+                    }
+                }
+                return null;
+            }
+            """, minPadding);
+
+        if (result is not null)
+            throw new Exception(
+                $"[{device.Name}] Content safe-padding violation on '{page.Url}': {result}");
+    }
+
+    // ── Cross-browser runner ────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Runs <paramref name="testAction"/> against each browser+device combination.
+    /// Browsers controlled by <c>GREENAI_BROWSERS</c> env var (comma-separated):
+    ///   <c>chromium</c> (default), <c>webkit</c>, <c>firefox</c>.
+    /// Quality gates run automatically for every browser.
+    /// </summary>
+    protected async Task ForEachBrowserAsync(
+        Func<IPage, DeviceProfile, Task> testAction,
+        [CallerMemberName] string         callerName = "")
+    {
+        var browserNames = (Environment.GetEnvironmentVariable("GREENAI_BROWSERS") ?? "chromium")
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+        var failures = new List<string>();
+
+        foreach (var browserName in browserNames)
+        {
+            IBrowser? extraBrowser = null;
+            try
+            {
+                IBrowser browser = browserName.ToLowerInvariant() switch
+                {
+                    "webkit"  => extraBrowser = await _playwright.Webkit.LaunchAsync(
+                                    new BrowserTypeLaunchOptions { Headless = false }),
+                    "firefox" => extraBrowser = await _playwright.Firefox.LaunchAsync(
+                                    new BrowserTypeLaunchOptions { Headless = false }),
+                    _         => _browser,
+                };
+
+                foreach (var device in DeviceProfile.All)
+                {
+                    IBrowserContext? ctx  = null;
+                    IPage?           page = null;
+                    try
+                    {
+                        ctx  = await browser.NewContextAsync(new BrowserNewContextOptions
+                        {
+                            ViewportSize      = new ViewportSize { Width = device.Width, Height = device.Height },
+                            IsMobile          = device.IsMobile,
+                            IgnoreHTTPSErrors = true,
+                        });
+                        page = await ctx.NewPageAsync();
+
+                        await testAction(page, device);
+
+                        await AssertNoVisibleErrorsAsync(page, device);
+                        await RunQualityGatesAsync(page, device);
+                    }
+                    catch (Exception ex)
+                    {
+                        await CaptureErrorAsync(page, device, $"{browserName}-{callerName}");
+                        failures.Add($"[{browserName}/{device.Name}] {ex.Message}");
+                    }
+                    finally
+                    {
+                        if (page is not null) await page.CloseAsync();
+                        if (ctx  is not null) await ctx.CloseAsync();
+                    }
+                }
+            }
+            finally
+            {
+                if (extraBrowser is not null) await extraBrowser.DisposeAsync();
+            }
+        }
+
+        if (failures.Count > 0)
+            throw new Exception(
+                $"Cross-browser test failed on {failures.Count} combination(s):\n" +
+                string.Join("\n", failures));
     }
 
     private static string Sanitize(string name) =>

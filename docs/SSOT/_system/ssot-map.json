@@ -250,6 +250,14 @@
       "applies_to": ["failing tests"],
       "enforcement": "OBSERVE layer before changing code"
     },
+    "ui-auto-fix-protocol": {
+      "path": "docs/SSOT/testing/ui-auto-fix-protocol.md",
+      "type": "protocol",
+      "red_threads": ["e2e-test-pattern", "greenai-ui-architecture"],
+      "triggers": ["fix ui", "run ui autofix", "repair ui", "ui broken", "visual issues", "accessibility issues", "color contrast", "touch target"],
+      "applies_to": ["wwwroot/css/greenai-skin.css", "Components/Layout/*.razor"],
+      "enforcement": "scripts/run-ui-autofix.ps1 — max 3 iterations, 0 inline styles"
+    },
     "respawn-guide": {
       "path": "docs/SSOT/testing/guides/respawn-guide.md",
       "type": "guide",

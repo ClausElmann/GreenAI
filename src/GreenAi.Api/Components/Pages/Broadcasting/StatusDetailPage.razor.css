@@ -7,13 +7,13 @@
     padding: 20px 12px;
     text-align: center;
     gap: 4px;
-    border-radius: 8px;
+    border-radius: var(--ga-radius-md);
     transition: box-shadow 150ms;
     height: 100%;
 }
 
 .stat-card:hover {
-    box-shadow: 0 2px 12px rgba(0,0,0,.12) !important;
+    box-shadow: var(--ga-shadow-card) !important;
 }
 
 .stat-value {
@@ -23,5 +23,5 @@
 }
 
 .stat-card--error .stat-value {
-    color: var(--mud-palette-error) !important;
+    color: var(--ga-danger) !important;
 }

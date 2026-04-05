@@ -43,6 +43,7 @@
         <MudDivider Class="mb-2" />
 
         @* Section: Primary *@
+        <div class="overlay-nav-group-label">Navigation</div>
         <div class="overlay-nav-section">
             <MudNavLink Href="/broadcasting"
                         Icon="@Icons.Material.Outlined.Hub"
@@ -72,6 +73,7 @@
         @* Section: Account + Admin (authenticated) *@
         <AuthorizeView>
             <Authorized>
+                <div class="overlay-nav-group-label">Konto</div>
                 <div class="overlay-nav-section">
                     <MudNavLink Href="/user/profile"
                                 Icon="@Icons.Material.Filled.Person"

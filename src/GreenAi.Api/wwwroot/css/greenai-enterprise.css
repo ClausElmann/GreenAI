@@ -1,0 +1,146 @@
+/* =============================================================================
+   GREEN AI — ENTERPRISE COMPONENT LAYER
+   Loaded after greenai-skin.css. Addresses audit findings:
+   - Table density + alignment (enterprise-density)
+   - Card visual weight (surface/bg contrast)
+   - Focus ring insurance (MudBlazor override protection)
+   - Brand accent (left-border identity on panel headers)
+   - Status badge sizing consistency
+   ============================================================================= */
+
+/* ── Table: enterprise density ──────────────────────────────────────────────── */
+/* Tighter row height — enterprise scanability */
+.mud-table-body .mud-table-cell {
+    padding: 4px 12px !important;    /* tighter: was 5px */
+    vertical-align: middle !important;
+}
+
+/* Distinct header background — clear visual separation from rows */
+.mud-table-head .mud-table-cell {
+    background-color: var(--ga-surface-alt) !important;
+    padding: 6px 12px !important;
+}
+
+/* Zebra rows — enterprise scanability (every even row gets alt bg) */
+.mud-table-body .mud-table-row:nth-child(even) > .mud-table-cell {
+    background-color: rgba(241,244,248,.7) !important;  /* --ga-surface-alt at 70% */
+}
+
+/* Stronger hover */
+.mud-table-row:hover td {
+    background-color: rgba(11,95,255,.07) !important;
+    cursor: pointer;
+}
+
+/* ── Cards: stronger visual weight + hover elevation ───────────────────────── */
+.mud-card,
+.mud-paper.mud-elevation-1 {
+    box-shadow: 0 1px 3px rgba(16,24,40,.09), 0 3px 8px rgba(16,24,40,.14) !important;
+    border: 1px solid var(--ga-border) !important;
+    transition: box-shadow 150ms, transform 150ms, border-color 150ms !important;
+}
+
+.mud-card:hover,
+.mud-paper.mud-elevation-1:hover {
+    box-shadow: 0 4px 12px rgba(16,24,40,.12), 0 8px 24px rgba(16,24,40,.14) !important;
+    transform: translateY(-1px);
+    border-color: var(--ga-primary) !important;  /* primary border on hover = tydelig respons */
+}
+
+/* ── Brand accent — subtle left-border on panel/section headers  ─────────────── */
+/* Adds 1 strong brand touch without redesign */
+.ga-brand-header {
+    border-left: 3px solid var(--ga-primary);
+    padding-left: var(--ga-space-3);
+}
+
+/* ── Focus ring insurance — MudBlazor override protection ─────────────────── */
+/* 3px solid near-black (#111827 = 18:1 contrast) — WCAG 2.4.11 AA compliant.  
+   Double ring via box-shadow adds visible offset even on dark backgrounds.      */
+.mud-button-root:focus-visible,
+.mud-icon-button:focus-visible,
+.mud-nav-link:focus-visible,
+.mud-list-item:focus-visible,
+.mud-chip:focus-visible {
+    outline: 3px solid var(--ga-focus) !important; /* explicit 3px — never inherit smaller */
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 5px rgba(17,24,39,.15) !important; /* outer halo for visibility on any bg */
+    z-index: 1;
+}
+
+/* Input focus — use border reinforcement (ring would be clipped by input container) */
+.mud-input-control.mud-input-focus-within .mud-input-outlined-border,
+.mud-input-control.mud-focused .mud-input-outlined-border {
+    border-color: var(--ga-focus) !important;
+    border-width: 2px !important;
+}
+
+/* ── Status badge sizing consistency ────────────────────────────────────────── */
+/* Ensures .ga-status-* badges have consistent height/padding wherever used      */
+.ga-status-draft,
+.ga-status-pending,
+.ga-status-approved,
+.ga-status-scheduled,
+.ga-status-sending,
+.ga-status-sent,
+.ga-status-failed,
+.ga-status-rejected,
+.ga-status-unknown {
+    display: inline-flex !important;
+    align-items: center !important;
+    padding: 2px 8px !important;
+    border-radius: var(--ga-radius-sm) !important;
+    font-size: var(--ga-font-xs) !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+    line-height: 1.6 !important;
+}
+
+/* ── Nav section grouping labels ────────────────────────────────────────────── */
+/* Adds visible "Broadcasting" / "Admin" group labels in overlay nav             */
+/* Applied via .overlay-nav-group-label in OverlayNav.razor                     */
+.overlay-nav-group-label {
+    display: block;
+    padding: var(--ga-space-3) var(--ga-space-4) var(--ga-space-1);
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .09em;
+    color: var(--ga-text-disabled);
+    user-select: none;
+}
+
+/* ── Brand accent on active interactive elements ───────────────────────────── */
+/* System identity: primary color appears on all "you are here" / "in use" states */
+
+/* Active tab indicator — thicker, primary color */
+.mud-tabs .mud-tab-slider-active {
+    height: 3px !important;             /* was 2px */
+    background-color: var(--ga-primary) !important;
+}
+
+/* Active MudChip — tinted bg + primary border for selected filters */
+.mud-chip.mud-chip-default.mud-chip-selected,
+.mud-chip[aria-pressed="true"] {
+    background-color: rgba(11,95,255,.10) !important;
+    border-color: var(--ga-primary) !important;
+    color: var(--ga-primary) !important;
+    font-weight: 600 !important;
+}
+
+/* Active row in tables (when .mud-selected applied by MudBlazor) */
+.mud-table-row.mud-selected td {
+    background-color: rgba(11,95,255,.07) !important;
+    border-left: 3px solid var(--ga-primary) !important;
+}
+
+/* ── Spacing system — page content wrapper ─────────────────────────────────── */
+/* Consistent inner gutter across all pages */
+.ga-page-content {
+    padding: var(--ga-space-5) var(--ga-space-5);  /* 24px */
+    max-width: var(--ga-content-max);
+}
+
+@media (max-width: 599px) {
+    .ga-page-content { padding: var(--ga-space-4); }   /* 16px on mobile */
+}

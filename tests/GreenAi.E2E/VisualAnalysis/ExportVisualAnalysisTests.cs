@@ -30,8 +30,21 @@ namespace GreenAi.E2E.VisualAnalysis;
 public sealed class ExportVisualAnalysisTests
 {
     [Fact]
+    [Trait("Category", "OnDemand")]
     public async Task ExportVisualAnalysisPackage()
     {
+        // Skip gracefully if visual tests haven't run yet (no screenshots)
+        // Use AppContext.BaseDirectory (same resolution as VisualAnalysisExporter)
+        var screenshotsDir = Path.GetFullPath(
+            Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "TestResults", "Visual", "current"));
+        if (!Directory.Exists(screenshotsDir) ||
+            !Directory.EnumerateFiles(screenshotsDir, "*.png", SearchOption.AllDirectories).Any())
+        {
+            Assert.Skip(
+                "No screenshots found. Run visual tests first: " +
+                "dotnet test tests/GreenAi.E2E --filter \"FullyQualifiedName~Visual\" --nologo");
+        }
+
         var result = await VisualAnalysisExporter.ExportAsync();
 
         // Surface the zip path prominently in test output

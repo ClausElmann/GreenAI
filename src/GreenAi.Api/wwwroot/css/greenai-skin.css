@@ -310,13 +310,13 @@
 .ga-wizard-step.active .ga-wizard-step-number {
     border-color: var(--ga-primary);
     background: var(--ga-primary);
-    color: #FFFFFF;
+    color: var(--ga-primary-contrast);
 }
 
 .ga-wizard-step.completed .ga-wizard-step-number {
     border-color: var(--ga-success);
     background: var(--ga-success);
-    color: #FFFFFF;
+    color: var(--ga-primary-contrast);
 }
 
 /* ── Typography scale — enterprise hierarchy ────────────────────────────────── */
@@ -446,7 +446,7 @@
 .mud-button-filled.mud-button-filled-error,
 .mud-button-filled.mud-button-filled-danger {
     background-color: var(--ga-danger) !important;
-    color: #FFFFFF !important;
+    color: var(--ga-primary-contrast) !important;
     box-shadow: none !important;
 }
 
@@ -555,4 +555,41 @@
     padding: var(--ga-space-3) var(--ga-space-5) var(--ga-space-4) !important;
     border-top: 1px solid var(--ga-border) !important;
     gap: var(--ga-space-2) !important;
+}
+
+/* ── Contrast fix — secondary text ─────────────────────────────────────────── */
+/* MudBlazor can emit low-contrast rgba for secondary text which fails WCAG AA
+   (4.5:1 minimum). We force --ga-text-muted (6.1:1 on white) via several selectors
+   to cover all MudBlazor specificity patterns.
+   NOTE: Intentionally uses var() NOT literal hex — token value is #4B5B6B.       */
+.mud-text-secondary,
+.mud-secondary-text,
+.mud-typography.mud-text-secondary,
+.mud-typography.mud-secondary-text,
+body .mud-text-secondary,
+body .mud-secondary-text {
+    color: var(--ga-text-muted) !important;  /* 6.1:1 on white — WCAG AA ✓ */
+}
+
+/* ── Touch targets — mobile WCAG 2.5.5 (min 44×44 px) ─────────────────────── */
+/* MudBlazor compact buttons are 36-40px tall; on mobile WCAG 2.5.5 requires 44px.
+   Scoped to ≤768px to cover phones and small tablets only.
+   .mud-icon-button.mud-button-root uses 2-class specificity to match/beat the
+   global "unset" rule above (same 0,2,0 specificity but later in cascade).
+   Panel-footer links need display:inline-flex to accept min-height.               */
+@media (max-width: 768px) {
+    .mud-button-root {
+        min-height: 44px !important;
+    }
+    .mud-icon-button.mud-button-root {
+        min-height: 44px !important;
+        min-width: 44px !important;
+    }
+    /* Hub / page panel footer links ("Se alle →" etc.) */
+    .hub-panel-footer .mud-link,
+    .hub-panel-footer a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+    }
 }

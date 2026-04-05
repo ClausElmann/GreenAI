@@ -15,6 +15,45 @@
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
+@* Override MudBlazor default palette; must come AFTER <MudThemeProvider /> in DOM
+   order so our :root variables take precedence over the default theme injection. *@
+<style id="greenai-palette-override">
+    :root {
+        --mud-palette-primary:              #0B5FFF;
+        --mud-palette-primary-text:         #FFFFFF;
+        --mud-palette-primary-darken:       #084FD6;
+        --mud-palette-primary-lighten:      #4B87FF;
+        --mud-palette-primary-hover:        rgba(11,95,255,.06);
+        --mud-palette-secondary:            #4B5B6B;
+        --mud-palette-secondary-text:       #FFFFFF;
+        --mud-palette-secondary-darken:     #2E3B4B;
+        --mud-palette-secondary-lighten:    #8A9BAC;
+        --mud-palette-surface:              #FFFFFF;
+        --mud-palette-background:           #F7F9FC;
+        --mud-palette-background-grey:      #F1F4F8;
+        --mud-palette-overlay-dark:         rgba(16,24,40,.5);
+        --mud-palette-divider:              #D7DEE7;
+        --mud-palette-divider-light:        rgba(215,222,231,.5);
+        --mud-palette-text-primary:         #16202A;
+        --mud-palette-text-secondary:       #4B5B6B;
+        --mud-palette-text-disabled:        #9AA0A6;
+        --mud-palette-action-default:       #4B5B6B;
+        --mud-palette-action-hover-opacity: 0.06;
+        --mud-palette-action-disabled:      #9AA0A6;
+        --mud-palette-success:              #117A37;
+        --mud-palette-success-text:         #FFFFFF;
+        --mud-palette-success-darken:       #0A5728;
+        --mud-palette-warning:              #A15C00;
+        --mud-palette-warning-text:         #FFFFFF;
+        --mud-palette-warning-darken:       #7A4500;
+        --mud-palette-error:                #B42318;
+        --mud-palette-error-text:           #FFFFFF;
+        --mud-palette-error-darken:         #8A1910;
+        --mud-palette-info:                 #005E7A;
+        --mud-palette-info-text:            #FFFFFF;
+        --mud-palette-info-darken:          #00445A;
+    }
+</style>
 
 <MudLayout>
     <TopBar />

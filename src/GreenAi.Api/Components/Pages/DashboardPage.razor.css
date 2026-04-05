@@ -2,21 +2,56 @@
 .dashboard-actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: var(--ga-space-2);
     align-items: center;
+    margin-bottom: var(--ga-space-5);   /* 24px below action row */
 }
 
 /* Section labels (overline) — subtle dividers between sections */
 .dashboard-section-label {
-    display: block;
-    margin-bottom: 4px;
-    letter-spacing: 0.08em;
-    font-size: 0.68rem;
+    display: flex;
+    align-items: center;
+    gap: var(--ga-space-3);
+    margin-bottom: var(--ga-space-4);   /* 16px below label */
+    letter-spacing: .08em;
+    font-size: var(--ga-font-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--ga-text-muted);
+}
+.dashboard-section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--ga-border);
+}
+
+/* Section wrapper — 32px between major sections */
+.dashboard-section {
+    margin-bottom: var(--ga-space-6);   /* 32px */
 }
 
 /* Metric cards — uniform height, minimal padding */
 .dashboard-metric-card {
     height: 100%;
+}
+
+/* Primary metric card — first row, highest prominence */
+.dashboard-metric-card--primary .metric-value {
+    font-size: 2.25rem !important;   /* 36px — more dominant than standard 28px */
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    color: var(--ga-text) !important;
+    letter-spacing: -0.02em !important;
+}
+
+.dashboard-metric-card--primary .metric-label {
+    font-size: 0.7rem !important;    /* smaller label = number gets visual dominance */
+    font-weight: 500 !important;
+    text-transform: uppercase !important;
+    letter-spacing: .07em !important;
+    color: var(--ga-text-muted) !important;
+    margin-top: 2px !important;
 }
 
 .metric-icon-row {
@@ -31,5 +66,5 @@
 
 /* Activity list placeholder row */
 .dashboard-activity-placeholder {
-    border-bottom: 1px solid var(--mud-palette-divider);
+    border-bottom: 1px solid var(--ga-border);
 }

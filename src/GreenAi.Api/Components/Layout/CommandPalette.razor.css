@@ -3,7 +3,7 @@
 .cmd-backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(15, 23, 42, 0.68);
+    background: var(--ga-overlay-dark);
     z-index: var(--ga-z-palette);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
@@ -34,6 +34,7 @@
     padding: 12px 16px;
     gap: 12px;
     flex-shrink: 0;
+    border-bottom: 1px solid var(--ga-border);  /* separator between search and results */
 }
 
 .cmd-search-icon {
@@ -78,11 +79,14 @@
 
 .cmd-item:hover,
 .cmd-item--active {
-    background: var(--mud-palette-action-default-hover);
+    background: rgba(11,95,255,.10);  /* stronger highlight */
 }
 
 .cmd-item--active {
     color: var(--mud-palette-primary);
+    border-left: 3px solid var(--ga-primary);
+    padding-left: 13px;
+    font-weight: 600;  /* bold label = unambiguous selection */
 }
 
 .cmd-item--empty {

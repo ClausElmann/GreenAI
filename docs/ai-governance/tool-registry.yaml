@@ -335,6 +335,44 @@ execution_rules:
 
 ---
 
+# ── UI Auto-Fix ───────────────────────────────────────────────────────────────
+
+ui_auto_fix:
+  description: >
+    Runs full UI quality loop: executes E2E tests with quality gates,
+    generates failures, applies deterministic fixes, and re-runs tests
+    until all gates pass or max 3 iterations is reached.
+  triggers:
+    - "fix ui"
+    - "run ui autofix"
+    - "repair ui"
+    - "ui broken"
+    - "visual issues"
+    - "accessibility issues"
+    - "color contrast"
+    - "touch target"
+  inputs:
+    - "TestResults/Visual/ui-failures.json (optional — auto-generated if missing)"
+  execution:
+    type: protocol
+    path: "docs/SSOT/testing/ui-auto-fix-protocol.md"
+    script: "scripts/run-ui-autofix.ps1"
+  env:
+    GREENAI_ACCESSIBILITY_GATES: "true"
+    GREENAI_VISUAL_HEADLESS: "true"
+  constraints:
+    - no redesign
+    - no architecture changes
+    - no inline style attributes on Razor elements
+    - max 3 iterations
+  output:
+    - files_modified
+    - fixes_applied
+    - remaining_failures
+    - iteration_count
+
+---
+
 # ── References ────────────────────────────────────────────────────────────────
 
 references:

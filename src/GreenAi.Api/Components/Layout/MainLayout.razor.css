@@ -15,9 +15,9 @@
 #blazor-error-ui {
     color-scheme: light only;
     background: var(--ga-warning);
-    color: #FFFFFF;
+    color: var(--ga-primary-contrast);
     bottom: 0;
-    box-shadow: 0 -2px 8px rgba(0,0,0,.15);
+    box-shadow: var(--ga-shadow-overlay);
     box-sizing: border-box;
     display: none;
     left: 0;

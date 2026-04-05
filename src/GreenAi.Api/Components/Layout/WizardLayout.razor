@@ -10,6 +10,25 @@
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
+@* Override MudBlazor default palette — see MainLayout.razor for explanation. *@
+<style id="greenai-palette-override">
+    :root {
+        --mud-palette-primary:              #0B5FFF;
+        --mud-palette-primary-text:         #FFFFFF;
+        --mud-palette-secondary:            #4B5B6B;
+        --mud-palette-secondary-text:       #FFFFFF;
+        --mud-palette-text-secondary:       #4B5B6B;
+        --mud-palette-text-disabled:        #9AA0A6;
+        --mud-palette-surface:              #FFFFFF;
+        --mud-palette-background:           #F7F9FC;
+        --mud-palette-error:                #B42318;
+        --mud-palette-error-text:           #FFFFFF;
+        --mud-palette-warning:              #A15C00;
+        --mud-palette-warning-text:         #FFFFFF;
+        --mud-palette-success:              #117A37;
+        --mud-palette-success-text:         #FFFFFF;
+    }
+</style>
 
 <MudLayout>
     <MudAppBar Elevation="1" Dense="true" data-testid="wizard-app-bar">

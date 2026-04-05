@@ -5,9 +5,7 @@
 <AppShell Title="@Loc.Get("page.broadcasting.Title")" IsLoading="false">
 
     @* ── 1. Send methods icon-grid ──────────────────────────────────────────── *@
-    <MudText Typo="Typo.overline" Color="Color.Secondary" Class="mb-2 d-block">
-        @Loc.Get("page.broadcasting.SendMethodsTitle")
-    </MudText>
+    <div class="ga-section-label">@Loc.Get("page.broadcasting.SendMethodsTitle")</div>
     <MudGrid Spacing="2" Class="mb-5" data-testid="send-methods-grid">
         @foreach (var m in _sendMethods)
         {
@@ -146,9 +144,7 @@
     </MudGrid>
 
     @* ── 3. Recent status panels ─────────────────────────────────────────────── *@
-    <MudText Typo="Typo.overline" Color="Color.Secondary" Class="mb-2 d-block">
-        @Loc.Get("page.broadcasting.RecentTitle")
-    </MudText>
+    <div class="ga-section-label">@Loc.Get("page.broadcasting.RecentTitle")</div>
     <MudGrid Spacing="3" data-testid="recent-panels">
 
         @* Sent panel *@
