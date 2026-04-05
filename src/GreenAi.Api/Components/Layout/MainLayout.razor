@@ -22,9 +22,16 @@
     <CommandPalette />
 
     <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pt-6 pb-6">
-            @Body
-        </MudContainer>
+        <div class="main-content-inner">
+            @* Guard: body only renders after EnsureLoadedAsync completes.
+               Raw label keys never appear in the DOM — all Loc.Get() calls return
+               translated values on first body render. Tests that wait for any
+               page element implicitly confirm labels are loaded. *@
+            @if (_labelsReady)
+            {
+                @Body
+            }
+        </div>
     </MudMainContent>
 </MudLayout>
 
@@ -37,11 +44,16 @@
 @code {
     [CascadingParameter] private Task<AuthenticationState> AuthStateTask { get; set; } = null!;
 
+    private bool _labelsReady;
+
     protected override async Task OnInitializedAsync()
     {
-        // Load labels always — fallback to Danish (1) for unauthenticated users
+        // Load labels always — fallback to Danish (1) for unauthenticated users.
+        // _labelsReady is set AFTER the await so @Body only renders once labels
+        // are in the dictionary. Raw keys never appear in the DOM.
         var languageId = CurrentUser.IsAuthenticated ? CurrentUser.LanguageId : 1;
         await Loc.EnsureLoadedAsync(languageId);
+        _labelsReady = true;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

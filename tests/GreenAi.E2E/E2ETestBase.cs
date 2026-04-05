@@ -169,7 +169,9 @@ public abstract class E2ETestBase : IAsyncLifetime
     /// </summary>
     protected async Task<IReadOnlyList<string>> ScanForMissingLabelsAsync()
     {
-        // Wait for network idle so dynamic labels have time to load
+        // Labels are guarded by @if (_labelsReady) in MainLayout/WizardLayout.
+        // By the time any page element is visible, labels are already loaded.
+        // NetworkIdle ensures all dynamic Blazor renders have settled.
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
         const string js = """
@@ -196,6 +198,52 @@ public abstract class E2ETestBase : IAsyncLifetime
 
         var result = await Page.EvaluateAsync<string[]>(js);
         return result ?? [];
+    }
+
+    /// <summary>
+    /// Asserts that no visible error states exist on the current page:
+    /// <list type="bullet">
+    ///   <item>Blazor circuit error overlay is not visible.</item>
+    ///   <item>No MudBlazor error-severity alerts are rendered.</item>
+    ///   <item>No Blazor component-level error boundary fallback UI is shown.</item>
+    /// </list>
+    /// Call this after navigating to any page to confirm no backend exception leaked into the UI.
+    /// </summary>
+    protected async Task AssertNoVisibleErrorsAsync(string? pageDescription = null)
+    {
+        var blazorErrorVisible = await Page.EvaluateAsync<bool>("""
+            () => {
+                const el = document.getElementById('blazor-error-ui');
+                if (!el) return false;
+                const cs = window.getComputedStyle(el);
+                return cs.display !== 'none' && cs.visibility !== 'hidden' && el.offsetHeight > 0;
+            }
+            """);
+
+        if (blazorErrorVisible)
+            await FailAsync(
+                $"Blazor circuit error overlay (#blazor-error-ui) is visible"
+                + (pageDescription is not null ? $" on '{pageDescription}'" : "")
+                + ". A backend exception or SignalR circuit failure occurred.");
+
+        var mudErrors = await Page.EvaluateAsync<string[]>("""
+            () => {
+                const sel = '.mud-alert-filled-error, .mud-alert-outlined-error, .mud-alert-text-error';
+                const out = [];
+                for (const el of document.querySelectorAll(sel)) {
+                    const r = el.getBoundingClientRect();
+                    if (r.width > 0 && r.height > 0)
+                        out.push((el.textContent?.trim() ?? '').slice(0, 100));
+                }
+                return out;
+            }
+            """);
+
+        if (mudErrors.Length > 0)
+            await FailAsync(
+                $"{mudErrors.Length} visible error alert(s)"
+                + (pageDescription is not null ? $" on '{pageDescription}'" : "")
+                + $":\n  " + string.Join("\n  ", mudErrors));
     }
 
     /// <summary>

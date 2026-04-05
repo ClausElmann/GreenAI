@@ -23,6 +23,23 @@
 
     <MudSpacer />
 
+    @* Right: Send shortcut (primary CTA — hidden on mobile, full button on desktop) *@
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary"
+               Size="Size.Small"
+               StartIcon="@Icons.Material.Filled.Send"
+               Href="/send/wizard"
+               Class="mr-2 d-none d-sm-flex"
+               data-testid="top-bar-send-button">
+        @Loc.Get("nav.Send")
+    </MudButton>
+    <MudIconButton Icon="@Icons.Material.Filled.Send"
+                   Color="Color.Inherit"
+                   Href="/send/wizard"
+                   Class="mr-1 d-flex d-sm-none"
+                   data-testid="top-bar-send-icon"
+                   aria-label="@Loc.Get("nav.Send")" />
+
     @* Right: Active context (profile + customer) *@
     @if (AppState.ActiveProfileName is not null)
     {
@@ -41,11 +58,11 @@
         }
     }
 
-    @* Right: User identity *@
+    @* Right: User identity (hidden on mobile — too wide for small viewports) *@
     <AuthorizeView>
         <Authorized>
             <MudText Typo="Typo.body2"
-                     Class="mr-2"
+                     Class="mr-2 d-none d-md-inline"
                      data-testid="top-bar-user-email">
                 @context.User.Identity?.Name
             </MudText>

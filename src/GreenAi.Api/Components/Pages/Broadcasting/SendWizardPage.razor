@@ -5,12 +5,50 @@
 @inject NavigationManager Nav
 @inject ILocalizationContext Loc
 
-<MudText Typo="Typo.h5" Class="mb-4" data-testid="wizard-heading">
-    @Loc.Get("nav.Send")
+@* ── Step indicator ────────────────────────────────────────────────────────── *@
+<div class="wizard-step-row" data-testid="wizard-step-indicator">
+    <div class="wizard-step wizard-step--active" data-testid="wizard-step-1">
+        <span class="wizard-step-num">1</span>
+        <span class="wizard-step-label">@Loc.Get("page.wizard.Step1")</span>
+    </div>
+    <div class="wizard-step-connector"></div>
+    <div class="wizard-step wizard-step--pending" data-testid="wizard-step-2">
+        <span class="wizard-step-num">2</span>
+        <span class="wizard-step-label">@Loc.Get("page.wizard.Step2")</span>
+    </div>
+    <div class="wizard-step-connector"></div>
+    <div class="wizard-step wizard-step--pending" data-testid="wizard-step-3">
+        <span class="wizard-step-num">3</span>
+        <span class="wizard-step-label">@Loc.Get("page.wizard.Step3")</span>
+    </div>
+</div>
+
+<MudDivider Class="my-4" />
+
+@* ── Step content (placeholder until steps are implemented) ──────────────── *@
+<MudText Typo="Typo.h5" Class="mb-2" data-testid="wizard-heading">
+    @Loc.Get("page.wizard.Step1") — @Loc.Get("nav.Send")
 </MudText>
 <MudText Typo="Typo.body2" Color="Color.Secondary" data-testid="wizard-placeholder">
     @Loc.Get("page.wizard.Placeholder")
 </MudText>
+
+@* ── Navigation footer ────────────────────────────────────────────────────── *@
+<div class="wizard-footer" data-testid="wizard-footer">
+    <MudButton Variant="Variant.Outlined"
+               Color="Color.Default"
+               Href="/dashboard"
+               data-testid="wizard-cancel">
+        @Loc.Get("shared.Cancel")
+    </MudButton>
+    <MudSpacer />
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary"
+               Disabled="true"
+               data-testid="wizard-next">
+        @Loc.Get("page.wizard.Next") →
+    </MudButton>
+</div>
 
 @code {
     [CascadingParameter] private Task<AuthenticationState> AuthStateTask { get; set; } = null!;

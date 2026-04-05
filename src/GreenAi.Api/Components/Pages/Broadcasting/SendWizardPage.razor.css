@@ -1,0 +1,81 @@
+/* Wizard step indicator row */
+.wizard-step-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 0;
+}
+
+.wizard-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex: 0 0 auto;
+}
+
+.wizard-step-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.875rem;
+    background: var(--mud-palette-action-disabled-background);
+    color: var(--mud-palette-text-disabled);
+    border: 2px solid var(--mud-palette-action-disabled-background);
+    transition: background 200ms, color 200ms;
+}
+
+.wizard-step--active .wizard-step-num {
+    background: var(--mud-palette-primary);
+    color: var(--mud-palette-primary-text);
+    border-color: var(--mud-palette-primary);
+}
+
+.wizard-step--done .wizard-step-num {
+    background: var(--mud-palette-success);
+    color: #fff;
+    border-color: var(--mud-palette-success);
+}
+
+.wizard-step-label {
+    font-size: 0.7rem;
+    color: var(--mud-palette-text-secondary);
+    white-space: nowrap;
+}
+
+.wizard-step--active .wizard-step-label {
+    color: var(--mud-palette-primary);
+    font-weight: 600;
+}
+
+.wizard-step-connector {
+    flex: 1;
+    height: 2px;
+    background: var(--mud-palette-divider);
+    margin: 0 8px;
+    margin-bottom: 20px; /* align with num circle center (32/2 + gap 4 + label ~14) */
+}
+
+/* Navigation footer — fixed to bottom of wizard container */
+.wizard-footer {
+    display: flex;
+    align-items: center;
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid var(--mud-palette-divider);
+}
+
+@media (max-width: 599px) {
+    .wizard-step-label {
+        font-size: 0.65rem;
+    }
+    .wizard-step-num {
+        width: 28px;
+        height: 28px;
+        font-size: 0.8rem;
+    }
+}

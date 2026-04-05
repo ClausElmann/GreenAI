@@ -25,11 +25,12 @@ public sealed class JwtTokenService
 
         var claims = new[]
         {
-            new Claim(ClaimTypes.NameIdentifier, userId.Value.ToString()),
+            new Claim(GreenAiClaims.Sub,        userId.Value.ToString()),
+            new Claim(GreenAiClaims.Name,       email),  // Identity.Name → email until profile names land
+            new Claim(GreenAiClaims.Email,      email),
             new Claim(GreenAiClaims.CustomerId, customerId.Value.ToString()),
-            new Claim(GreenAiClaims.ProfileId, profileId.Value.ToString()),
+            new Claim(GreenAiClaims.ProfileId,  profileId.Value.ToString()),
             new Claim(GreenAiClaims.LanguageId, languageId.ToString()),
-            new Claim(ClaimTypes.Email, email),
         };
 
         var token = new JwtSecurityToken(
@@ -65,6 +66,8 @@ public sealed class JwtTokenService
         try
         {
             var handler = new JwtSecurityTokenHandler { MapInboundClaims = false };
+            // NameClaimType = GreenAiClaims.Name so Identity.Name returns the display-name claim.
+            parameters.NameClaimType = GreenAiClaims.Name;
             var principal = handler.ValidateToken(token, parameters, out _);
             return principal;
         }

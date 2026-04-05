@@ -19,15 +19,24 @@
 
     <MudMainContent>
         <MudContainer MaxWidth="MaxWidth.Medium" Class="pt-8 pb-8">
-            @Body
+            @* Guard: body only renders after labels are loaded — no raw keys ever visible *@
+            @if (_labelsReady)
+            {
+                @Body
+            }
         </MudContainer>
     </MudMainContent>
 </MudLayout>
 
 @code {
+    private bool _labelsReady;
+
     protected override async Task OnInitializedAsync()
     {
         var languageId = CurrentUser.IsAuthenticated ? CurrentUser.LanguageId : 1;
         await Loc.EnsureLoadedAsync(languageId);
+        _labelsReady = true;
     }
+
+    // OnAfterRenderAsync not needed — labels are guarded by @if (_labelsReady) on @Body
 }

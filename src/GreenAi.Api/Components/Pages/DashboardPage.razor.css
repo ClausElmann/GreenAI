@@ -1,0 +1,35 @@
+/* Dashboard quick-action row */
+.dashboard-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+/* Section labels (overline) — subtle dividers between sections */
+.dashboard-section-label {
+    display: block;
+    margin-bottom: 4px;
+    letter-spacing: 0.08em;
+    font-size: 0.68rem;
+}
+
+/* Metric cards — uniform height, minimal padding */
+.dashboard-metric-card {
+    height: 100%;
+}
+
+.metric-icon-row {
+    display: flex;
+    align-items: center;
+}
+
+.metric-value {
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+/* Activity list placeholder row */
+.dashboard-activity-placeholder {
+    border-bottom: 1px solid var(--mud-palette-divider);
+}

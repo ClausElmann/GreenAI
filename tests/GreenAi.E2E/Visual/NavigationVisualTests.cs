@@ -198,6 +198,7 @@ public sealed class NavigationVisualTests : VisualTestBase
             var mobileProfile = new DeviceProfile("Mobile", 390, 844, IsMobile: true);
             await AssertNoHorizontalOverflowAsync(page, mobileProfile);
             await AssertTopBarNotClippingContentAsync(page, mobileProfile);
+            await AssertNoVisibleErrorsAsync(page, mobileProfile);
             await CaptureAsync(page, mobileProfile, "resize_after");
         }
         finally
@@ -228,5 +229,109 @@ public sealed class NavigationVisualTests : VisualTestBase
             await AssertNavigationUsableAsync(page, device);
             await AssertNoTextOverflowAsync(page, device);
             await CaptureAsync(page, device, "user-profile");
+        });
+
+    // ── TopBar identity ───────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Verifies that the authenticated user's email is displayed in the top bar
+    /// after login, on all device sizes.
+    /// </summary>
+    [Fact]
+    public Task TopBar_ShowsUserEmail_WhenAuthenticated()
+        => ForEachDeviceAsync(async (page, device) =>
+        {
+            // Email is hidden via CSS on mobile (d-none d-md-inline) — too wide for small viewports.
+            if (device.IsMobile) return;
+
+            await LoginAsync(page);
+            // Wait for the shell to render and Blazor circuit to resolve auth state
+            // before checking AuthorizeView-gated elements (top-bar-user-email).
+            await page.WaitForSelectorAsync("[data-testid='top-bar']",               new() { Timeout = 15_000 });
+            await page.WaitForSelectorAsync("[data-testid='dashboard-placeholder']", new() { Timeout = 10_000 });
+            await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+            await page.WaitForSelectorAsync("[data-testid='top-bar-user-email']", new() { Timeout = 10_000 });
+            var email = (await page.InnerTextAsync("[data-testid='top-bar-user-email']")).Trim();
+            if (string.IsNullOrWhiteSpace(email) || !email.Contains('@'))
+                throw new Exception(
+                    $"[{device.Name}] TopBar user-email element is empty or not an email address: '{email}'");
+        });
+
+    // ── OverlayNav backdrop ───────────────────────────────────────────────────
+
+    /// <summary>
+    /// Clicking the backdrop (outside the panel) closes the overlay navigation.
+    /// Skipped on Mobile because the panel covers the full viewport leaving no
+    /// exposed backdrop area to click — use the close button on those viewports.
+    /// </summary>
+    [Fact]
+    public Task OverlayNav_BackdropClick_Closes_NonMobile()
+        => ForEachDeviceAsync(async (page, device) =>
+        {
+            if (device.IsMobile) return; // backdrop unreachable when panel fills viewport
+
+            await LoginAsync(page);
+            await page.WaitForSelectorAsync("[data-testid='top-bar-nav-toggle']", new() { Timeout = 15_000 });
+
+            await page.ClickAsync("[data-testid='top-bar-nav-toggle']");
+            await page.WaitForSelectorAsync("[data-testid='overlay-nav-panel']", new() { Timeout = 8_000 });
+
+            // Click the backdrop element directly
+            await page.ClickAsync("[data-testid='overlay-nav-backdrop']");
+            await page.WaitForSelectorAsync("[data-testid='overlay-nav-panel']",
+                new() { State = WaitForSelectorState.Hidden, Timeout = 5_000 });
+        });
+
+    // ── OverlayNav link navigation ────────────────────────────────────────────
+
+    /// <summary>
+    /// Clicking a nav link inside the overlay navigates to the correct route and
+    /// automatically closes the overlay (OnClick="AppState.CloseOverlayNav").
+    /// Tested on all device sizes.
+    /// </summary>
+    [Fact]
+    public Task OverlayNav_NavLinks_NavigateCorrectly()
+        => ForEachDeviceAsync(async (page, device) =>
+        {
+            await LoginAsync(page);
+            await page.WaitForSelectorAsync("[data-testid='top-bar-nav-toggle']", new() { Timeout = 15_000 });
+
+            // Open panel
+            await page.ClickAsync("[data-testid='top-bar-nav-toggle']");
+            await page.WaitForSelectorAsync("[data-testid='overlay-nav-panel']", new() { Timeout = 8_000 });
+
+            // Click the user-profile link
+            await page.ClickAsync("[data-testid='nav-user-profile']");
+
+            // Panel must close automatically (the nav link has OnClick=CloseOverlayNav)
+            await page.WaitForSelectorAsync("[data-testid='overlay-nav-panel']",
+                new() { State = WaitForSelectorState.Hidden, Timeout = 5_000 });
+
+            // URL must reflect the navigated route
+            await page.WaitForURLAsync("**/user/profile", new() { Timeout = 8_000 });
+        });
+
+    // ── WizardLayout ──────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// The Send-wizard page uses WizardLayout (minimal shell, no OverlayNav).
+    /// Verifies the wizard app-bar and page heading are present and the layout
+    /// has no overflow on all device sizes.
+    /// </summary>
+    [Fact]
+    public Task WizardLayout_IsAccessible_AllDevices()
+        => ForEachDeviceAsync(async (page, device) =>
+        {
+            await LoginAsync(page);
+            await page.GotoAsync($"{BaseUrl}/send/wizard");
+            await page.WaitForSelectorAsync("[data-testid='wizard-app-bar']",       new() { Timeout = 15_000 });
+            await page.WaitForSelectorAsync("[data-testid='wizard-step-indicator']", new() { Timeout = 10_000 });
+            await page.WaitForSelectorAsync("[data-testid='wizard-heading']",        new() { Timeout = 10_000 });
+            await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+            await AssertNoHorizontalOverflowAsync(page, device);
+            await AssertNoTextOverflowAsync(page, device);
+            await CaptureAsync(page, device, "wizard-layout");
         });
 }

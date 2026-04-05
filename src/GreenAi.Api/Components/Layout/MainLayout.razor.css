@@ -8,6 +8,20 @@ main {
     flex: 1;
 }
 
+/* Full-width content wrapper — replaces MudContainer MaxWidth.ExtraLarge.
+   Gives consistent padding without capping content width. */
+.main-content-inner {
+    padding: 16px 20px 24px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+    .main-content-inner {
+        padding: 12px 12px 20px;
+    }
+}
+
 .sidebar {
     background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
 }

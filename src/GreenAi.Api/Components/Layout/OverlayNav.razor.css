@@ -1,7 +1,7 @@
 .overlay-nav-backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.45);
+    background: rgba(0, 0, 0, 0.65);
     z-index: 1299;
 }
 
@@ -29,7 +29,21 @@
 }
 
 .overlay-nav-section {
-    padding: 4px 0;
+    padding: 2px 0;
+}
+
+/* Tighter item height — MudNavLink renders as .mud-nav-link */
+::deep .overlay-nav-section .mud-nav-link {
+    min-height: 40px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    line-height: 1.3;
+}
+
+@media (max-width: 599px) {
+    ::deep .overlay-nav-section .mud-nav-link {
+        min-height: 44px; /* slightly taller for touch, but still compact */
+    }
 }
 
 /* Active route highlight — MudNavLink applies .mud-nav-link-active on match */

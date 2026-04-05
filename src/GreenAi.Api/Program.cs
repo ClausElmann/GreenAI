@@ -139,6 +139,9 @@ try
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
         {
+            // MapInboundClaims = false: keep short claim names ("sub", "email", etc.)
+            // instead of remapping to long ClaimTypes.* URIs.
+            options.MapInboundClaims = false;
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
@@ -148,7 +151,9 @@ try
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey)),
                 ValidateLifetime = true,
-                ClockSkew = TimeSpan.Zero
+                ClockSkew = TimeSpan.Zero,
+                // NameClaimType = "name" so Identity.Name resolves the GreenAiClaims.Name claim.
+                NameClaimType = GreenAiClaims.Name,
             };
         });
     builder.Services.AddAuthorization();

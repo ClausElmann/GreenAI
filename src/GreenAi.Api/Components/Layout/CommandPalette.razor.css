@@ -3,8 +3,10 @@
 .cmd-backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.50);
+    background: rgba(0, 0, 0, 0.65);
     z-index: 1500;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
 }
 
 .cmd-panel {
@@ -15,8 +17,9 @@
     width: min(600px, 92vw);
     max-height: 480px;
     background: var(--mud-palette-surface);
-    border-radius: 8px;
-    box-shadow: var(--mud-elevation-16);
+    border-radius: 10px;
+    box-shadow: var(--mud-elevation-16), 0 0 0 1px rgba(0,0,0,0.12);
+    border: 1px solid var(--mud-palette-divider);
     z-index: 1501;
     display: flex;
     flex-direction: column;

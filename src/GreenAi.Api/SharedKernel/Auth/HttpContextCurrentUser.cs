@@ -43,7 +43,7 @@ public sealed class HttpContextCurrentUser : ICurrentUser
 
     public UserId UserId =>
         new(int.Parse(
-            AuthenticatedPrincipal.FindFirstValue(ClaimTypes.NameIdentifier)
+            AuthenticatedPrincipal.FindFirstValue(GreenAiClaims.Sub)
             ?? throw new InvalidOperationException("UserId claim is missing from the authenticated principal.")));
 
     public CustomerId CustomerId =>
@@ -62,7 +62,7 @@ public sealed class HttpContextCurrentUser : ICurrentUser
             ?? throw new InvalidOperationException("LanguageId claim is missing from the authenticated principal."));
 
     public string Email =>
-        AuthenticatedPrincipal.FindFirstValue(ClaimTypes.Email)
+        AuthenticatedPrincipal.FindFirstValue(GreenAiClaims.Email)
         ?? throw new InvalidOperationException("Email claim is missing from the authenticated principal.");
 
     public bool IsImpersonating =>

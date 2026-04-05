@@ -43,6 +43,7 @@ public sealed class CustomerAdminE2ETests : E2ETestBase
         var heading = Page.Locator("[data-testid='page-title']");
         Assert.Equal("Kundestyre", await heading.InnerTextAsync());
 
+        await AssertNoVisibleErrorsAsync("CustomerAdmin page");
         await AssertNoMissingLabelsAsync("CustomerAdmin page");
     }
 
@@ -67,6 +68,7 @@ public sealed class CustomerAdminE2ETests : E2ETestBase
         await LoginAsync();
         await Page.GotoAsync($"{BaseUrl}/customer-admin");
         await WaitOrFailAsync("[data-testid='customer-admin-heading']", timeoutMs: 20_000);
+        await AssertNoVisibleErrorsAsync("CustomerAdmin / Settings tab");
         await AssertNoMissingLabelsAsync("CustomerAdmin / Settings tab");
     }
 
@@ -78,6 +80,7 @@ public sealed class CustomerAdminE2ETests : E2ETestBase
         await WaitOrFailAsync("[data-testid='customer-admin-heading']", timeoutMs: 20_000);
         await Page.ClickAsync("text=Brugere");
         await WaitOrFailAsync("[data-testid='user-table']", timeoutMs: 10_000);
+        await AssertNoVisibleErrorsAsync("CustomerAdmin / Users tab");
         await AssertNoMissingLabelsAsync("CustomerAdmin / Users tab");
     }
 
@@ -89,6 +92,7 @@ public sealed class CustomerAdminE2ETests : E2ETestBase
         await WaitOrFailAsync("[data-testid='customer-admin-heading']", timeoutMs: 20_000);
         await Page.ClickAsync("text=Profiler");
         await WaitOrFailAsync("[data-testid='profile-table']", timeoutMs: 10_000);
+        await AssertNoVisibleErrorsAsync("CustomerAdmin / Profiles tab");
         await AssertNoMissingLabelsAsync("CustomerAdmin / Profiles tab");
     }
 

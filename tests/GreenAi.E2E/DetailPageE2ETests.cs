@@ -148,6 +148,7 @@ public sealed class DetailPageE2ETests : E2ETestBase
         await WaitOrFailAsync("[data-testid='profile-table'] a", timeoutMs: 10_000);
         await Page.ClickAsync("[data-testid='profile-table'] a");
         await WaitOrFailAsync("[data-testid='profile-save']", timeoutMs: 15_000);
+        await AssertNoVisibleErrorsAsync("ProfileDetail page");
         await AssertNoMissingLabelsAsync("ProfileDetail page");
     }
 
@@ -161,6 +162,7 @@ public sealed class DetailPageE2ETests : E2ETestBase
         await WaitOrFailAsync("[data-testid='user-table'] a", timeoutMs: 10_000);
         await Page.ClickAsync("[data-testid='user-table'] a");
         await WaitOrFailAsync(".mud-breadcrumbs", timeoutMs: 15_000);
+        await AssertNoVisibleErrorsAsync("UserDetail page");
         await AssertNoMissingLabelsAsync("UserDetail page");
     }
 }

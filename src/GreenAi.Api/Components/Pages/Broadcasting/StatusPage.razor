@@ -1,0 +1,30 @@
+@page "/status"
+@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager Nav
+@inject ILocalizationContext Loc
+@inject BlazorPrincipalHolder PrincipalHolder
+
+<AppShell Title="@Loc.Get("nav.Status")" IsLoading="false">
+
+    <MudText Typo="Typo.body1"
+             Color="Color.Secondary"
+             Class="mt-2"
+             data-testid="status-page-placeholder">
+        @Loc.Get("page.status.Placeholder")
+    </MudText>
+
+</AppShell>
+
+@code {
+    [CascadingParameter] private Task<AuthenticationState> AuthStateTask { get; set; } = null!;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        var authState = await AuthStateTask;
+        if (authState.User.Identity?.IsAuthenticated != true)
+            Nav.NavigateTo("/login");
+        else
+            PrincipalHolder.Set(authState.User);
+    }
+}

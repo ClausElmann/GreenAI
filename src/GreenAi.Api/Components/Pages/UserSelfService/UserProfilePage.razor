@@ -8,33 +8,45 @@
 @inject ILocalizationContext Loc
 
 <AppShell Title="@Loc.Get("feature.userProfile.Title")"
-          IsLoading="_loading"
-          ErrorMessage="_errorMessage">
+          IsLoading="@_loading"
+          ErrorMessage="@_errorMessage">
 
-    <MudGrid>
+    <MudGrid Class="px-2 px-sm-0" Spacing="3">
+
+        @* Row 1: Display name (desktop: col 1 of 2) *@
         <MudItem xs="12" sm="6">
             <MudTextField @bind-Value="_displayName"
                           Label="@Loc.Get("feature.userProfile.DisplayNameLabel")"
                           Variant="Variant.Outlined"
+                          Class="mb-sm-0 mb-2"
                           data-testid="display-name-input" />
         </MudItem>
+
+        @* Row 1 col 2 on desktop — placeholder for future fields (e.g. language) *@
+        <MudItem xs="12" sm="6" Class="d-none d-sm-block" />
+
+        @* Save row — full width but constrained to match form *@
+        <MudItem xs="12">
+            <MudStack Row="true" Spacing="2">
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           OnClick="SaveAsync"
+                           data-testid="save-profile-button">
+                    @Loc.Get("feature.userProfile.SaveButton")
+                </MudButton>
+            </MudStack>
+        </MudItem>
+
+        @if (_saveSuccess)
+        {
+            <MudItem xs="12" sm="6">
+                <MudAlert Severity="Severity.Success" data-testid="save-success-alert">
+                    @Loc.Get("feature.userProfile.SaveSuccess")
+                </MudAlert>
+            </MudItem>
+        }
+
     </MudGrid>
-
-    <MudStack Row="true" Spacing="2" Class="mt-4">
-        <MudButton Variant="Variant.Filled"
-                   Color="Color.Primary"
-                   OnClick="SaveAsync"
-                   data-testid="save-profile-button">
-            @Loc.Get("feature.userProfile.SaveButton")
-        </MudButton>
-    </MudStack>
-
-    @if (_saveSuccess)
-    {
-        <MudAlert Severity="Severity.Success" Class="mt-4" data-testid="save-success-alert">
-            @Loc.Get("feature.userProfile.SaveSuccess")
-        </MudAlert>
-    }
 
 </AppShell>
 

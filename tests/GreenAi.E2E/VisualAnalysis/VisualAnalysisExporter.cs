@@ -106,6 +106,11 @@ public static class VisualAnalysisExporter
 
             foreach (var file in Directory.GetFiles(deviceDir, "*.png", SearchOption.TopDirectoryOnly))
             {
+                // Exclude failure-state diagnostic screenshots — they capture error conditions,
+                // not valid UI states, and would mislead AI visual analysis.
+                if (Path.GetFileName(file).EndsWith("-error.png", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
                 // Store with device/ prefix so ZIP layout is: desktop/dashboard.png
                 var relativePath = Path.Combine(device, Path.GetFileName(file));
                 results.Add((relativePath, file));

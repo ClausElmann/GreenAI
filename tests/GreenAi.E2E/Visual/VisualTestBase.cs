@@ -89,6 +89,10 @@ public abstract class VisualTestBase : IAsyncLifetime
                 page = await ctx.NewPageAsync();
 
                 await testAction(page, device);
+
+                // Auto-check: test action passed layout assertions — now verify no
+                // backend error UI slipped through (Blazor error overlay, MudAlert errors).
+                await AssertNoVisibleErrorsAsync(page, device);
             }
             catch (Exception ex)
             {
@@ -512,6 +516,69 @@ public abstract class VisualTestBase : IAsyncLifetime
                 $"[{device.Name}] {clipped.Length} text element(s) have overflowing/clipped text:\n" +
                 string.Join("\n", clipped.Take(5)) +
                 (clipped.Length > 5 ? $"\n\u2026and {clipped.Length - 5} more." : ""));
+    }
+
+    /// <summary>
+    /// Asserts that no visible error states exist on the current page:
+    /// <list type="bullet">
+    ///   <item>Blazor circuit error overlay (<c>#blazor-error-ui</c>) is not visible.</item>
+    ///   <item>No MudBlazor error-severity alerts are rendered.</item>
+    ///   <item>No Blazor component-level error boundary is triggered.</item>
+    /// </list>
+    /// Called automatically by <see cref="ForEachDeviceAsync"/> after each test action
+    /// so screenshots are never silently capturing backend error UI.
+    /// </summary>
+    protected async Task AssertNoVisibleErrorsAsync(IPage page, DeviceProfile device)
+    {
+        // 1. Blazor circuit error overlay (appears on unhandled circuit exception)
+        var blazorErrorVisible = await page.EvaluateAsync<bool>("""
+            () => {
+                const el = document.getElementById('blazor-error-ui');
+                if (!el) return false;
+                const cs = window.getComputedStyle(el);
+                return cs.display !== 'none' && cs.visibility !== 'hidden' && el.offsetHeight > 0;
+            }
+            """);
+
+        if (blazorErrorVisible)
+            throw new Exception(
+                $"[{device.Name}] Blazor circuit error overlay (#blazor-error-ui) is visible on {page.Url}. "
+                + "A backend exception or SignalR circuit failure occurred.");
+
+        // 2. Visible MudBlazor error alerts (Severity.Error)
+        var mudErrors = await page.EvaluateAsync<string[]>("""
+            () => {
+                const sel = '.mud-alert-filled-error, .mud-alert-outlined-error, .mud-alert-text-error';
+                const out = [];
+                for (const el of document.querySelectorAll(sel)) {
+                    const r = el.getBoundingClientRect();
+                    if (r.width > 0 && r.height > 0)
+                        out.push((el.textContent?.trim() ?? '').slice(0, 100));
+                }
+                return out;
+            }
+            """);
+
+        if (mudErrors.Length > 0)
+            throw new Exception(
+                $"[{device.Name}] {mudErrors.Length} visible error alert(s) on {page.Url}:\n"
+                + string.Join("\n", mudErrors.Select(m => $"  • {m}")));
+
+        // 3. Blazor component-level error boundary (renders fallback UI on component exceptions)
+        var errorBoundaryVisible = await page.EvaluateAsync<bool>("""
+            () => {
+                for (const el of document.querySelectorAll('[data-blazor-error-boundary]')) {
+                    const r = el.getBoundingClientRect();
+                    if (r.width > 0 && r.height > 0) return true;
+                }
+                return false;
+            }
+            """);
+
+        if (errorBoundaryVisible)
+            throw new Exception(
+                $"[{device.Name}] A Blazor error boundary is displaying fallback UI on {page.Url}. "
+                + "Check server logs for the component exception.");
     }
 
     private static string Sanitize(string name) =>

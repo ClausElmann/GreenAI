@@ -42,11 +42,12 @@ public static class TestJwtHelper
 
         var claims = new[]
         {
-            new Claim(ClaimTypes.NameIdentifier, userId.Value.ToString()),
-            new Claim(GreenAiClaims.CustomerId,  customerId.Value.ToString()),
-            new Claim(GreenAiClaims.ProfileId,   profileId.Value.ToString()),
-            new Claim(GreenAiClaims.LanguageId,  languageId.ToString()),
-            new Claim(ClaimTypes.Email,          email),
+            new Claim(GreenAiClaims.Sub,        userId.Value.ToString()),
+            new Claim(GreenAiClaims.Name,       email),
+            new Claim(GreenAiClaims.Email,      email),
+            new Claim(GreenAiClaims.CustomerId, customerId.Value.ToString()),
+            new Claim(GreenAiClaims.ProfileId,  profileId.Value.ToString()),
+            new Claim(GreenAiClaims.LanguageId, languageId.ToString()),
         };
 
         var tokenDescriptor = new JwtSecurityToken(

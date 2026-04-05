@@ -3,12 +3,127 @@
 @inject NavigationManager Nav
 @inject ILocalizationContext Loc
 
-<AppShell Title="@Loc.Get("nav.Home")"
-          IsLoading="false">
+<AppShell Title="@Loc.Get("nav.Home")" IsLoading="false">
 
-    <MudText Typo="Typo.body1" Color="Color.Secondary" data-testid="dashboard-placeholder">
-        @Loc.Get("page.dashboard.Placeholder")
-    </MudText>
+    @* ── Quick actions ────────────────────────────────────────────────────── *@
+    <MudGrid Spacing="2" Class="mb-2" data-testid="dashboard-placeholder">
+        <MudItem xs="12">
+            <MudText Typo="Typo.overline" Class="mud-text-secondary dashboard-section-label">@Loc.Get("dashboard.QuickActions")</MudText>
+            <div class="dashboard-actions">
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           StartIcon="@Icons.Material.Filled.Send"
+                           Href="/send/wizard"
+                           data-testid="dashboard-action-send">
+                    @Loc.Get("nav.Send")
+                </MudButton>
+                <MudButton Variant="Variant.Outlined"
+                           Color="Color.Default"
+                           StartIcon="@Icons.Material.Filled.CheckCircle"
+                           Href="/status"
+                           data-testid="dashboard-action-status">
+                    @Loc.Get("nav.Status")
+                </MudButton>
+                <MudButton Variant="Variant.Outlined"
+                           Color="Color.Default"
+                           StartIcon="@Icons.Material.Filled.Edit"
+                           Href="/drafts"
+                           data-testid="dashboard-action-drafts">
+                    @Loc.Get("nav.Drafts")
+                </MudButton>
+            </div>
+        </MudItem>
+    </MudGrid>
+
+    @* ── Metrics row ──────────────────────────────────────────────────────── *@
+    <MudGrid Spacing="2" Class="mb-2">
+        <MudItem xs="12">
+            <MudText Typo="Typo.overline" Class="mud-text-secondary dashboard-section-label">@Loc.Get("dashboard.SectionMetrics")</MudText>
+        </MudItem>
+        <MudItem xs="12" sm="6" lg="3">
+            <MudCard Elevation="1" Class="dashboard-metric-card" data-testid="metric-messages-today">
+                <MudCardContent Class="pa-3">
+                    <div class="metric-icon-row">
+                        <MudIcon Icon="@Icons.Material.Filled.Send" Color="Color.Primary" Size="Size.Medium" />
+                        <MudText Typo="Typo.caption" Class="mud-text-secondary ml-1">@Loc.Get("dashboard.MetricMessagesToday")</MudText>
+                    </div>
+                    <MudText Typo="Typo.h4" Class="metric-value mt-1">—</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="6" lg="3">
+            <MudCard Elevation="1" Class="dashboard-metric-card" data-testid="metric-failed">
+                <MudCardContent Class="pa-3">
+                    <div class="metric-icon-row">
+                        <MudIcon Icon="@Icons.Material.Filled.Error" Color="Color.Error" Size="Size.Medium" />
+                        <MudText Typo="Typo.caption" Class="mud-text-secondary ml-1">@Loc.Get("dashboard.MetricFailed")</MudText>
+                    </div>
+                    <MudText Typo="Typo.h4" Class="metric-value mt-1">—</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="6" lg="3">
+            <MudCard Elevation="1" Class="dashboard-metric-card" data-testid="metric-active-profiles">
+                <MudCardContent Class="pa-3">
+                    <div class="metric-icon-row">
+                        <MudIcon Icon="@Icons.Material.Filled.Person" Color="Color.Success" Size="Size.Medium" />
+                        <MudText Typo="Typo.caption" Class="mud-text-secondary ml-1">@Loc.Get("dashboard.MetricActiveProfiles")</MudText>
+                    </div>
+                    <MudText Typo="Typo.h4" Class="metric-value mt-1">—</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="6" lg="3">
+            <MudCard Elevation="1" Class="dashboard-metric-card" data-testid="metric-drafts">
+                <MudCardContent Class="pa-3">
+                    <div class="metric-icon-row">
+                        <MudIcon Icon="@Icons.Material.Filled.Edit" Color="Color.Warning" Size="Size.Medium" />
+                        <MudText Typo="Typo.caption" Class="mud-text-secondary ml-1">@Loc.Get("dashboard.MetricDrafts")</MudText>
+                    </div>
+                    <MudText Typo="Typo.h4" Class="metric-value mt-1">—</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+
+    @* ── Activity + Info ──────────────────────────────────────────────────── *@
+    <MudGrid Spacing="2">
+        <MudItem xs="12">
+            <MudText Typo="Typo.overline" Class="mud-text-secondary dashboard-section-label">@Loc.Get("dashboard.SectionActivity")</MudText>
+        </MudItem>
+        <MudItem xs="12" md="8">
+            <MudCard Elevation="1" data-testid="dashboard-activity">
+                <MudCardHeader Class="pb-0 pt-3 px-3">
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.subtitle1"><b>@Loc.Get("dashboard.RecentActivity")</b></MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent Class="pa-0">
+                    <MudList T="string" Dense="true" Class="pt-0">
+                        <MudListItem Dense="true" Class="px-3 py-2 dashboard-activity-placeholder">
+                            <MudText Typo="Typo.body2" Color="Color.Secondary">@Loc.Get("dashboard.ActivityPlaceholder")</MudText>
+                        </MudListItem>
+                    </MudList>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudCard Elevation="1" data-testid="dashboard-info">
+                <MudCardHeader Class="pb-0 pt-3 px-3">
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.subtitle1"><b>@Loc.Get("dashboard.QuickInfo")</b></MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent Class="pa-3">
+                    <MudText Typo="Typo.body2" Color="Color.Secondary">@Loc.Get("page.home.CustomerAdminDescription")</MudText>
+                    <MudDivider Class="my-3" />
+                    <MudLink Href="/customer-admin" Typo="Typo.body2" data-testid="dashboard-link-customer-admin">
+                        @Loc.Get("shared.BackToCustomerAdmin") →
+                    </MudLink>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
 
 </AppShell>
 
