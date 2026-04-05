@@ -1,7 +1,8 @@
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using Microsoft.Playwright;
 
 namespace GreenAi.E2E;
+
 
 /// <summary>
 /// Base class for all E2E tests. Creates a fresh browser page per test.
@@ -117,43 +118,49 @@ public abstract class E2ETestBase : IAsyncLifetime
     // -------------------------------------------------------------------------
 
     /// <summary>
-    /// Logs in by calling the auth API directly and injecting the JWT into localStorage.
-    /// This is the ONLY reliable way to authenticate in Playwright tests against
-    /// Blazor Server: the UI form requires timing-sensitive SignalR circuit interactions
-    /// that are fragile under test conditions. API login + localStorage injection is
-    /// the recommended Playwright pattern for JS/Blazor auth.
+    /// Injects a cached JWT into the page's localStorage and navigates to /dashboard.
+    /// Tokens are acquired ONCE per test process (see SharedAuth) so this method only
+    /// does a localStorage write + two page navigations — no HTTP call per test.
     /// </summary>
     protected async Task LoginAsync(string email = "claus.elmann@gmail.com", string password = "Flipper12#")
     {
-        // Step 1: Call the auth API to get a real JWT
-        using var http = new HttpClient();
-        var body = System.Text.Json.JsonSerializer.Serialize(new { email, password });
-        var response = await http.PostAsync(
-            $"{BaseUrl}/api/auth/login",
-            new StringContent(body, System.Text.Encoding.UTF8, "application/json"));
+        // Use the cached token for the primary dev account (acquired once per process).
+        // For other accounts we acquire fresh tokens (uncommon in current tests).
+        LoginTokens tokens;
+        if (email == "claus.elmann@gmail.com" && password == "Flipper12#")
+        {
+            tokens = await SharedAuth.PrimaryAsync();
+        }
+        else
+        {
+            using var http = new HttpClient();
+            var body = System.Text.Json.JsonSerializer.Serialize(new { email, password });
+            var response = await http.PostAsync(
+                $"{BaseUrl}/api/auth/login",
+                new StringContent(body, System.Text.Encoding.UTF8, "application/json"));
 
-        if (!response.IsSuccessStatusCode)
-            throw new Exception($"Login API returned {response.StatusCode} for {email}. Check credentials and backend.");
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"Login API returned {response.StatusCode} for {email}. Check credentials and backend.");
 
-        var json = System.Text.Json.JsonDocument.Parse(await response.Content.ReadAsStringAsync()).RootElement;
-        var accessToken  = json.GetProperty("accessToken").GetString()!;
-        var refreshToken = json.GetProperty("refreshToken").GetString()!;
-        var expiresAt    = json.GetProperty("expiresAt").GetString()!;
+            var json = System.Text.Json.JsonDocument.Parse(await response.Content.ReadAsStringAsync()).RootElement;
+            tokens = new LoginTokens(
+                json.GetProperty("accessToken").GetString()!,
+                json.GetProperty("refreshToken").GetString()!,
+                json.GetProperty("expiresAt").GetString()!);
+        }
 
-        // Step 2: Navigate to the app to establish domain context for localStorage
+        // Establish domain context so localStorage write is accepted by the browser
         await Page.GotoAsync($"{BaseUrl}/");
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
-        // Step 3: Inject tokens — keys match GreenAiAuthenticationStateProvider constants
+        // Inject tokens — keys match GreenAiAuthenticationStateProvider constants
         await Page.EvaluateAsync($"""
-            localStorage.setItem('greenai_access_token',  '{accessToken}');
-            localStorage.setItem('greenai_refresh_token', '{refreshToken}');
-            localStorage.setItem('greenai_expires_at',    '{expiresAt}');
+            localStorage.setItem('greenai_access_token',  '{tokens.AccessToken}');
+            localStorage.setItem('greenai_refresh_token', '{tokens.RefreshToken}');
+            localStorage.setItem('greenai_expires_at',    '{tokens.ExpiresAt}');
         """);
 
-        // Step 4: Navigate to /dashboard — NOT /: Home.razor does SSR redirect to /login
-        // before the circuit reads localStorage. Going direct to a protected page is safe
-        // because DashboardPage reads AuthStateTask in OnAfterRenderAsync (circuit side).
+        // Navigate to /dashboard — NOT /: Home.razor SSR-redirects to /login before circuit reads localStorage
         await Page.GotoAsync($"{BaseUrl}/dashboard");
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }

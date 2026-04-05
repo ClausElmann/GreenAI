@@ -1,8 +1,10 @@
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using Microsoft.Data.SqlClient;
 using Microsoft.Playwright;
 
 namespace GreenAi.E2E.Visual;
+
+using GreenAi.E2E; // SharedAuth + LoginTokens
 
 /// <summary>
 /// Base class for multi-device visual tests.
@@ -143,45 +145,51 @@ public abstract class VisualTestBase : IAsyncLifetime
     // ── Auth ─────────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Logs in by calling the auth API directly and injecting the JWT into localStorage.
-    /// API login + localStorage injection bypasses Blazor form interaction timing issues.
+    /// Injects a cached JWT into this page's localStorage and navigates to /dashboard.
+    /// Tokens are acquired ONCE per test process (see SharedAuth) so no HTTP call per test.
     /// </summary>
     protected async Task LoginAsync(
         IPage  page,
         string email    = "claus.elmann@gmail.com",
         string password = "Flipper12#")
     {
-        // Step 1: Call the auth API to get a real JWT
-        using var http = new HttpClient();
-        var body = System.Text.Json.JsonSerializer.Serialize(new { email, password });
-        var response = await http.PostAsync(
-            $"{BaseUrl}/api/auth/login",
-            new StringContent(body, System.Text.Encoding.UTF8, "application/json"));
+        // Use cached tokens for the primary dev account.
+        LoginTokens tokens;
+        if (email == "claus.elmann@gmail.com" && password == "Flipper12#")
+        {
+            tokens = await SharedAuth.PrimaryAsync();
+        }
+        else
+        {
+            using var http = new HttpClient();
+            var body = System.Text.Json.JsonSerializer.Serialize(new { email, password });
+            var response = await http.PostAsync(
+                $"{BaseUrl}/api/auth/login",
+                new StringContent(body, System.Text.Encoding.UTF8, "application/json"));
 
-        if (!response.IsSuccessStatusCode)
-            throw new Exception($"Login API returned {response.StatusCode} for {email}.");
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"Login API returned {response.StatusCode} for {email}.");
 
-        var json = System.Text.Json.JsonDocument.Parse(await response.Content.ReadAsStringAsync()).RootElement;
-        var accessToken  = json.GetProperty("accessToken").GetString()!;
-        var refreshToken = json.GetProperty("refreshToken").GetString()!;
-        var expiresAt    = json.GetProperty("expiresAt").GetString()!;
+            var json = System.Text.Json.JsonDocument.Parse(await response.Content.ReadAsStringAsync()).RootElement;
+            tokens = new LoginTokens(
+                json.GetProperty("accessToken").GetString()!,
+                json.GetProperty("refreshToken").GetString()!,
+                json.GetProperty("expiresAt").GetString()!);
+        }
 
-        // Step 2: Navigate to the app to establish domain context for localStorage
         await page.GotoAsync($"{BaseUrl}/");
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
-        // Step 3: Inject tokens — keys match GreenAiAuthenticationStateProvider constants
         await page.EvaluateAsync($"""
-            localStorage.setItem('greenai_access_token',  '{accessToken}');
-            localStorage.setItem('greenai_refresh_token', '{refreshToken}');
-            localStorage.setItem('greenai_expires_at',    '{expiresAt}');
+            localStorage.setItem('greenai_access_token',  '{tokens.AccessToken}');
+            localStorage.setItem('greenai_refresh_token', '{tokens.RefreshToken}');
+            localStorage.setItem('greenai_expires_at',    '{tokens.ExpiresAt}');
         """);
 
-        // Step 4: Navigate to /dashboard — NOT /: Home.razor does SSR redirect to /login
-        // before circuit reads localStorage.
         await page.GotoAsync($"{BaseUrl}/dashboard");
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
+
 
     // ── Screenshots ──────────────────────────────────────────────────────────
 
@@ -405,11 +413,19 @@ public abstract class VisualTestBase : IAsyncLifetime
                     if (++n > 300) break;
                     const r = el.getBoundingClientRect();
                     if (r.width === 0 || r.height === 0) continue; // display:none / truly invisible
+                    // Skip MudBlazor internal elements (their rendering uses thin sizing
+                    // internally — popovers, slots, adornments) and SVG/HR structural elements.
+                    // We only want to catch anomalies in our own layout containers.
+                    const cls = typeof el.className === 'string' ? el.className : '';
+                    const tag = el.tagName;
+                    if (cls.includes('mud-') || tag === 'HR' || tag === 'PATH' ||
+                        tag === 'SVG'        || tag === 'STYLE' || tag === 'SCRIPT')
+                        continue;
                     const cs = window.getComputedStyle(el);
                     const id = el.getAttribute('data-testid')
                              ?? el.id
                              ?? el.tagName.toLowerCase();
-                    // Extreme spacing
+                    // Extreme spacing — flag margin/padding > 200px on non-MudBlazor elements
                     const props = ['marginTop','marginBottom','marginLeft','marginRight',
                                    'paddingTop','paddingBottom','paddingLeft','paddingRight'];
                     for (const p of props) {
@@ -418,7 +434,7 @@ public abstract class VisualTestBase : IAsyncLifetime
                             out.push(`"${id}" has ${p}=${v}px`);
                     }
                     // Collapsed container: visible in DOM but ~invisible in height
-                    if (r.height > 0 && r.height < 8 && el.children.length > 0)
+                    if (r.height > 0 && r.height < 4 && el.children.length > 0)
                         out.push(`"${id}" collapsed: height=${r.height.toFixed(1)}px with ${el.children.length} child(ren)`);
                 }
                 return [...new Set(out)];

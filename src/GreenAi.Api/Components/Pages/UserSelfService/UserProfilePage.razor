@@ -11,52 +11,88 @@
           IsLoading="@_loading"
           ErrorMessage="@_errorMessage">
 
-    <MudGrid Class="px-2 px-sm-0" Spacing="3">
+    @* ── Account section ──────────────────────────────────────────────────── *@
+    <MudText Typo="Typo.overline" Color="Color.Secondary" Class="mb-2 d-block">
+        @Loc.Get("feature.userProfile.AccountSection")
+    </MudText>
 
-        @* Row 1: Display name (desktop: col 1 of 2) *@
+    <MudGrid Spacing="3" Class="mb-4 px-2 px-sm-0">
+        <MudItem xs="12" sm="6">
+            <MudTextField Value="@_email"
+                          Label="@Loc.Get("shared.EmailLabel")"
+                          Variant="Variant.Outlined"
+                          ReadOnly="true"
+                          data-testid="email-display" />
+        </MudItem>
         <MudItem xs="12" sm="6">
             <MudTextField @bind-Value="_displayName"
                           Label="@Loc.Get("feature.userProfile.DisplayNameLabel")"
                           Variant="Variant.Outlined"
-                          Class="mb-sm-0 mb-2"
                           data-testid="display-name-input" />
         </MudItem>
-
-        @* Row 1 col 2 on desktop — placeholder for future fields (e.g. language) *@
-        <MudItem xs="12" sm="6" Class="d-none d-sm-block" />
-
-        @* Save row — full width but constrained to match form *@
-        <MudItem xs="12">
-            <MudStack Row="true" Spacing="2">
-                <MudButton Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           OnClick="SaveAsync"
-                           data-testid="save-profile-button">
-                    @Loc.Get("feature.userProfile.SaveButton")
-                </MudButton>
-            </MudStack>
+        <MudItem xs="12" sm="6">
+            <MudTextField Value="@_role"
+                          Label="@Loc.Get("feature.userProfile.RoleLabel")"
+                          Variant="Variant.Outlined"
+                          ReadOnly="true"
+                          data-testid="role-display" />
         </MudItem>
-
-        @if (_saveSuccess)
-        {
-            <MudItem xs="12" sm="6">
-                <MudAlert Severity="Severity.Success" data-testid="save-success-alert">
-                    @Loc.Get("feature.userProfile.SaveSuccess")
-                </MudAlert>
-            </MudItem>
-        }
-
+        <MudItem xs="12" sm="6">
+            <MudTextField Value="@_memberSince"
+                          Label="@Loc.Get("feature.userProfile.MemberSince")"
+                          Variant="Variant.Outlined"
+                          ReadOnly="true"
+                          data-testid="member-since-display" />
+        </MudItem>
     </MudGrid>
+
+    @* ── Preferences section ──────────────────────────────────────────────── *@
+    <MudText Typo="Typo.overline" Color="Color.Secondary" Class="mb-2 d-block">
+        @Loc.Get("feature.userProfile.PreferencesSection")
+    </MudText>
+
+    <MudGrid Spacing="3" Class="mb-4 px-2 px-sm-0">
+        <MudItem xs="12" sm="6">
+            <MudSelect @bind-Value="_languageId"
+                       Label="@Loc.Get("feature.userProfile.LanguageLabel")"
+                       Variant="Variant.Outlined"
+                       data-testid="language-select">
+                <MudSelectItem Value="1">@Loc.Get("feature.userProfile.LanguageDanish")</MudSelectItem>
+                <MudSelectItem Value="2">@Loc.Get("feature.userProfile.LanguageEnglish")</MudSelectItem>
+            </MudSelect>
+        </MudItem>
+    </MudGrid>
+
+    @* ── Actions ──────────────────────────────────────────────────────────── *@
+    <MudStack Row="true" Spacing="2" Class="px-2 px-sm-0">
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   OnClick="SaveAsync"
+                   data-testid="save-profile-button">
+            @Loc.Get("feature.userProfile.SaveButton")
+        </MudButton>
+    </MudStack>
+
+    @if (_saveSuccess)
+    {
+        <MudAlert Severity="Severity.Success" Class="mt-3 mx-2 mx-sm-0" data-testid="save-success-alert">
+            @Loc.Get("feature.userProfile.SaveSuccess")
+        </MudAlert>
+    }
 
 </AppShell>
 
 @code {
     [CascadingParameter] private Task<AuthenticationState> AuthStateTask { get; set; } = null!;
 
-    private bool   _loading     = true;
-    private string _displayName = string.Empty;
+    private bool    _loading     = true;
+    private string  _email       = string.Empty;
+    private string  _displayName = string.Empty;
+    private string  _role        = string.Empty;
+    private string  _memberSince = string.Empty;
+    private int     _languageId  = 1;
     private string? _errorMessage;
-    private bool   _saveSuccess;
+    private bool    _saveSuccess;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -71,16 +107,18 @@
 
         PrincipalHolder.Set(authState.User);
 
+        // Load email from backend; fall back to mock data on failure
         var result = await Mediator.Send(new MeQuery());
-        if (!result.IsSuccess)
-        {
-            _errorMessage = result.Error!.Message;
-            _loading      = false;
-            StateHasChanged();
-            return;
-        }
+        if (result.IsSuccess)
+            _email = result.Value!.Email;
+        else
+            _email = MockData.Users[0].Email;
 
-        _displayName = result.Value!.Email; // email as display fallback until DisplayName in MeResponse
+        // Mock data for fields not yet backed by real handlers
+        var mock = MockData.Users[0];
+        _displayName = mock.DisplayName;
+        _role        = mock.Role;
+        _memberSince = mock.CreatedAt.ToString("d. MMM yyyy");
 
         _loading = false;
         StateHasChanged();

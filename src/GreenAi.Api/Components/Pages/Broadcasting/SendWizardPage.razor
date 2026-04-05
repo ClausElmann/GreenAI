@@ -7,6 +7,220 @@
 
 @* ── Step indicator ────────────────────────────────────────────────────────── *@
 <div class="wizard-step-row" data-testid="wizard-step-indicator">
+    <div class="wizard-step @(_step > 1 ? "wizard-step--done" : "wizard-step--active")"
+         data-testid="wizard-step-1">
+        <span class="wizard-step-num">@(_step > 1 ? "✓" : "1")</span>
+        <span class="wizard-step-label">@Loc.Get("page.wizard.StepRecipients")</span>
+    </div>
+    <div class="wizard-step-connector @(_step > 1 ? "wizard-step-connector--done" : "")"></div>
+    <div class="wizard-step @(_step == 2 ? "wizard-step--active" : _step > 2 ? "wizard-step--done" : "wizard-step--pending")"
+         data-testid="wizard-step-2">
+        <span class="wizard-step-num">@(_step > 2 ? "✓" : "2")</span>
+        <span class="wizard-step-label">@Loc.Get("page.wizard.StepContent")</span>
+    </div>
+    <div class="wizard-step-connector @(_step > 2 ? "wizard-step-connector--done" : "")"></div>
+    <div class="wizard-step @(_step == 3 ? "wizard-step--active" : "wizard-step--pending")"
+         data-testid="wizard-step-3">
+        <span class="wizard-step-num">3</span>
+        <span class="wizard-step-label">@Loc.Get("page.wizard.StepConfirm")</span>
+    </div>
+</div>
+
+<MudDivider Class="my-4" />
+
+@* ── Step 1: Recipients ──────────────────────────────────────────────────────── *@
+@if (_step == 1)
+{
+    <MudText Typo="Typo.h5" Class="mb-1" data-testid="wizard-heading">
+        @Loc.Get("page.wizard.StepRecipients")
+    </MudText>
+    <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-3">
+        @Loc.Get("page.wizard.RecipientsHint")
+    </MudText>
+    <MudTextField @bind-Value="_recipientsText"
+                  Label="@Loc.Get("page.wizard.RecipientsLabel")"
+                  Lines="10"
+                  Variant="Variant.Outlined"
+                  Placeholder="+4512345678&#10;+4587654321&#10;+4598765432"
+                  Class="mb-3"
+                  data-testid="wizard-recipients-input" />
+    @if (RecipientCount > 0)
+    {
+        <MudAlert Severity="Severity.Info" Dense="true" Class="mb-2" data-testid="wizard-recipient-count">
+            <b>@RecipientCount</b> @Loc.Get("page.wizard.RecipientsCount")
+        </MudAlert>
+    }
+}
+
+@* ── Step 2: Message ────────────────────────────────────────────────────────── *@
+@if (_step == 2)
+{
+    <MudText Typo="Typo.h5" Class="mb-1" data-testid="wizard-heading">
+        @Loc.Get("page.wizard.StepContent")
+    </MudText>
+    <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-3">
+        @Loc.Get("page.wizard.MessageHint")
+    </MudText>
+    <MudGrid Spacing="3">
+        <MudItem xs="12">
+            <MudTextField @bind-Value="_message"
+                          Label="@Loc.Get("page.wizard.MessageLabel")"
+                          Lines="5"
+                          Variant="Variant.Outlined"
+                          MaxLength="160"
+                          HelperText="@($"{_message.Length}/160 {Loc.Get("page.wizard.MessageChars")}")"
+                          HelperTextOnFocus="false"
+                          data-testid="wizard-message-input" />
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudTextField @bind-Value="_senderId"
+                          Label="@Loc.Get("page.wizard.SenderLabel")"
+                          Variant="Variant.Outlined"
+                          MaxLength="11"
+                          HelperText="@Loc.Get("page.wizard.SenderHint")"
+                          HelperTextOnFocus="false"
+                          data-testid="wizard-senderid-input" />
+        </MudItem>
+    </MudGrid>
+}
+
+@* ── Step 3: Confirm ────────────────────────────────────────────────────────── *@
+@if (_step == 3)
+{
+    <MudText Typo="Typo.h5" Class="mb-4" data-testid="wizard-heading">
+        @Loc.Get("page.wizard.SummaryTitle")
+    </MudText>
+
+    @if (_sent)
+    {
+        <MudAlert Severity="Severity.Success" Class="mb-4" data-testid="wizard-sent-confirmation">
+            <MudText><b>Sendt!</b> @RecipientCount @Loc.Get("page.wizard.RecipientsCount") · @DateTime.Now.ToString("HH:mm")</MudText>
+        </MudAlert>
+    }
+    else
+    {
+        <MudCard Elevation="1" Class="mb-4" data-testid="wizard-summary-card">
+            <MudCardContent>
+                <MudGrid Spacing="4">
+                    <MudItem xs="6" sm="3">
+                        <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mb-1">@Loc.Get("page.wizard.SummaryRecipients")</MudText>
+                        <MudText Typo="Typo.h5" Color="Color.Primary"><b>@RecipientCount</b></MudText>
+                    </MudItem>
+                    <MudItem xs="6" sm="3">
+                        <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mb-1">@Loc.Get("page.wizard.SummarySender")</MudText>
+                        <MudText Typo="Typo.body1"><b>@_senderId</b></MudText>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mb-1">@Loc.Get("page.wizard.SummaryMessage")</MudText>
+                        <MudPaper Outlined="true" Class="pa-3">
+                            <MudText Typo="Typo.body2">@_message</MudText>
+                        </MudPaper>
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+    }
+}
+
+@* ── Navigation footer ────────────────────────────────────────────────────────── *@
+<div class="wizard-footer" data-testid="wizard-footer">
+    @if (_step == 1)
+    {
+        <MudButton Variant="Variant.Outlined"
+                   Color="Color.Default"
+                   Href="/dashboard"
+                   data-testid="wizard-cancel">
+            @Loc.Get("shared.Cancel")
+        </MudButton>
+    }
+    else
+    {
+        <MudButton Variant="Variant.Outlined"
+                   Color="Color.Default"
+                   OnClick="Back"
+                   Disabled="_sent"
+                   data-testid="wizard-back">
+            @Loc.Get("page.wizard.Back")
+        </MudButton>
+    }
+    <MudSpacer />
+    @if (_step < 3)
+    {
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   Disabled="@(!CanProceed)"
+                   OnClick="Next"
+                   data-testid="wizard-next">
+            @Loc.Get("page.wizard.Next") →
+        </MudButton>
+    }
+    else if (!_sent)
+    {
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Success"
+                   Disabled="@_sending"
+                   OnClick="SendAsync"
+                   StartIcon="@Icons.Material.Filled.Send"
+                   data-testid="wizard-send">
+            @(_sending ? Loc.Get("page.wizard.Sending") : Loc.Get("page.wizard.Send"))
+        </MudButton>
+    }
+    else
+    {
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   Href="/status"
+                   StartIcon="@Icons.Material.Filled.BarChart"
+                   data-testid="wizard-view-status">
+            @Loc.Get("page.wizard.ViewStatus")
+        </MudButton>
+    }
+</div>
+
+@code {
+    [CascadingParameter] private Task<AuthenticationState> AuthStateTask { get; set; } = null!;
+
+    private int    _step          = 1;
+    private string _recipientsText = "+4512345678\n+4587654321\n+4598765432\n+4534567890\n+4521098765";
+    private string _message        = string.Empty;
+    private string _senderId       = "GreenAI";
+    private bool   _sending        = false;
+    private bool   _sent           = false;
+
+    private int RecipientCount => _recipientsText
+        .Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+        .Count(static l => l.Length >= 8);
+
+    private bool CanProceed => _step switch
+    {
+        1 => RecipientCount > 0,
+        2 => _message.Trim().Length >= 5 && _senderId.Trim().Length >= 2,
+        _ => false,
+    };
+
+    private void Next() { if (_step < 3) _step++; }
+    private void Back() { if (_step > 1) _step--; }
+
+    private async Task SendAsync()
+    {
+        _sending = true;
+        await Task.Delay(1200);
+        _sending = false;
+        _sent    = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        var authState = await AuthStateTask;
+        if (authState.User.Identity?.IsAuthenticated != true)
+            Nav.NavigateTo("/login");
+    }
+}
+
+
+@* ── Step indicator ────────────────────────────────────────────────────────── *@
+<div class="wizard-step-row" data-testid="wizard-step-indicator">
     <div class="wizard-step wizard-step--active" data-testid="wizard-step-1">
         <span class="wizard-step-num">1</span>
         <span class="wizard-step-label">@Loc.Get("page.wizard.Step1")</span>
@@ -49,16 +263,3 @@
         @Loc.Get("page.wizard.Next") →
     </MudButton>
 </div>
-
-@code {
-    [CascadingParameter] private Task<AuthenticationState> AuthStateTask { get; set; } = null!;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (!firstRender) return;
-
-        var authState = await AuthStateTask;
-        if (authState.User.Identity?.IsAuthenticated != true)
-            Nav.NavigateTo("/login");
-    }
-}

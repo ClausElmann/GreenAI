@@ -6,12 +6,118 @@
 
 <AppShell Title="@Loc.Get("nav.Status")" IsLoading="false">
 
-    <MudText Typo="Typo.body1"
-             Color="Color.Secondary"
-             Class="mt-2"
-             data-testid="status-page-placeholder">
-        @Loc.Get("page.status.Placeholder")
-    </MudText>
+    <MudTabs Elevation="0" Rounded="false" PanelClass="pt-3" data-testid="status-tabs">
+
+        @* ── Sent ── *@
+        <MudTabPanel Text="@($"{Loc.Get("page.status.TabSent")} ({MockData.SentBroadcasts.Count})")"
+                     Icon="@Icons.Material.Filled.CheckCircle" IconColor="Color.Success">
+            <MudTable Items="MockData.SentBroadcasts" Dense="true" Hover="true"
+                      Breakpoint="Breakpoint.Sm" Striped="false"
+                      data-testid="status-sent-table">
+                <HeaderContent>
+                    <MudTh>@Loc.Get("page.status.ColMessage")</MudTh>
+                    <MudTh>@Loc.Get("page.status.ColProfile")</MudTh>
+                    <MudTh Style="text-align:right">@Loc.Get("page.status.ColRecipients")</MudTh>
+                    <MudTh Style="text-align:right">@Loc.Get("page.status.ColDelivered")</MudTh>
+                    <MudTh>@Loc.Get("page.status.ColTime")</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Besked">
+                        <MudText Typo="Typo.body2" Class="status-subject-cell">@context.Subject</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Profil">
+                        <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Style="margin:0">
+                            @context.Profile
+                        </MudChip>
+                    </MudTd>
+                    <MudTd DataLabel="Modtagere" Style="text-align:right">
+                        @context.Recipients.ToString("N0")
+                    </MudTd>
+                    <MudTd DataLabel="Leveret" Style="text-align:right">
+                        @if (context.FailedCount > 0)
+                        {
+                            <MudText Color="Color.Warning" Typo="Typo.body2">
+                                @context.Delivered.ToString("N0")
+                                <MudIcon Icon="@Icons.Material.Filled.Warning" Size="Size.Small" Style="vertical-align:middle" />
+                            </MudText>
+                        }
+                        else
+                        {
+                            <MudText Color="Color.Success" Typo="Typo.body2">@context.Delivered.ToString("N0")</MudText>
+                        }
+                    </MudTd>
+                    <MudTd DataLabel="Tidspunkt">
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">@FormatTime(context.CreatedAt)</MudText>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudTabPanel>
+
+        @* ── Scheduled ── *@
+        <MudTabPanel Text="@($"{Loc.Get("page.status.TabScheduled")} ({MockData.ScheduledBroadcasts.Count})")"
+                     Icon="@Icons.Material.Filled.Schedule" IconColor="Color.Info">
+            <MudTable Items="MockData.ScheduledBroadcasts" Dense="true" Hover="true"
+                      Breakpoint="Breakpoint.Sm"
+                      data-testid="status-scheduled-table">
+                <HeaderContent>
+                    <MudTh>@Loc.Get("page.status.ColMessage")</MudTh>
+                    <MudTh>@Loc.Get("page.status.ColProfile")</MudTh>
+                    <MudTh Style="text-align:right">@Loc.Get("page.status.ColRecipients")</MudTh>
+                    <MudTh>@Loc.Get("page.status.ColScheduled")</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Besked">
+                        <MudText Typo="Typo.body2" Class="status-subject-cell">@context.Subject</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Profil">
+                        <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Style="margin:0">
+                            @context.Profile
+                        </MudChip>
+                    </MudTd>
+                    <MudTd DataLabel="Modtagere" Style="text-align:right">@context.Recipients.ToString("N0")</MudTd>
+                    <MudTd DataLabel="Planlagt til">
+                        <MudText Typo="Typo.body2" Color="Color.Info">
+                            @(context.ScheduledAt?.ToString("d. MMM 'kl.' HH:mm") ?? "—")
+                        </MudText>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudTabPanel>
+
+        @* ── Failed ── *@
+        <MudTabPanel Text="@($"{Loc.Get("page.status.TabFailed")} ({MockData.FailedBroadcasts.Count})")"
+                     Icon="@Icons.Material.Filled.Error" IconColor="Color.Error">
+            <MudTable Items="MockData.FailedBroadcasts" Dense="true" Hover="true"
+                      Breakpoint="Breakpoint.Sm"
+                      data-testid="status-failed-table">
+                <HeaderContent>
+                    <MudTh>@Loc.Get("page.status.ColMessage")</MudTh>
+                    <MudTh>@Loc.Get("page.status.ColProfile")</MudTh>
+                    <MudTh Style="text-align:right">@Loc.Get("page.status.ColRecipients")</MudTh>
+                    <MudTh Style="text-align:right">@Loc.Get("page.status.ColFailed")</MudTh>
+                    <MudTh>@Loc.Get("page.status.ColTime")</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Besked">
+                        <MudText Typo="Typo.body2" Class="status-subject-cell">@context.Subject</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Profil">
+                        <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Style="margin:0">
+                            @context.Profile
+                        </MudChip>
+                    </MudTd>
+                    <MudTd DataLabel="Modtagere" Style="text-align:right">@context.Recipients.ToString("N0")</MudTd>
+                    <MudTd DataLabel="Fejlet" Style="text-align:right">
+                        <MudText Color="Color.Error" Typo="Typo.body2">@context.FailedCount.ToString("N0")</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Tidspunkt">
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">@FormatTime(context.CreatedAt)</MudText>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudTabPanel>
+
+    </MudTabs>
 
 </AppShell>
 
@@ -26,5 +132,14 @@
             Nav.NavigateTo("/login");
         else
             PrincipalHolder.Set(authState.User);
+    }
+
+    private static string FormatTime(DateTime dt)
+    {
+        var diff = DateTime.Now - dt;
+        if (diff.TotalMinutes < 60) return $"for {(int)diff.TotalMinutes} min. siden";
+        if (diff.TotalHours   < 24) return $"i dag kl. {dt:HH:mm}";
+        if (diff.TotalDays    <  2) return $"i går kl. {dt:HH:mm}";
+        return dt.ToString("d. MMM yyyy");
     }
 }

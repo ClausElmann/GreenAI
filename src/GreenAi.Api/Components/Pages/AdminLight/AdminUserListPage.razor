@@ -11,7 +11,17 @@
           IsLoading="_loading"
           ErrorMessage="@_errorMessage">
 
-    <MudStack Row="true" Spacing="2" Class="mb-4">
+    @* ── Toolbar ── *@
+    <MudStack Row="true" Spacing="2" Class="mb-4" AlignItems="AlignItems.Center">
+        <MudTextField @bind-Value="_search"
+                      Placeholder="@Loc.Get("feature.adminUsers.SearchPlaceholder")"
+                      Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      Variant="Variant.Outlined"
+                      Immediate="true"
+                      Clearable="true"
+                      Class="flex-grow-1"
+                      data-testid="user-search-input" />
         <MudButton Variant="Variant.Filled"
                    Color="Color.Primary"
                    StartIcon="@Icons.Material.Filled.PersonAdd"
@@ -21,7 +31,7 @@
         </MudButton>
     </MudStack>
 
-    @* Create user inline form (drawer-lite) *@
+    @* ── Create user inline form ── *@
     @if (_showCreateForm)
     {
         <MudPaper Class="pa-4 mb-4" Elevation="1">
@@ -34,7 +44,7 @@
                 </MudItem>
                 <MudItem xs="12" sm="6">
                     <MudTextField @bind-Value="_newPassword"
-                                  Label="shared.PasswordLabel"
+                                  Label="@Loc.Get("shared.NameLabel")"
                                   InputType="InputType.Password"
                                   Variant="Variant.Outlined"
                                   data-testid="new-user-password-input" />
@@ -56,6 +66,58 @@
         </MudPaper>
     }
 
+    @* ── User table ── *@
+    <MudTable Items="FilteredUsers" Dense="true" Hover="true"
+              Breakpoint="Breakpoint.Sm"
+              data-testid="admin-users-table">
+        <HeaderContent>
+            <MudTh>@Loc.Get("feature.adminUsers.EmailColumn")</MudTh>
+            <MudTh>@Loc.Get("feature.adminUsers.ColDisplayName")</MudTh>
+            <MudTh>@Loc.Get("feature.adminUsers.ColRole")</MudTh>
+            <MudTh>@Loc.Get("feature.adminUsers.ColStatus")</MudTh>
+            <MudTh>@Loc.Get("feature.adminUsers.ColLastLogin")</MudTh>
+            <MudTh>@Loc.Get("feature.adminUsers.ActionsColumn")</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Email">
+                <MudText Typo="Typo.body2">@context.Email</MudText>
+            </MudTd>
+            <MudTd DataLabel="Navn">
+                <MudText Typo="Typo.body2"><b>@context.DisplayName</b></MudText>
+            </MudTd>
+            <MudTd DataLabel="Rolle">
+                <MudChip T="string" Size="Size.Small"
+                         Color="@GetRoleColor(context.Role)"
+                         Variant="Variant.Outlined"
+                         Style="margin:0">
+                    @context.Role
+                </MudChip>
+            </MudTd>
+            <MudTd DataLabel="Status">
+                <MudChip T="string" Size="Size.Small"
+                         Color="@GetStatusColor(context.Status)"
+                         Variant="Variant.Filled"
+                         Style="margin:0">
+                    @Loc.Get($"feature.adminUsers.Status{context.Status}")
+                </MudChip>
+            </MudTd>
+            <MudTd DataLabel="Senest login">
+                <MudText Typo="Typo.caption" Color="Color.Secondary">@FormatRelative(context.LastLogin)</MudText>
+            </MudTd>
+            <MudTd>
+                <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                               Size="Size.Small"
+                               Color="Color.Default"
+                               data-testid="@($"edit-user-{context.Id}")" />
+            </MudTd>
+        </RowTemplate>
+        <NoRecordsContent>
+            <MudText Typo="Typo.body2" Color="Color.Secondary" Class="pa-4">
+                @Loc.Get("feature.adminUsers.NoRecords")
+            </MudText>
+        </NoRecordsContent>
+    </MudTable>
+
 </AppShell>
 
 @code {
@@ -66,20 +128,27 @@
     private bool    _showCreateForm;
     private string  _newEmail        = string.Empty;
     private string  _newPassword     = string.Empty;
+    private string  _search          = string.Empty;
+
+    private IReadOnlyList<UserMock> FilteredUsers =>
+        string.IsNullOrWhiteSpace(_search)
+            ? MockData.Users
+            : MockData.Users
+                .Where(u => u.Email.Contains(_search, StringComparison.OrdinalIgnoreCase)
+                         || u.DisplayName.Contains(_search, StringComparison.OrdinalIgnoreCase)
+                         || u.Role.Contains(_search, StringComparison.OrdinalIgnoreCase))
+                .ToList();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender) return;
-
         var authState = await AuthStateTask;
         if (authState.User.Identity?.IsAuthenticated != true)
         {
             Nav.NavigateTo("/login");
             return;
         }
-
         PrincipalHolder.Set(authState.User);
-
         _loading = false;
         StateHasChanged();
     }
@@ -90,17 +159,40 @@
     private async Task CreateUserAsync()
     {
         _errorMessage = null;
-
         var result = await Mediator.Send(new CreateUserCommand(_newEmail, _newPassword));
-
         if (!result.IsSuccess)
         {
             _errorMessage = result.Error!.Message;
             StateHasChanged();
             return;
         }
-
         Snackbar.Add($"User '{_newEmail}' created.", Severity.Success);
         CloseCreateForm();
+    }
+
+    private static Color GetRoleColor(string role) => role switch
+    {
+        "SuperAdmin"    => Color.Error,
+        "ManageUsers"   => Color.Warning,
+        "CanBroadcast"  => Color.Primary,
+        _               => Color.Default,
+    };
+
+    private static Color GetStatusColor(string status) => status switch
+    {
+        "Active"   => Color.Success,
+        "Inactive" => Color.Default,
+        "Pending"  => Color.Warning,
+        _          => Color.Default,
+    };
+
+    private static string FormatRelative(DateTime dt)
+    {
+        var diff = DateTime.Now - dt;
+        if (diff.TotalMinutes < 2)   return "lige nu";
+        if (diff.TotalMinutes < 60)  return $"for {(int)diff.TotalMinutes} min. siden";
+        if (diff.TotalHours   < 24)  return $"for {(int)diff.TotalHours} t. siden";
+        if (diff.TotalDays    <  7)  return $"for {(int)diff.TotalDays} d. siden";
+        return dt.ToString("d. MMM yyyy");
     }
 }

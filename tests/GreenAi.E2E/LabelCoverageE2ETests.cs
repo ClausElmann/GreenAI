@@ -40,7 +40,7 @@ public sealed class LabelCoverageE2ETests : E2ETestBase
     {
         await LoginAsync();
         await Page.GotoAsync($"{BaseUrl}/status");
-        await WaitOrFailAsync("[data-testid='status-page-placeholder']", timeoutMs: 15_000);
+        await WaitOrFailAsync("[data-testid='status-tabs']", timeoutMs: 15_000);
         await AssertNoVisibleErrorsAsync("Status page");
         await AssertNoMissingLabelsAsync("Status page");
     }
@@ -50,7 +50,7 @@ public sealed class LabelCoverageE2ETests : E2ETestBase
     {
         await LoginAsync();
         await Page.GotoAsync($"{BaseUrl}/drafts");
-        await WaitOrFailAsync("[data-testid='drafts-page-placeholder']", timeoutMs: 15_000);
+        await WaitOrFailAsync("[data-testid='drafts-table']", timeoutMs: 15_000);
         await AssertNoVisibleErrorsAsync("Drafts page");
         await AssertNoMissingLabelsAsync("Drafts page");
     }

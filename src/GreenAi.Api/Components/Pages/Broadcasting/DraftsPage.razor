@@ -6,12 +6,46 @@
 
 <AppShell Title="@Loc.Get("nav.Drafts")" IsLoading="false">
 
-    <MudText Typo="Typo.body1"
-             Color="Color.Secondary"
-             Class="mt-2"
-             data-testid="drafts-page-placeholder">
-        @Loc.Get("page.drafts.Placeholder")
-    </MudText>
+    <MudTable Items="MockData.Drafts" Dense="true" Hover="true"
+              Breakpoint="Breakpoint.Sm"
+              data-testid="drafts-table">
+        <HeaderContent>
+            <MudTh>@Loc.Get("page.drafts.ColMessage")</MudTh>
+            <MudTh>@Loc.Get("page.drafts.ColProfile")</MudTh>
+            <MudTh Style="text-align:right">@Loc.Get("page.drafts.ColRecipients")</MudTh>
+            <MudTh>@Loc.Get("page.drafts.ColLastModified")</MudTh>
+            <MudTh></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Besked">
+                <MudText Typo="Typo.body2" Class="draft-subject-cell">@context.Subject</MudText>
+            </MudTd>
+            <MudTd DataLabel="Profil">
+                <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Style="margin:0">
+                    @context.Profile
+                </MudChip>
+            </MudTd>
+            <MudTd DataLabel="Modtagere" Style="text-align:right">@context.Recipients.ToString("N0")</MudTd>
+            <MudTd DataLabel="Sidst ændret">
+                <MudText Typo="Typo.caption" Color="Color.Secondary">@FormatRelative(context.LastModified)</MudText>
+            </MudTd>
+            <MudTd Style="text-align:right">
+                <MudStack Row="true" Spacing="1" Justify="Justify.FlexEnd">
+                    <MudButton Variant="Variant.Filled"
+                               Size="Size.Small"
+                               Color="Color.Primary"
+                               Href="/send/wizard"
+                               data-testid="@($"draft-continue-{context.Id}")">
+                        @Loc.Get("page.drafts.Continue")
+                    </MudButton>
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                   Color="Color.Default"
+                                   Size="Size.Small"
+                                   data-testid="@($"draft-delete-{context.Id}")" />
+                </MudStack>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
 
 </AppShell>
 
@@ -26,5 +60,14 @@
             Nav.NavigateTo("/login");
         else
             PrincipalHolder.Set(authState.User);
+    }
+
+    private static string FormatRelative(DateTime dt)
+    {
+        var diff = DateTime.Now - dt;
+        if (diff.TotalMinutes < 60) return $"for {(int)diff.TotalMinutes} min. siden";
+        if (diff.TotalHours   < 24) return $"i dag kl. {dt:HH:mm}";
+        if (diff.TotalDays    <  2) return $"i går kl. {dt:HH:mm}";
+        return dt.ToString("d. MMM yyyy");
     }
 }

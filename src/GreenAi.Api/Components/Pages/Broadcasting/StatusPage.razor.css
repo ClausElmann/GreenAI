@@ -1,0 +1,7 @@
+/* Subject truncation in table cells */
+.status-subject-cell {
+    max-width: 280px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

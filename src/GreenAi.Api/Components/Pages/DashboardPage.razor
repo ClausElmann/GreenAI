@@ -47,7 +47,7 @@
                         <MudIcon Icon="@Icons.Material.Filled.Send" Color="Color.Primary" Size="Size.Medium" />
                         <MudText Typo="Typo.caption" Class="mud-text-secondary ml-1">@Loc.Get("dashboard.MetricMessagesToday")</MudText>
                     </div>
-                    <MudText Typo="Typo.h4" Class="metric-value mt-1">—</MudText>
+                    <MudText Typo="Typo.h4" Class="metric-value mt-1">@MockData.KpiMessagesToday.ToString("N0")</MudText>
                 </MudCardContent>
             </MudCard>
         </MudItem>
@@ -58,7 +58,7 @@
                         <MudIcon Icon="@Icons.Material.Filled.Error" Color="Color.Error" Size="Size.Medium" />
                         <MudText Typo="Typo.caption" Class="mud-text-secondary ml-1">@Loc.Get("dashboard.MetricFailed")</MudText>
                     </div>
-                    <MudText Typo="Typo.h4" Class="metric-value mt-1">—</MudText>
+                    <MudText Typo="Typo.h4" Class="metric-value mt-1" Style="color:var(--mud-palette-error)">@MockData.KpiFailed.ToString("N0")</MudText>
                 </MudCardContent>
             </MudCard>
         </MudItem>
@@ -69,7 +69,7 @@
                         <MudIcon Icon="@Icons.Material.Filled.Person" Color="Color.Success" Size="Size.Medium" />
                         <MudText Typo="Typo.caption" Class="mud-text-secondary ml-1">@Loc.Get("dashboard.MetricActiveProfiles")</MudText>
                     </div>
-                    <MudText Typo="Typo.h4" Class="metric-value mt-1">—</MudText>
+                    <MudText Typo="Typo.h4" Class="metric-value mt-1" Style="color:var(--mud-palette-success)">@MockData.KpiActiveProfiles</MudText>
                 </MudCardContent>
             </MudCard>
         </MudItem>
@@ -80,7 +80,7 @@
                         <MudIcon Icon="@Icons.Material.Filled.Edit" Color="Color.Warning" Size="Size.Medium" />
                         <MudText Typo="Typo.caption" Class="mud-text-secondary ml-1">@Loc.Get("dashboard.MetricDrafts")</MudText>
                     </div>
-                    <MudText Typo="Typo.h4" Class="metric-value mt-1">—</MudText>
+                    <MudText Typo="Typo.h4" Class="metric-value mt-1">@MockData.KpiDrafts</MudText>
                 </MudCardContent>
             </MudCard>
         </MudItem>
@@ -97,12 +97,31 @@
                     <CardHeaderContent>
                         <MudText Typo="Typo.subtitle1"><b>@Loc.Get("dashboard.RecentActivity")</b></MudText>
                     </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudLink Href="/status" Typo="Typo.caption">@Loc.Get("dashboard.ViewAll") →</MudLink>
+                    </CardHeaderActions>
                 </MudCardHeader>
                 <MudCardContent Class="pa-0">
                     <MudList T="string" Dense="true" Class="pt-0">
-                        <MudListItem Dense="true" Class="px-3 py-2 dashboard-activity-placeholder">
-                            <MudText Typo="Typo.body2" Color="Color.Secondary">@Loc.Get("dashboard.ActivityPlaceholder")</MudText>
-                        </MudListItem>
+                        @foreach (var item in MockData.Activities)
+                        {
+                            <MudListItem Dense="true" Class="px-3 py-2">
+                                <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center" Class="flex-nowrap">
+                                    <MudIcon Icon="@GetActivityIcon(item.Severity)"
+                                             Color="@GetActivityColor(item.Severity)"
+                                             Size="Size.Small"
+                                             Style="flex-shrink:0" />
+                                    <div Style="min-width:0;flex:1">
+                                        <MudText Typo="Typo.body2">
+                                            <b>@item.Action</b> · @item.Subject
+                                        </MudText>
+                                        <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                            @item.Profile · @FormatRelativeTime(item.At)
+                                        </MudText>
+                                    </div>
+                                </MudStack>
+                            </MudListItem>
+                        }
                     </MudList>
                 </MudCardContent>
             </MudCard>
@@ -137,5 +156,31 @@
         var authState = await AuthStateTask;
         if (authState.User.Identity?.IsAuthenticated != true)
             Nav.NavigateTo("/login");
+    }
+
+    private static string GetActivityIcon(string severity) => severity switch
+    {
+        "success" => Icons.Material.Filled.CheckCircle,
+        "error"   => Icons.Material.Filled.Error,
+        "warning" => Icons.Material.Filled.Warning,
+        _         => Icons.Material.Filled.Info,
+    };
+
+    private static Color GetActivityColor(string severity) => severity switch
+    {
+        "success" => Color.Success,
+        "error"   => Color.Error,
+        "warning" => Color.Warning,
+        _         => Color.Info,
+    };
+
+    private static string FormatRelativeTime(DateTime at)
+    {
+        var diff = DateTime.Now - at;
+        if (diff.TotalMinutes < 2)   return "lige nu";
+        if (diff.TotalMinutes < 60)  return $"for {(int)diff.TotalMinutes} min. siden";
+        if (diff.TotalHours   < 24)  return $"for {(int)diff.TotalHours} t. siden";
+        if (diff.TotalDays    < 7)   return $"for {(int)diff.TotalDays} d. siden";
+        return at.ToString("d. MMM");
     }
 }
