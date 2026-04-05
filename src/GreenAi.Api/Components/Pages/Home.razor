@@ -1,5 +1,5 @@
 @page "/"
-@* DEPRECATED — replaced by /dashboard. Redirects immediately. *@
+@* DEPRECATED — /dashboard replaced by /broadcasting. Redirects immediately. *@
 @inject NavigationManager Nav
 @inject ICurrentUser CurrentUser
 @using GreenAi.Api.SharedKernel.Auth
@@ -7,7 +7,7 @@
 @code {
     protected override void OnInitialized()
     {
-        var target = CurrentUser.IsAuthenticated ? "/dashboard" : "/login";
+        var target = CurrentUser.IsAuthenticated ? "/broadcasting" : "/login";
         Nav.NavigateTo(target, replace: true);
     }
 }

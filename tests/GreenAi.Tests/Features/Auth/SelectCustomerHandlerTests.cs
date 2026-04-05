@@ -141,4 +141,26 @@ public sealed class SelectCustomerHandlerTests
         await repository.DidNotReceive().SaveRefreshTokenAsync(
             Arg.Any<UserId>(), Arg.Any<CustomerId>(), Arg.Any<string>(), Arg.Any<DateTimeOffset>(), Arg.Any<int>());
     }
+
+    [Fact]
+    public async Task Handle_ValidMembershipMultipleProfiles_ReturnsRequiresProfileSelectionWithPreAuthToken()
+    {
+        var repository = Substitute.For<ISelectCustomerRepository>();
+        repository.FindMembershipAsync(new UserId(1), new CustomerId(10))
+            .Returns(new MembershipRecord(CustomerId: 10, LanguageId: 1, DefaultProfileId: 0));
+        repository.GetProfilesAsync(Arg.Any<UserId>(), Arg.Any<CustomerId>())
+            .Returns((IReadOnlyCollection<ProfileRecord>)[
+                new ProfileRecord(ProfileId: 1, DisplayName: "Alpha"),
+                new ProfileRecord(ProfileId: 2, DisplayName: "Beta")]);
+
+        var result = await CreateHandler(repository).Handle(new SelectCustomerCommand(10), TestContext.Current.CancellationToken);
+
+        Assert.True(result.IsSuccess);
+        Assert.True(result.Value!.NeedsProfileSelection);
+        Assert.Equal(2, result.Value.AvailableProfiles!.Count);
+        Assert.NotNull(result.Value.PreAuthToken);
+        Assert.NotEmpty(result.Value.PreAuthToken);
+        await repository.DidNotReceive().SaveRefreshTokenAsync(
+            Arg.Any<UserId>(), Arg.Any<CustomerId>(), Arg.Any<string>(), Arg.Any<DateTimeOffset>(), Arg.Any<int>());
+    }
 }

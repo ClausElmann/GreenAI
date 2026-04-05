@@ -42,35 +42,15 @@
 
         <MudDivider Class="mb-2" />
 
-        @* Section: Send *@
+        @* Section: Primary *@
         <div class="overlay-nav-section">
-            <MudNavLink Href="/dashboard"
-                        Icon="@Icons.Material.Filled.Dashboard"
-                        Match="NavLinkMatch.All"
-                        OnClick="AppState.CloseOverlayNav"
-                        data-testid="nav-dashboard">
-                @Loc.Get("nav.Home")
-            </MudNavLink>
             <MudNavLink Href="/broadcasting"
                         Icon="@Icons.Material.Outlined.Hub"
-                        Match="NavLinkMatch.Prefix"
+                        Match="NavLinkMatch.All"
                         OnClick="AppState.CloseOverlayNav"
                         data-testid="nav-broadcasting">
                 @Loc.Get("nav.Broadcasting")
             </MudNavLink>
-            <MudNavLink Href="/send/wizard"
-                        Icon="@Icons.Material.Filled.Send"
-                        Match="NavLinkMatch.Prefix"
-                        OnClick="AppState.CloseOverlayNav"
-                        data-testid="nav-send-wizard">
-                @Loc.Get("nav.Send")
-            </MudNavLink>
-        </div>
-
-        <MudDivider Class="my-2" />
-
-        @* Section: Messages *@
-        <div class="overlay-nav-section">
             <MudNavLink Href="/status"
                         Icon="@Icons.Material.Filled.CheckCircle"
                         Match="NavLinkMatch.Prefix"

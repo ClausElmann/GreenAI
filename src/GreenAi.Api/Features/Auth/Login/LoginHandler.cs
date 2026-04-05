@@ -46,7 +46,16 @@ public sealed class LoginHandler : IRequestHandler<LoginCommand, Result<LoginRes
             return Result<LoginResponse>.Fail("ACCOUNT_HAS_NO_TENANT", "Account has no active tenant membership.");
 
         if (memberships.Count > 1)
-            return Result<LoginResponse>.Ok(LoginResponse.RequiresCustomerSelection());
+        {
+            // Multiple customers — issue pre-auth token with userId only (customerId=0).
+            // The token is valid for /api/auth/select-customer which only needs userId.
+            var preAuthToken = _jwt.CreatePreAuthToken(
+                new UserId(user.Id), new CustomerId(0), user.Email, languageId: 1);
+            var customers = memberships
+                .Select(m => new CustomerSummary(m.CustomerId, m.CustomerName))
+                .ToList();
+            return Result<LoginResponse>.Ok(LoginResponse.RequiresCustomerSelection(preAuthToken, customers));
+        }
 
         // Single membership — auto-select customer, then resolve profile.
         var membership = memberships[0];
@@ -60,7 +69,13 @@ public sealed class LoginHandler : IRequestHandler<LoginCommand, Result<LoginRes
             return Result<LoginResponse>.Fail("PROFILE_NOT_FOUND", "No accessible profiles found for this account.");
 
         if (resolution.NeedsSelection)
-            return Result<LoginResponse>.Ok(LoginResponse.RequiresProfileSelection(resolution.Summaries));
+        {
+            // Single customer, multiple profiles — issue pre-auth token with userId + customerId.
+            // The token is valid for /api/auth/select-profile which needs userId + customerId.
+            var preAuthToken = _jwt.CreatePreAuthToken(
+                new UserId(user.Id), customerId, user.Email, membership.LanguageId);
+            return Result<LoginResponse>.Ok(LoginResponse.RequiresProfileSelection(preAuthToken, resolution.Summaries));
+        }
 
         // Single profile — auto-resolved. ProfileId > 0 is guaranteed.
         var profileId = resolution.ResolvedId;

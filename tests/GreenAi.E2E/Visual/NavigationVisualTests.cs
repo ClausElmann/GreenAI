@@ -32,8 +32,9 @@ public sealed class NavigationVisualTests : VisualTestBase
         => ForEachDeviceAsync(async (page, device) =>
         {
             await LoginAsync(page);
-            await page.WaitForSelectorAsync("[data-testid='top-bar']",               new() { Timeout = 15_000 });
-            await page.WaitForSelectorAsync("[data-testid='dashboard-placeholder']", new() { Timeout = 10_000 });
+            // /dashboard redirects to /broadcasting — wait for the broadcasting hub
+            await page.WaitForSelectorAsync("[data-testid='top-bar']",           new() { Timeout = 15_000 });
+            await page.WaitForSelectorAsync("[data-testid='send-methods-grid']", new() { Timeout = 15_000 });
             await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
             await AssertNoHorizontalOverflowAsync(page, device);
@@ -44,7 +45,7 @@ public sealed class NavigationVisualTests : VisualTestBase
             await AssertReasonableSpacingAsync(page, device);
             await AssertNavigationUsableAsync(page, device);
             await AssertNoTextOverflowAsync(page, device);
-            await CaptureAsync(page, device, "dashboard");
+            await CaptureAsync(page, device, "broadcasting-hub");
         });
 
     // ── OverlayNav ────────────────────────────────────────────────────────────
@@ -247,8 +248,8 @@ public sealed class NavigationVisualTests : VisualTestBase
             await LoginAsync(page);
             // Wait for the shell to render and Blazor circuit to resolve auth state
             // before checking AuthorizeView-gated elements (top-bar-user-email).
-            await page.WaitForSelectorAsync("[data-testid='top-bar']",               new() { Timeout = 15_000 });
-            await page.WaitForSelectorAsync("[data-testid='dashboard-placeholder']", new() { Timeout = 10_000 });
+            await page.WaitForSelectorAsync("[data-testid='top-bar']",           new() { Timeout = 15_000 });
+            await page.WaitForSelectorAsync("[data-testid='send-methods-grid']", new() { Timeout = 15_000 });
             await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
             await page.WaitForSelectorAsync("[data-testid='top-bar-user-email']", new() { Timeout = 10_000 });

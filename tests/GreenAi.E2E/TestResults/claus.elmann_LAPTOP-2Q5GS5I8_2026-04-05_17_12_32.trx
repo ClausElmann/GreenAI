@@ -1,0 +1,526 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="8f3b7522-020e-4a49-9af6-94492b98cc65" name="claus.elmann@LAPTOP-2Q5GS5I8 2026-04-05 17:12:32" runUser="F24\claus.elmann" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-04-05T17:12:32.3136950+02:00" queuing="2026-04-05T17:12:32.3136955+02:00" start="2026-04-05T17:12:30.3001468+02:00" finish="2026-04-05T17:18:29.2140116+02:00" />
+  <TestSettings name="default" id="86440e4e-74cc-4eb2-b159-fa9dd28e8627">
+    <Deployment runDeploymentRoot="claus.elmann_LAPTOP-2Q5GS5I8_2026-04-05_17_12_32" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="23935ab7-0f6a-49ca-8c0a-5ec7576d9684" testId="c451d1bb-122e-0d08-c606-cf27abf33f7c" testName="GreenAi.E2E.CustomerAdminE2ETests.CustomerAdmin_UnauthenticatedAccess_RedirectsToLogin" computerName="LAPTOP-2Q5GS5I8" duration="00:00:01.7031030" startTime="2026-04-05T17:18:07.2953306+02:00" endTime="2026-04-05T17:18:08.9985073+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="23935ab7-0f6a-49ca-8c0a-5ec7576d9684" />
+    <UnitTestResult executionId="bf4c6e47-f8e8-439d-94d2-f0f24a058694" testId="6f21fb76-c1c9-fe83-8cea-7b8af6e1da1a" testName="GreenAi.E2E.CustomerAdminE2ETests.CustomerAdmin_UsersTab_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.4719231" startTime="2026-04-05T17:18:22.5669287+02:00" endTime="2026-04-05T17:18:26.0389169+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bf4c6e47-f8e8-439d-94d2-f0f24a058694" />
+    <UnitTestResult executionId="e95288b5-b376-4454-bd49-7014a895d5c2" testId="5b779511-9be5-cf31-092f-55c5c416231f" testName="GreenAi.E2E.LabelCoverageE2ETests.StatusDetail_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.3397195" startTime="2026-04-05T17:17:07.8173535+02:00" endTime="2026-04-05T17:17:11.1571602+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e95288b5-b376-4454-bd49-7014a895d5c2" />
+    <UnitTestResult executionId="f2fafd9e-2932-4f12-8ef5-7b0163515963" testId="2bcc4490-32d9-3d90-8f0e-6079ba9e345a" testName="GreenAi.E2E.Visual.NavigationVisualTests.TopBar_ShowsUserEmail_WhenAuthenticated" computerName="LAPTOP-2Q5GS5I8" duration="00:00:06.8388438" startTime="2026-04-05T17:13:46.0179824+02:00" endTime="2026-04-05T17:13:52.8571379+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f2fafd9e-2932-4f12-8ef5-7b0163515963" />
+    <UnitTestResult executionId="eca6a57d-04dd-4ab3-85c3-3dea83bc2bd3" testId="28c743a2-ed50-21c2-6e55-5516582e7db7" testName="GreenAi.E2E.DetailPageE2ETests.ProfileDetail_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.8994173" startTime="2026-04-05T17:17:49.3229176+02:00" endTime="2026-04-05T17:17:53.2224198+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="eca6a57d-04dd-4ab3-85c3-3dea83bc2bd3" />
+    <UnitTestResult executionId="e0471c03-20ca-4242-857c-a742e299d2b1" testId="2bcbdf26-1e64-d41a-6ccc-bc2ad133021d" testName="GreenAi.E2E.LabelCoverageE2ETests.Drafts_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.3284150" startTime="2026-04-05T17:16:57.9496726+02:00" endTime="2026-04-05T17:17:01.2781695+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e0471c03-20ca-4242-857c-a742e299d2b1" />
+    <UnitTestResult executionId="23902d72-2064-4bdc-9c6b-c0f31204f922" testId="c3c1f6f6-7342-6d4b-6c96-97baf002d2e9" testName="GreenAi.E2E.LabelCoverageE2ETests.AdminUsers_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.2454015" startTime="2026-04-05T17:17:11.1586736+02:00" endTime="2026-04-05T17:17:14.4041765+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="23902d72-2064-4bdc-9c6b-c0f31204f922" />
+    <UnitTestResult executionId="0f24a1df-f69b-4b36-a2e2-3d185573c028" testId="bd93d7f1-b86f-5210-2589-b66ec3e8eb32" testName="GreenAi.E2E.CustomerAdminE2ETests.CustomerAdmin_ProfilesTab_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.7776004" startTime="2026-04-05T17:18:18.7886932+02:00" endTime="2026-04-05T17:18:22.5663516+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0f24a1df-f69b-4b36-a2e2-3d185573c028" />
+    <UnitTestResult executionId="d498a6b8-5d79-4fb3-9450-83d164937c68" testId="1514c7e3-cdd5-81ac-92e5-2e342423b454" testName="GreenAi.E2E.LoginFlowE2ETests.Login_MultipleCustomers_SelectCustomer_NavigatesToBroadcasting" computerName="LAPTOP-2Q5GS5I8" duration="00:00:32.3322388" startTime="2026-04-05T17:14:48.5788936+02:00" endTime="2026-04-05T17:15:20.9122074+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d498a6b8-5d79-4fb3-9450-83d164937c68">
+      <Output>
+        <ErrorInfo>
+          <Message>Microsoft.Data.SqlClient.SqlException : Invalid object name 'dbo.RefreshTokens'.</Message>
+          <StackTrace>   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)&#xD;
+   at Microsoft.Data.SqlClient.Connection.SqlConnectionInternal.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)&#xD;
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)&#xD;
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean&amp; dataReady)&#xD;
+   at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)&#xD;
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)&#xD;
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)&#xD;
+   at Microsoft.Data.SqlClient.SqlCommand.&lt;&gt;c.&lt;InternalExecuteNonQueryAsync&gt;b__251_1(IAsyncResult asyncResult)&#xD;
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at GreenAi.E2E.LoginFlowE2ETests.ExecAsync(SqlConnection conn, String sql) in C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs:line 351&#xD;
+   at GreenAi.E2E.LoginFlowE2ETests.ExecAsync(SqlConnection conn, String sql) in C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs:line 351&#xD;
+   at GreenAi.E2E.LoginFlowE2ETests.CleanupUserAsync(Int32 userId, Int32[] customerIds) in C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs:line 292&#xD;
+   at GreenAi.E2E.LoginFlowE2ETests.CleanupUserAsync(Int32 userId, Int32[] customerIds) in C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs:line 308&#xD;
+   at GreenAi.E2E.LoginFlowE2ETests.Login_MultipleCustomers_SelectCustomer_NavigatesToBroadcasting() in C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs:line 111&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="1df0f58a-7a8f-4eaa-bf18-250b6c39cc9f" testId="a3d4b2d4-68d8-743e-8f21-b9ca19f8b1b2" testName="GreenAi.E2E.Visual.NavigationVisualTests.Dashboard_AllDevices" computerName="LAPTOP-2Q5GS5I8" duration="00:00:09.9548702" startTime="2026-04-05T17:12:32.0101144+02:00" endTime="2026-04-05T17:12:41.9687699+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1df0f58a-7a8f-4eaa-bf18-250b6c39cc9f" />
+    <UnitTestResult executionId="563c011e-ee3e-437b-98fa-2eb6909422a7" testId="901cfdbc-ffaa-a154-7559-0ada183f3a9d" testName="GreenAi.E2E.Visual.NavigationVisualTests.WizardLayout_IsAccessible_AllDevices" computerName="LAPTOP-2Q5GS5I8" duration="00:00:11.1663047" startTime="2026-04-05T17:12:52.3122728+02:00" endTime="2026-04-05T17:13:03.4786879+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="563c011e-ee3e-437b-98fa-2eb6909422a7" />
+    <UnitTestResult executionId="a2c97d93-5bb3-450d-8f85-63e7f9c9d887" testId="211a7750-3056-af95-4b2d-6c37ac077778" testName="GreenAi.E2E.LabelCoverageE2ETests.Dashboard_RedirectsToBroadcasting" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.4976985" startTime="2026-04-05T17:17:27.9701707+02:00" endTime="2026-04-05T17:17:31.4679375+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a2c97d93-5bb3-450d-8f85-63e7f9c9d887" />
+    <UnitTestResult executionId="bb3d7b10-0367-49ef-9e20-deb6f938148b" testId="794ce17b-ba8c-ab7d-5fb9-401bad973950" testName="GreenAi.E2E.Visual.NavigationVisualTests.OverlayNav_ESCCloses_AllDevices" computerName="LAPTOP-2Q5GS5I8" duration="00:00:10.2738150" startTime="2026-04-05T17:14:00.8796590+02:00" endTime="2026-04-05T17:14:11.1536769+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bb3d7b10-0367-49ef-9e20-deb6f938148b" />
+    <UnitTestResult executionId="780006ad-e48c-40f9-bbb6-b69dd259b6db" testId="d185c56f-05f8-ea55-f119-8e96d680bae6" testName="GreenAi.E2E.CustomerAdminE2ETests.Login_WithValidCredentials_RedirectsToHome" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.0355978" startTime="2026-04-05T17:18:26.0396428+02:00" endTime="2026-04-05T17:18:29.0765852+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="780006ad-e48c-40f9-bbb6-b69dd259b6db" />
+    <UnitTestResult executionId="dc1480cd-1ebc-42b8-84da-3efc500cd5f3" testId="c2477602-a002-2a10-b8fe-d98b639cb2e5" testName="GreenAi.E2E.LoginFlowE2ETests.Login_SingleCustomerMultipleProfiles_ShowsSelectProfilePage" computerName="LAPTOP-2Q5GS5I8" duration="00:00:32.3166305" startTime="2026-04-05T17:14:16.2568514+02:00" endTime="2026-04-05T17:14:48.5783117+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="dc1480cd-1ebc-42b8-84da-3efc500cd5f3">
+      <Output>
+        <ErrorInfo>
+          <Message>Microsoft.Data.SqlClient.SqlException : Invalid object name 'dbo.RefreshTokens'.</Message>
+          <StackTrace>   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)&#xD;
+   at Microsoft.Data.SqlClient.Connection.SqlConnectionInternal.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)&#xD;
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)&#xD;
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean&amp; dataReady)&#xD;
+   at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)&#xD;
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)&#xD;
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)&#xD;
+   at Microsoft.Data.SqlClient.SqlCommand.&lt;&gt;c.&lt;InternalExecuteNonQueryAsync&gt;b__251_1(IAsyncResult asyncResult)&#xD;
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at GreenAi.E2E.LoginFlowE2ETests.ExecAsync(SqlConnection conn, String sql) in C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs:line 351&#xD;
+   at GreenAi.E2E.LoginFlowE2ETests.ExecAsync(SqlConnection conn, String sql) in C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs:line 351&#xD;
+   at GreenAi.E2E.LoginFlowE2ETests.CleanupUserAsync(Int32 userId, Int32[] customerIds) in C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs:line 292&#xD;
+   at GreenAi.E2E.LoginFlowE2ETests.CleanupUserAsync(Int32 userId, Int32[] customerIds) in C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs:line 308&#xD;
+   at GreenAi.E2E.LoginFlowE2ETests.Login_SingleCustomerMultipleProfiles_ShowsSelectProfilePage() in C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs:line 139&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="c63358be-703d-4775-8b43-ecac9bc02a1d" testId="38110dbb-4c54-c00d-67ec-d8c709fc0bd6" testName="GreenAi.E2E.CustomerAdminE2ETests.CustomerAdmin_SettingsTab_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.4173112" startTime="2026-04-05T17:18:00.7380632+02:00" endTime="2026-04-05T17:18:04.1554364+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c63358be-703d-4775-8b43-ecac9bc02a1d" />
+    <UnitTestResult executionId="9b47e353-37ad-44ec-8fdf-64aae5e317e6" testId="6199eddb-75c8-d2ac-d687-af1e81ecfa20" testName="GreenAi.E2E.LabelCoverageE2ETests.SelectProfile_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.2858522" startTime="2026-04-05T17:17:34.7657938+02:00" endTime="2026-04-05T17:17:38.0517198+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9b47e353-37ad-44ec-8fdf-64aae5e317e6" />
+    <UnitTestResult executionId="85fcb199-678a-42bf-8998-5e59c64fbd1a" testId="e5df468f-097d-4e93-2215-fb6b4187bbf4" testName="GreenAi.E2E.LabelCoverageE2ETests.UserProfile_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.3103223" startTime="2026-04-05T17:17:01.2788144+02:00" endTime="2026-04-05T17:17:04.5892118+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="85fcb199-678a-42bf-8998-5e59c64fbd1a" />
+    <UnitTestResult executionId="0e10731d-a75f-46fe-a073-4cf341a48d72" testId="c362e506-522f-27ea-1c8e-3e3a2223bd99" testName="GreenAi.E2E.DetailPageE2ETests.ProfileDetail_NavigateFromTable_LoadsProfileInfoForm" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.7759285" startTime="2026-04-05T17:17:45.5454070+02:00" endTime="2026-04-05T17:17:49.3214520+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0e10731d-a75f-46fe-a073-4cf341a48d72" />
+    <UnitTestResult executionId="01228d8b-2536-4894-917a-86669dcaa442" testId="e8d40798-e1e7-c63b-5d8e-567fdc8c6f5b" testName="GreenAi.E2E.LabelCoverageE2ETests.SelectCustomer_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.3717191" startTime="2026-04-05T17:17:24.5977940+02:00" endTime="2026-04-05T17:17:27.9695781+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="01228d8b-2536-4894-917a-86669dcaa442" />
+    <UnitTestResult executionId="e0363f76-43fa-4f5d-85b5-e47cca6f67c6" testId="eed0a7dd-ec50-5488-8971-769c9adcd555" testName="GreenAi.E2E.LabelCoverageE2ETests.SendWizard_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.2974618" startTime="2026-04-05T17:17:14.4052204+02:00" endTime="2026-04-05T17:17:17.7027512+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e0363f76-43fa-4f5d-85b5-e47cca6f67c6" />
+    <UnitTestResult executionId="de588019-a19d-422e-a931-404248a1944f" testId="93844514-1118-c739-0606-7aef5cbaaba2" testName="GreenAi.E2E.LoginFlowE2ETests.Login_SingleCustomerSingleProfile_NavigatesDirectlyToBroadcasting" computerName="LAPTOP-2Q5GS5I8" duration="00:00:32.2773009" startTime="2026-04-05T17:16:25.6698282+02:00" endTime="2026-04-05T17:16:57.9482033+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="de588019-a19d-422e-a931-404248a1944f">
+      <Output>
+        <ErrorInfo>
+          <Message>Microsoft.Data.SqlClient.SqlException : Invalid object name 'dbo.RefreshTokens'.</Message>
+          <StackTrace>   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)&#xD;
+   at Microsoft.Data.SqlClient.Connection.SqlConnectionInternal.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)&#xD;
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)&#xD;
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean&amp; dataReady)&#xD;
+   at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)&#xD;
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)&#xD;
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)&#xD;
+   at Microsoft.Data.SqlClient.SqlCommand.&lt;&gt;c.&lt;InternalExecuteNonQueryAsync&gt;b__251_1(IAsyncResult asyncResult)&#xD;
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at GreenAi.E2E.LoginFlowE2ETests.ExecAsync(SqlConnection conn, String sql) in C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs:line 351&#xD;
+   at GreenAi.E2E.LoginFlowE2ETests.ExecAsync(SqlConnection conn, String sql) in C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs:line 351&#xD;
+   at GreenAi.E2E.LoginFlowE2ETests.CleanupUserAsync(Int32 userId, Int32[] customerIds) in C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs:line 292&#xD;
+   at GreenAi.E2E.LoginFlowE2ETests.CleanupUserAsync(Int32 userId, Int32[] customerIds) in C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs:line 308&#xD;
+   at GreenAi.E2E.LoginFlowE2ETests.Login_SingleCustomerSingleProfile_NavigatesDirectlyToBroadcasting() in C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs:line 57&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="d1bd7ed5-5876-416f-9f2f-1b2da5176a43" testId="69e3b573-07a4-c60c-20b5-b5ee3ecbe577" testName="GreenAi.E2E.Visual.NavigationVisualTests.OverlayNav_Open_AllDevices" computerName="LAPTOP-2Q5GS5I8" duration="00:00:10.3364245" startTime="2026-04-05T17:12:41.9748435+02:00" endTime="2026-04-05T17:12:52.3115045+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d1bd7ed5-5876-416f-9f2f-1b2da5176a43" />
+    <UnitTestResult executionId="a26f0df0-3992-4d79-b20b-428310575759" testId="e3c1a298-9885-4920-d800-f1a4820fd194" testName="GreenAi.E2E.DetailPageE2ETests.UserDetail_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.9765447" startTime="2026-04-05T17:17:41.5673852+02:00" endTime="2026-04-05T17:17:45.5440241+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a26f0df0-3992-4d79-b20b-428310575759" />
+    <UnitTestResult executionId="00846067-416a-42f5-b03f-242947090b18" testId="24013c7e-979c-08e4-9cb8-c3b861d94655" testName="GreenAi.E2E.Visual.NavigationVisualTests.Resize_Desktop_To_Mobile" computerName="LAPTOP-2Q5GS5I8" duration="00:00:05.0966469" startTime="2026-04-05T17:14:11.1555118+02:00" endTime="2026-04-05T17:14:16.2523558+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="00846067-416a-42f5-b03f-242947090b18" />
+    <UnitTestResult executionId="96328fa8-3155-4269-b155-6f40c08eed1f" testId="8414f684-09c2-ad79-b35b-8d18b03ee549" testName="GreenAi.E2E.DetailPageE2ETests.UserDetail_NavigateFromTable_LoadsBreadcrumbs" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.5129463" startTime="2026-04-05T17:17:38.0536894+02:00" endTime="2026-04-05T17:17:41.5667317+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="96328fa8-3155-4269-b155-6f40c08eed1f" />
+    <UnitTestResult executionId="87d9e354-f941-4440-9800-952814920a82" testId="6ef24e1e-b7bc-9663-bee8-23a7da386fd1" testName="GreenAi.E2E.DetailPageE2ETests.UserDetail_ActiveStatusChip_IsVisible" computerName="LAPTOP-2Q5GS5I8" duration="00:00:04.0115925" startTime="2026-04-05T17:17:53.2236423+02:00" endTime="2026-04-05T17:17:57.2352926+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="87d9e354-f941-4440-9800-952814920a82" />
+    <UnitTestResult executionId="f9e4ad65-9b58-4ee8-a9cf-5583c0411122" testId="681e72a1-64f9-086a-a8bc-60707ce83b03" testName="GreenAi.E2E.Visual.NavigationVisualTests.OverlayNav_BackdropClick_Closes_NonMobile" computerName="LAPTOP-2Q5GS5I8" duration="00:00:08.0201583" startTime="2026-04-05T17:13:52.8581190+02:00" endTime="2026-04-05T17:14:00.8784446+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f9e4ad65-9b58-4ee8-a9cf-5583c0411122" />
+    <UnitTestResult executionId="f996f9f4-7671-45eb-b89f-4484f8fe619a" testId="f3951272-e2dc-f90e-d27c-b6b1ed03d55c" testName="GreenAi.E2E.LabelCoverageE2ETests.Broadcasting_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.2267658" startTime="2026-04-05T17:17:04.5897066+02:00" endTime="2026-04-05T17:17:07.8166229+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f996f9f4-7671-45eb-b89f-4484f8fe619a" />
+    <UnitTestResult executionId="75679726-91f7-4b6b-976f-43ff73166749" testId="ecbc3c83-a864-026a-57fc-8ef120975fa0" testName="GreenAi.E2E.Visual.NavigationVisualTests.CommandPalette_TypeFilters_AndNavigates_AllDevices" computerName="LAPTOP-2Q5GS5I8" duration="00:00:11.0546555" startTime="2026-04-05T17:13:34.9619799+02:00" endTime="2026-04-05T17:13:46.0167859+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="75679726-91f7-4b6b-976f-43ff73166749" />
+    <UnitTestResult executionId="831695a2-09ed-43dd-93ce-b035ea6b0d29" testId="c7ab239f-b07a-4f94-a384-baa074b37d98" testName="GreenAi.E2E.LabelCoverageE2ETests.SuperAdmin_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.4037018" startTime="2026-04-05T17:17:17.7032997+02:00" endTime="2026-04-05T17:17:21.1070800+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="831695a2-09ed-43dd-93ce-b035ea6b0d29" />
+    <UnitTestResult executionId="ee598775-2291-44ed-bfa3-fad9b7e699c2" testId="5de81687-9c3b-540b-46e1-53e6f61f68f4" testName="GreenAi.E2E.Visual.NavigationVisualTests.OverlayNav_NavLinks_NavigateCorrectly" computerName="LAPTOP-2Q5GS5I8" duration="00:00:09.5214656" startTime="2026-04-05T17:13:13.9005320+02:00" endTime="2026-04-05T17:13:23.4221415+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ee598775-2291-44ed-bfa3-fad9b7e699c2" />
+    <UnitTestResult executionId="91d26c5d-e6f6-4dcc-857c-5ce85c49e6bd" testId="7c3d8fb4-a440-8d7b-6a19-d8d74ff3a163" testName="GreenAi.E2E.CustomerAdminE2ETests.CustomerAdmin_UsersTab_ShowsSeedUsers" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.1886761" startTime="2026-04-05T17:18:08.9991808+02:00" endTime="2026-04-05T17:18:12.1879165+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="91d26c5d-e6f6-4dcc-857c-5ce85c49e6bd" />
+    <UnitTestResult executionId="148dbaa1-83cb-4ba1-ad9b-cf91ed2350e5" testId="c0565992-6d34-3a4a-b8ad-8f6f597c45bc" testName="GreenAi.E2E.Visual.NavigationVisualTests.CommandPalette_Open_AllDevices" computerName="LAPTOP-2Q5GS5I8" duration="00:00:10.4183266" startTime="2026-04-05T17:13:03.4806509+02:00" endTime="2026-04-05T17:13:13.8991138+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="148dbaa1-83cb-4ba1-ad9b-cf91ed2350e5" />
+    <UnitTestResult executionId="eb8ac59f-2343-40b0-b4ef-36673a131cc5" testId="ec1af9c9-b214-e604-7895-76f112d24f37" testName="GreenAi.E2E.DetailPageE2ETests.ProfileDetail_ProfileNameField_IsPresentAndEditable" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.5008883" startTime="2026-04-05T17:17:57.2362677+02:00" endTime="2026-04-05T17:18:00.7372072+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="eb8ac59f-2343-40b0-b4ef-36673a131cc5" />
+    <UnitTestResult executionId="b119e9e9-58a3-43e2-a9e8-e19bc0e095b7" testId="49d10efe-881d-c66e-07a2-36ab46a91ea3" testName="GreenAi.E2E.VisualAnalysis.ExportVisualAnalysisTests.ExportVisualAnalysisPackage" computerName="LAPTOP-2Q5GS5I8" duration="00:00:00.0181074" startTime="2026-04-05T17:12:31.7443526+02:00" endTime="2026-04-05T17:12:31.7900383+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b119e9e9-58a3-43e2-a9e8-e19bc0e095b7">
+      <Output>
+        <ErrorInfo>
+          <Message>System.InvalidOperationException : No screenshots found under TestResults/Visual/current/. Run visual tests first: dotnet test tests/GreenAi.E2E --filter "FullyQualifiedName~Visual" --nologo</Message>
+          <StackTrace>   at GreenAi.E2E.VisualAnalysis.VisualAnalysisExporter.ExportAsync() in C:\Udvikling\green-ai\tests\GreenAi.E2E\VisualAnalysis\VisualAnalysisExporter.cs:line 50&#xD;
+   at GreenAi.E2E.VisualAnalysis.ExportVisualAnalysisTests.ExportVisualAnalysisPackage() in C:\Udvikling\green-ai\tests\GreenAi.E2E\VisualAnalysis\ExportVisualAnalysisTests.cs:line 35&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="cebbeadf-dc9f-42a2-b666-9dfc96c2bd58" testId="17cafc69-f9be-418f-1b43-5f32a7971675" testName="GreenAi.E2E.LoginFlowE2ETests.Login_SingleCustomerMultipleProfiles_SelectProfile_NavigatesToBroadcasting" computerName="LAPTOP-2Q5GS5I8" duration="00:00:32.3906940" startTime="2026-04-05T17:15:53.2768039+02:00" endTime="2026-04-05T17:16:25.6686689+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="cebbeadf-dc9f-42a2-b666-9dfc96c2bd58">
+      <Output>
+        <ErrorInfo>
+          <Message>Microsoft.Data.SqlClient.SqlException : Invalid object name 'dbo.RefreshTokens'.</Message>
+          <StackTrace>   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)&#xD;
+   at Microsoft.Data.SqlClient.Connection.SqlConnectionInternal.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)&#xD;
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)&#xD;
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean&amp; dataReady)&#xD;
+   at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)&#xD;
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)&#xD;
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)&#xD;
+   at Microsoft.Data.SqlClient.SqlCommand.&lt;&gt;c.&lt;InternalExecuteNonQueryAsync&gt;b__251_1(IAsyncResult asyncResult)&#xD;
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at GreenAi.E2E.LoginFlowE2ETests.ExecAsync(SqlConnection conn, String sql) in C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs:line 351&#xD;
+   at GreenAi.E2E.LoginFlowE2ETests.ExecAsync(SqlConnection conn, String sql) in C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs:line 351&#xD;
+   at GreenAi.E2E.LoginFlowE2ETests.CleanupUserAsync(Int32 userId, Int32[] customerIds) in C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs:line 292&#xD;
+   at GreenAi.E2E.LoginFlowE2ETests.CleanupUserAsync(Int32 userId, Int32[] customerIds) in C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs:line 308&#xD;
+   at GreenAi.E2E.LoginFlowE2ETests.Login_SingleCustomerMultipleProfiles_SelectProfile_NavigatesToBroadcasting() in C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs:line 165&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="408fc157-b736-4f2e-976b-fde9913e68be" testId="4ee67fd7-6259-1087-5ba8-4702a82477af" testName="GreenAi.E2E.LabelCoverageE2ETests.Status_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.4880380" startTime="2026-04-05T17:17:21.1085893+02:00" endTime="2026-04-05T17:17:24.5967027+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="408fc157-b736-4f2e-976b-fde9913e68be" />
+    <UnitTestResult executionId="fd07bc54-7d10-4cba-a6cf-0e543d012874" testId="fef5af75-593f-4da4-fc26-afb5afa64846" testName="GreenAi.E2E.Visual.NavigationVisualTests.UserProfile_AllDevices" computerName="LAPTOP-2Q5GS5I8" duration="00:00:11.5358512" startTime="2026-04-05T17:13:23.4233557+02:00" endTime="2026-04-05T17:13:34.9594115+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fd07bc54-7d10-4cba-a6cf-0e543d012874" />
+    <UnitTestResult executionId="79a60f62-4ef6-4cca-9a1d-33ef0bac588b" testId="96413178-20ad-3567-b3cf-bdf5a1a7df69" testName="GreenAi.E2E.LoginFlowE2ETests.Login_MultipleCustomers_ShowsSelectCustomerPage" computerName="LAPTOP-2Q5GS5I8" duration="00:00:32.3615869" startTime="2026-04-05T17:15:20.9127182+02:00" endTime="2026-04-05T17:15:53.2762759+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="79a60f62-4ef6-4cca-9a1d-33ef0bac588b">
+      <Output>
+        <ErrorInfo>
+          <Message>Microsoft.Data.SqlClient.SqlException : Invalid object name 'dbo.RefreshTokens'.</Message>
+          <StackTrace>   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)&#xD;
+   at Microsoft.Data.SqlClient.Connection.SqlConnectionInternal.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)&#xD;
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)&#xD;
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean&amp; dataReady)&#xD;
+   at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)&#xD;
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)&#xD;
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)&#xD;
+   at Microsoft.Data.SqlClient.SqlCommand.&lt;&gt;c.&lt;InternalExecuteNonQueryAsync&gt;b__251_1(IAsyncResult asyncResult)&#xD;
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at GreenAi.E2E.LoginFlowE2ETests.ExecAsync(SqlConnection conn, String sql) in C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs:line 351&#xD;
+   at GreenAi.E2E.LoginFlowE2ETests.ExecAsync(SqlConnection conn, String sql) in C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs:line 351&#xD;
+   at GreenAi.E2E.LoginFlowE2ETests.CleanupUserAsync(Int32 userId, Int32[] customerIds) in C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs:line 292&#xD;
+   at GreenAi.E2E.LoginFlowE2ETests.CleanupUserAsync(Int32 userId, Int32[] customerIds) in C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs:line 308&#xD;
+   at GreenAi.E2E.LoginFlowE2ETests.Login_MultipleCustomers_ShowsSelectCustomerPage() in C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs:line 85&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="060aef03-3d31-40fc-86ec-4501ecbb86dd" testId="ba8430a0-b50f-156f-34eb-0fff2cbc4b2f" testName="GreenAi.E2E.CustomerAdminE2ETests.CustomerAdmin_ProfilesTab_ShowsSeedProfiles" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.3271574" startTime="2026-04-05T17:18:12.1889193+02:00" endTime="2026-04-05T17:18:15.5161355+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="060aef03-3d31-40fc-86ec-4501ecbb86dd" />
+    <UnitTestResult executionId="dfb4b996-43b4-4749-b70e-4d5a27500197" testId="4e45b4d7-79cb-6286-febd-551e60c646f9" testName="GreenAi.E2E.LabelCoverageE2ETests.AdminSettings_NoMissingLabels" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.2960757" startTime="2026-04-05T17:17:31.4685377+02:00" endTime="2026-04-05T17:17:34.7647033+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="dfb4b996-43b4-4749-b70e-4d5a27500197" />
+    <UnitTestResult executionId="e493acee-0ebf-4399-8a2c-dfcc777b665d" testId="351495f3-09f6-f48f-f99f-3f5a835dc9be" testName="GreenAi.E2E.CustomerAdminE2ETests.Login_WithWrongPassword_ShowsError" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.1387175" startTime="2026-04-05T17:18:04.1559192+02:00" endTime="2026-04-05T17:18:07.2947444+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e493acee-0ebf-4399-8a2c-dfcc777b665d" />
+    <UnitTestResult executionId="99369885-db85-43c5-af91-3d04d4d9f2c4" testId="52d31b75-c007-42f6-e556-3ae1101d7eb2" testName="GreenAi.E2E.CustomerAdminE2ETests.CustomerAdmin_AfterLogin_ShowsHeading" computerName="LAPTOP-2Q5GS5I8" duration="00:00:03.2694830" startTime="2026-04-05T17:18:15.5173055+02:00" endTime="2026-04-05T17:18:18.7868666+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="99369885-db85-43c5-af91-3d04d4d9f2c4" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="GreenAi.E2E.DetailPageE2ETests.UserDetail_ActiveStatusChip_IsVisible" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="6ef24e1e-b7bc-9663-bee8-23a7da386fd1">
+      <Execution id="87d9e354-f941-4440-9800-952814920a82" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.DetailPageE2ETests" name="UserDetail_ActiveStatusChip_IsVisible" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.Visual.NavigationVisualTests.OverlayNav_BackdropClick_Closes_NonMobile" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="681e72a1-64f9-086a-a8bc-60707ce83b03">
+      <Execution id="f9e4ad65-9b58-4ee8-a9cf-5583c0411122" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.Visual.NavigationVisualTests" name="OverlayNav_BackdropClick_Closes_NonMobile" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.DetailPageE2ETests.ProfileDetail_NavigateFromTable_LoadsProfileInfoForm" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="c362e506-522f-27ea-1c8e-3e3a2223bd99">
+      <Execution id="0e10731d-a75f-46fe-a073-4cf341a48d72" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.DetailPageE2ETests" name="ProfileDetail_NavigateFromTable_LoadsProfileInfoForm" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.Visual.NavigationVisualTests.TopBar_ShowsUserEmail_WhenAuthenticated" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="2bcc4490-32d9-3d90-8f0e-6079ba9e345a">
+      <Execution id="f2fafd9e-2932-4f12-8ef5-7b0163515963" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.Visual.NavigationVisualTests" name="TopBar_ShowsUserEmail_WhenAuthenticated" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LabelCoverageE2ETests.SendWizard_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="eed0a7dd-ec50-5488-8971-769c9adcd555">
+      <Execution id="e0363f76-43fa-4f5d-85b5-e47cca6f67c6" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LabelCoverageE2ETests" name="SendWizard_NoMissingLabels" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.VisualAnalysis.ExportVisualAnalysisTests.ExportVisualAnalysisPackage" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="49d10efe-881d-c66e-07a2-36ab46a91ea3">
+      <Execution id="b119e9e9-58a3-43e2-a9e8-e19bc0e095b7" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.VisualAnalysis.ExportVisualAnalysisTests" name="ExportVisualAnalysisPackage" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.Visual.NavigationVisualTests.CommandPalette_Open_AllDevices" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="c0565992-6d34-3a4a-b8ad-8f6f597c45bc">
+      <Execution id="148dbaa1-83cb-4ba1-ad9b-cf91ed2350e5" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.Visual.NavigationVisualTests" name="CommandPalette_Open_AllDevices" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.CustomerAdminE2ETests.CustomerAdmin_UsersTab_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="6f21fb76-c1c9-fe83-8cea-7b8af6e1da1a">
+      <Execution id="bf4c6e47-f8e8-439d-94d2-f0f24a058694" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.CustomerAdminE2ETests" name="CustomerAdmin_UsersTab_NoMissingLabels" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LoginFlowE2ETests.Login_SingleCustomerMultipleProfiles_SelectProfile_NavigatesToBroadcasting" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="17cafc69-f9be-418f-1b43-5f32a7971675">
+      <Execution id="cebbeadf-dc9f-42a2-b666-9dfc96c2bd58" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LoginFlowE2ETests" name="Login_SingleCustomerMultipleProfiles_SelectProfile_NavigatesToBroadcasting" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.CustomerAdminE2ETests.Login_WithValidCredentials_RedirectsToHome" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="d185c56f-05f8-ea55-f119-8e96d680bae6">
+      <Execution id="780006ad-e48c-40f9-bbb6-b69dd259b6db" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.CustomerAdminE2ETests" name="Login_WithValidCredentials_RedirectsToHome" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LabelCoverageE2ETests.SelectCustomer_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="e8d40798-e1e7-c63b-5d8e-567fdc8c6f5b">
+      <Execution id="01228d8b-2536-4894-917a-86669dcaa442" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LabelCoverageE2ETests" name="SelectCustomer_NoMissingLabels" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LabelCoverageE2ETests.SuperAdmin_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="c7ab239f-b07a-4f94-a384-baa074b37d98">
+      <Execution id="831695a2-09ed-43dd-93ce-b035ea6b0d29" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LabelCoverageE2ETests" name="SuperAdmin_NoMissingLabels" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.DetailPageE2ETests.ProfileDetail_ProfileNameField_IsPresentAndEditable" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="ec1af9c9-b214-e604-7895-76f112d24f37">
+      <Execution id="eb8ac59f-2343-40b0-b4ef-36673a131cc5" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.DetailPageE2ETests" name="ProfileDetail_ProfileNameField_IsPresentAndEditable" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.Visual.NavigationVisualTests.Dashboard_AllDevices" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="a3d4b2d4-68d8-743e-8f21-b9ca19f8b1b2">
+      <Execution id="1df0f58a-7a8f-4eaa-bf18-250b6c39cc9f" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.Visual.NavigationVisualTests" name="Dashboard_AllDevices" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LoginFlowE2ETests.Login_MultipleCustomers_ShowsSelectCustomerPage" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="96413178-20ad-3567-b3cf-bdf5a1a7df69">
+      <Execution id="79a60f62-4ef6-4cca-9a1d-33ef0bac588b" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LoginFlowE2ETests" name="Login_MultipleCustomers_ShowsSelectCustomerPage" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.DetailPageE2ETests.ProfileDetail_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="28c743a2-ed50-21c2-6e55-5516582e7db7">
+      <Execution id="eca6a57d-04dd-4ab3-85c3-3dea83bc2bd3" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.DetailPageE2ETests" name="ProfileDetail_NoMissingLabels" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.CustomerAdminE2ETests.CustomerAdmin_UnauthenticatedAccess_RedirectsToLogin" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="c451d1bb-122e-0d08-c606-cf27abf33f7c">
+      <Execution id="23935ab7-0f6a-49ca-8c0a-5ec7576d9684" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.CustomerAdminE2ETests" name="CustomerAdmin_UnauthenticatedAccess_RedirectsToLogin" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LabelCoverageE2ETests.StatusDetail_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="5b779511-9be5-cf31-092f-55c5c416231f">
+      <Execution id="e95288b5-b376-4454-bd49-7014a895d5c2" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LabelCoverageE2ETests" name="StatusDetail_NoMissingLabels" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.CustomerAdminE2ETests.CustomerAdmin_AfterLogin_ShowsHeading" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="52d31b75-c007-42f6-e556-3ae1101d7eb2">
+      <Execution id="99369885-db85-43c5-af91-3d04d4d9f2c4" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.CustomerAdminE2ETests" name="CustomerAdmin_AfterLogin_ShowsHeading" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.Visual.NavigationVisualTests.UserProfile_AllDevices" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="fef5af75-593f-4da4-fc26-afb5afa64846">
+      <Execution id="fd07bc54-7d10-4cba-a6cf-0e543d012874" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.Visual.NavigationVisualTests" name="UserProfile_AllDevices" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.CustomerAdminE2ETests.Login_WithWrongPassword_ShowsError" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="351495f3-09f6-f48f-f99f-3f5a835dc9be">
+      <Execution id="e493acee-0ebf-4399-8a2c-dfcc777b665d" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.CustomerAdminE2ETests" name="Login_WithWrongPassword_ShowsError" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LoginFlowE2ETests.Login_MultipleCustomers_SelectCustomer_NavigatesToBroadcasting" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="1514c7e3-cdd5-81ac-92e5-2e342423b454">
+      <Execution id="d498a6b8-5d79-4fb3-9450-83d164937c68" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LoginFlowE2ETests" name="Login_MultipleCustomers_SelectCustomer_NavigatesToBroadcasting" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.Visual.NavigationVisualTests.CommandPalette_TypeFilters_AndNavigates_AllDevices" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="ecbc3c83-a864-026a-57fc-8ef120975fa0">
+      <Execution id="75679726-91f7-4b6b-976f-43ff73166749" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.Visual.NavigationVisualTests" name="CommandPalette_TypeFilters_AndNavigates_AllDevices" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LabelCoverageE2ETests.SelectProfile_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="6199eddb-75c8-d2ac-d687-af1e81ecfa20">
+      <Execution id="9b47e353-37ad-44ec-8fdf-64aae5e317e6" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LabelCoverageE2ETests" name="SelectProfile_NoMissingLabels" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LoginFlowE2ETests.Login_SingleCustomerSingleProfile_NavigatesDirectlyToBroadcasting" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="93844514-1118-c739-0606-7aef5cbaaba2">
+      <Execution id="de588019-a19d-422e-a931-404248a1944f" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LoginFlowE2ETests" name="Login_SingleCustomerSingleProfile_NavigatesDirectlyToBroadcasting" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.DetailPageE2ETests.UserDetail_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="e3c1a298-9885-4920-d800-f1a4820fd194">
+      <Execution id="a26f0df0-3992-4d79-b20b-428310575759" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.DetailPageE2ETests" name="UserDetail_NoMissingLabels" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LoginFlowE2ETests.Login_SingleCustomerMultipleProfiles_ShowsSelectProfilePage" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="c2477602-a002-2a10-b8fe-d98b639cb2e5">
+      <Execution id="dc1480cd-1ebc-42b8-84da-3efc500cd5f3" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LoginFlowE2ETests" name="Login_SingleCustomerMultipleProfiles_ShowsSelectProfilePage" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LabelCoverageE2ETests.UserProfile_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="e5df468f-097d-4e93-2215-fb6b4187bbf4">
+      <Execution id="85fcb199-678a-42bf-8998-5e59c64fbd1a" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LabelCoverageE2ETests" name="UserProfile_NoMissingLabels" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LabelCoverageE2ETests.AdminSettings_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="4e45b4d7-79cb-6286-febd-551e60c646f9">
+      <Execution id="dfb4b996-43b4-4749-b70e-4d5a27500197" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LabelCoverageE2ETests" name="AdminSettings_NoMissingLabels" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.CustomerAdminE2ETests.CustomerAdmin_ProfilesTab_ShowsSeedProfiles" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="ba8430a0-b50f-156f-34eb-0fff2cbc4b2f">
+      <Execution id="060aef03-3d31-40fc-86ec-4501ecbb86dd" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.CustomerAdminE2ETests" name="CustomerAdmin_ProfilesTab_ShowsSeedProfiles" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.DetailPageE2ETests.UserDetail_NavigateFromTable_LoadsBreadcrumbs" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="8414f684-09c2-ad79-b35b-8d18b03ee549">
+      <Execution id="96328fa8-3155-4269-b155-6f40c08eed1f" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.DetailPageE2ETests" name="UserDetail_NavigateFromTable_LoadsBreadcrumbs" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.CustomerAdminE2ETests.CustomerAdmin_SettingsTab_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="38110dbb-4c54-c00d-67ec-d8c709fc0bd6">
+      <Execution id="c63358be-703d-4775-8b43-ecac9bc02a1d" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.CustomerAdminE2ETests" name="CustomerAdmin_SettingsTab_NoMissingLabels" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LabelCoverageE2ETests.Dashboard_RedirectsToBroadcasting" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="211a7750-3056-af95-4b2d-6c37ac077778">
+      <Execution id="a2c97d93-5bb3-450d-8f85-63e7f9c9d887" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LabelCoverageE2ETests" name="Dashboard_RedirectsToBroadcasting" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LabelCoverageE2ETests.Drafts_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="2bcbdf26-1e64-d41a-6ccc-bc2ad133021d">
+      <Execution id="e0471c03-20ca-4242-857c-a742e299d2b1" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LabelCoverageE2ETests" name="Drafts_NoMissingLabels" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LabelCoverageE2ETests.AdminUsers_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="c3c1f6f6-7342-6d4b-6c96-97baf002d2e9">
+      <Execution id="23902d72-2064-4bdc-9c6b-c0f31204f922" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LabelCoverageE2ETests" name="AdminUsers_NoMissingLabels" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.Visual.NavigationVisualTests.Resize_Desktop_To_Mobile" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="24013c7e-979c-08e4-9cb8-c3b861d94655">
+      <Execution id="00846067-416a-42f5-b03f-242947090b18" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.Visual.NavigationVisualTests" name="Resize_Desktop_To_Mobile" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.CustomerAdminE2ETests.CustomerAdmin_UsersTab_ShowsSeedUsers" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="7c3d8fb4-a440-8d7b-6a19-d8d74ff3a163">
+      <Execution id="91d26c5d-e6f6-4dcc-857c-5ce85c49e6bd" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.CustomerAdminE2ETests" name="CustomerAdmin_UsersTab_ShowsSeedUsers" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LabelCoverageE2ETests.Status_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="4ee67fd7-6259-1087-5ba8-4702a82477af">
+      <Execution id="408fc157-b736-4f2e-976b-fde9913e68be" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LabelCoverageE2ETests" name="Status_NoMissingLabels" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.LabelCoverageE2ETests.Broadcasting_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="f3951272-e2dc-f90e-d27c-b6b1ed03d55c">
+      <Execution id="f996f9f4-7671-45eb-b89f-4484f8fe619a" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.LabelCoverageE2ETests" name="Broadcasting_NoMissingLabels" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.Visual.NavigationVisualTests.OverlayNav_ESCCloses_AllDevices" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="794ce17b-ba8c-ab7d-5fb9-401bad973950">
+      <Execution id="bb3d7b10-0367-49ef-9e20-deb6f938148b" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.Visual.NavigationVisualTests" name="OverlayNav_ESCCloses_AllDevices" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.Visual.NavigationVisualTests.WizardLayout_IsAccessible_AllDevices" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="901cfdbc-ffaa-a154-7559-0ada183f3a9d">
+      <Execution id="563c011e-ee3e-437b-98fa-2eb6909422a7" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.Visual.NavigationVisualTests" name="WizardLayout_IsAccessible_AllDevices" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.Visual.NavigationVisualTests.OverlayNav_Open_AllDevices" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="69e3b573-07a4-c60c-20b5-b5ee3ecbe577">
+      <Execution id="d1bd7ed5-5876-416f-9f2f-1b2da5176a43" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.Visual.NavigationVisualTests" name="OverlayNav_Open_AllDevices" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.Visual.NavigationVisualTests.OverlayNav_NavLinks_NavigateCorrectly" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="5de81687-9c3b-540b-46e1-53e6f61f68f4">
+      <Execution id="ee598775-2291-44ed-bfa3-fad9b7e699c2" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.Visual.NavigationVisualTests" name="OverlayNav_NavLinks_NavigateCorrectly" />
+    </UnitTest>
+    <UnitTest name="GreenAi.E2E.CustomerAdminE2ETests.CustomerAdmin_ProfilesTab_NoMissingLabels" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="bd93d7f1-b86f-5210-2589-b66ec3e8eb32">
+      <Execution id="0f24a1df-f69b-4b36-a2e2-3d185573c028" />
+      <TestMethod codeBase="C:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.CustomerAdminE2ETests" name="CustomerAdmin_ProfilesTab_NoMissingLabels" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="c451d1bb-122e-0d08-c606-cf27abf33f7c" executionId="23935ab7-0f6a-49ca-8c0a-5ec7576d9684" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6f21fb76-c1c9-fe83-8cea-7b8af6e1da1a" executionId="bf4c6e47-f8e8-439d-94d2-f0f24a058694" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5b779511-9be5-cf31-092f-55c5c416231f" executionId="e95288b5-b376-4454-bd49-7014a895d5c2" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2bcc4490-32d9-3d90-8f0e-6079ba9e345a" executionId="f2fafd9e-2932-4f12-8ef5-7b0163515963" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="28c743a2-ed50-21c2-6e55-5516582e7db7" executionId="eca6a57d-04dd-4ab3-85c3-3dea83bc2bd3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2bcbdf26-1e64-d41a-6ccc-bc2ad133021d" executionId="e0471c03-20ca-4242-857c-a742e299d2b1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c3c1f6f6-7342-6d4b-6c96-97baf002d2e9" executionId="23902d72-2064-4bdc-9c6b-c0f31204f922" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="bd93d7f1-b86f-5210-2589-b66ec3e8eb32" executionId="0f24a1df-f69b-4b36-a2e2-3d185573c028" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="1514c7e3-cdd5-81ac-92e5-2e342423b454" executionId="d498a6b8-5d79-4fb3-9450-83d164937c68" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a3d4b2d4-68d8-743e-8f21-b9ca19f8b1b2" executionId="1df0f58a-7a8f-4eaa-bf18-250b6c39cc9f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="901cfdbc-ffaa-a154-7559-0ada183f3a9d" executionId="563c011e-ee3e-437b-98fa-2eb6909422a7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="211a7750-3056-af95-4b2d-6c37ac077778" executionId="a2c97d93-5bb3-450d-8f85-63e7f9c9d887" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="794ce17b-ba8c-ab7d-5fb9-401bad973950" executionId="bb3d7b10-0367-49ef-9e20-deb6f938148b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d185c56f-05f8-ea55-f119-8e96d680bae6" executionId="780006ad-e48c-40f9-bbb6-b69dd259b6db" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c2477602-a002-2a10-b8fe-d98b639cb2e5" executionId="dc1480cd-1ebc-42b8-84da-3efc500cd5f3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="38110dbb-4c54-c00d-67ec-d8c709fc0bd6" executionId="c63358be-703d-4775-8b43-ecac9bc02a1d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6199eddb-75c8-d2ac-d687-af1e81ecfa20" executionId="9b47e353-37ad-44ec-8fdf-64aae5e317e6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e5df468f-097d-4e93-2215-fb6b4187bbf4" executionId="85fcb199-678a-42bf-8998-5e59c64fbd1a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c362e506-522f-27ea-1c8e-3e3a2223bd99" executionId="0e10731d-a75f-46fe-a073-4cf341a48d72" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e8d40798-e1e7-c63b-5d8e-567fdc8c6f5b" executionId="01228d8b-2536-4894-917a-86669dcaa442" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="eed0a7dd-ec50-5488-8971-769c9adcd555" executionId="e0363f76-43fa-4f5d-85b5-e47cca6f67c6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="93844514-1118-c739-0606-7aef5cbaaba2" executionId="de588019-a19d-422e-a931-404248a1944f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="69e3b573-07a4-c60c-20b5-b5ee3ecbe577" executionId="d1bd7ed5-5876-416f-9f2f-1b2da5176a43" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e3c1a298-9885-4920-d800-f1a4820fd194" executionId="a26f0df0-3992-4d79-b20b-428310575759" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="24013c7e-979c-08e4-9cb8-c3b861d94655" executionId="00846067-416a-42f5-b03f-242947090b18" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8414f684-09c2-ad79-b35b-8d18b03ee549" executionId="96328fa8-3155-4269-b155-6f40c08eed1f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6ef24e1e-b7bc-9663-bee8-23a7da386fd1" executionId="87d9e354-f941-4440-9800-952814920a82" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="681e72a1-64f9-086a-a8bc-60707ce83b03" executionId="f9e4ad65-9b58-4ee8-a9cf-5583c0411122" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f3951272-e2dc-f90e-d27c-b6b1ed03d55c" executionId="f996f9f4-7671-45eb-b89f-4484f8fe619a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ecbc3c83-a864-026a-57fc-8ef120975fa0" executionId="75679726-91f7-4b6b-976f-43ff73166749" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c7ab239f-b07a-4f94-a384-baa074b37d98" executionId="831695a2-09ed-43dd-93ce-b035ea6b0d29" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5de81687-9c3b-540b-46e1-53e6f61f68f4" executionId="ee598775-2291-44ed-bfa3-fad9b7e699c2" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7c3d8fb4-a440-8d7b-6a19-d8d74ff3a163" executionId="91d26c5d-e6f6-4dcc-857c-5ce85c49e6bd" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c0565992-6d34-3a4a-b8ad-8f6f597c45bc" executionId="148dbaa1-83cb-4ba1-ad9b-cf91ed2350e5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ec1af9c9-b214-e604-7895-76f112d24f37" executionId="eb8ac59f-2343-40b0-b4ef-36673a131cc5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="49d10efe-881d-c66e-07a2-36ab46a91ea3" executionId="b119e9e9-58a3-43e2-a9e8-e19bc0e095b7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="17cafc69-f9be-418f-1b43-5f32a7971675" executionId="cebbeadf-dc9f-42a2-b666-9dfc96c2bd58" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4ee67fd7-6259-1087-5ba8-4702a82477af" executionId="408fc157-b736-4f2e-976b-fde9913e68be" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="fef5af75-593f-4da4-fc26-afb5afa64846" executionId="fd07bc54-7d10-4cba-a6cf-0e543d012874" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="96413178-20ad-3567-b3cf-bdf5a1a7df69" executionId="79a60f62-4ef6-4cca-9a1d-33ef0bac588b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ba8430a0-b50f-156f-34eb-0fff2cbc4b2f" executionId="060aef03-3d31-40fc-86ec-4501ecbb86dd" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4e45b4d7-79cb-6286-febd-551e60c646f9" executionId="dfb4b996-43b4-4749-b70e-4d5a27500197" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="351495f3-09f6-f48f-f99f-3f5a835dc9be" executionId="e493acee-0ebf-4399-8a2c-dfcc777b665d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="52d31b75-c007-42f6-e556-3ae1101d7eb2" executionId="99369885-db85-43c5-af91-3d04d4d9f2c4" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="44" executed="44" passed="38" failed="6" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.5+1b188a7b0a (64-bit .NET 10.0.5)&#xD;
+[xUnit.net 00:00:00.29]   Discovering: GreenAi.E2E&#xD;
+[xUnit.net 00:00:00.67]   Discovered:  GreenAi.E2E&#xD;
+[xUnit.net 00:00:00.91]   Starting:    GreenAi.E2E&#xD;
+[xUnit.net 00:00:01.01]       System.InvalidOperationException : No screenshots found under TestResults/Visual/current/. Run visual tests first: dotnet test tests/GreenAi.E2E --filter "FullyQualifiedName~Visual" --nologo&#xD;
+[xUnit.net 00:00:01.01]       Stack Trace:&#xD;
+[xUnit.net 00:00:01.01]         C:\Udvikling\green-ai\tests\GreenAi.E2E\VisualAnalysis\VisualAnalysisExporter.cs(50,0): at GreenAi.E2E.VisualAnalysis.VisualAnalysisExporter.ExportAsync()&#xD;
+[xUnit.net 00:00:01.01]         C:\Udvikling\green-ai\tests\GreenAi.E2E\VisualAnalysis\ExportVisualAnalysisTests.cs(35,0): at GreenAi.E2E.VisualAnalysis.ExportVisualAnalysisTests.ExportVisualAnalysisPackage()&#xD;
+[xUnit.net 00:00:01.01]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:02:17.79]       Microsoft.Data.SqlClient.SqlException : Invalid object name 'dbo.RefreshTokens'.&#xD;
+[xUnit.net 00:02:17.79]       Stack Trace:&#xD;
+[xUnit.net 00:02:17.79]            at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)&#xD;
+[xUnit.net 00:02:17.79]            at Microsoft.Data.SqlClient.Connection.SqlConnectionInternal.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)&#xD;
+[xUnit.net 00:02:17.79]            at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)&#xD;
+[xUnit.net 00:02:17.79]            at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean&amp; dataReady)&#xD;
+[xUnit.net 00:02:17.79]            at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)&#xD;
+[xUnit.net 00:02:17.79]            at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)&#xD;
+[xUnit.net 00:02:17.79]            at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)&#xD;
+[xUnit.net 00:02:17.79]            at Microsoft.Data.SqlClient.SqlCommand.&lt;&gt;c.&lt;InternalExecuteNonQueryAsync&gt;b__251_1(IAsyncResult asyncResult)&#xD;
+[xUnit.net 00:02:17.79]            at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)&#xD;
+[xUnit.net 00:02:17.79]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:02:17.79]         C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs(351,0): at GreenAi.E2E.LoginFlowE2ETests.ExecAsync(SqlConnection conn, String sql)&#xD;
+[xUnit.net 00:02:17.79]         C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs(351,0): at GreenAi.E2E.LoginFlowE2ETests.ExecAsync(SqlConnection conn, String sql)&#xD;
+[xUnit.net 00:02:17.79]         C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs(292,0): at GreenAi.E2E.LoginFlowE2ETests.CleanupUserAsync(Int32 userId, Int32[] customerIds)&#xD;
+[xUnit.net 00:02:17.79]         C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs(308,0): at GreenAi.E2E.LoginFlowE2ETests.CleanupUserAsync(Int32 userId, Int32[] customerIds)&#xD;
+[xUnit.net 00:02:17.79]         C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs(139,0): at GreenAi.E2E.LoginFlowE2ETests.Login_SingleCustomerMultipleProfiles_ShowsSelectProfilePage()&#xD;
+[xUnit.net 00:02:17.79]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:02:50.12]       Microsoft.Data.SqlClient.SqlException : Invalid object name 'dbo.RefreshTokens'.&#xD;
+[xUnit.net 00:02:50.12]       Stack Trace:&#xD;
+[xUnit.net 00:02:50.12]            at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)&#xD;
+[xUnit.net 00:02:50.12]            at Microsoft.Data.SqlClient.Connection.SqlConnectionInternal.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)&#xD;
+[xUnit.net 00:02:50.12]            at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)&#xD;
+[xUnit.net 00:02:50.12]            at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean&amp; dataReady)&#xD;
+[xUnit.net 00:02:50.13]            at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)&#xD;
+[xUnit.net 00:02:50.13]            at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)&#xD;
+[xUnit.net 00:02:50.13]            at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)&#xD;
+[xUnit.net 00:02:50.13]            at Microsoft.Data.SqlClient.SqlCommand.&lt;&gt;c.&lt;InternalExecuteNonQueryAsync&gt;b__251_1(IAsyncResult asyncResult)&#xD;
+[xUnit.net 00:02:50.13]            at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)&#xD;
+[xUnit.net 00:02:50.13]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:02:50.13]         C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs(351,0): at GreenAi.E2E.LoginFlowE2ETests.ExecAsync(SqlConnection conn, String sql)&#xD;
+[xUnit.net 00:02:50.13]         C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs(351,0): at GreenAi.E2E.LoginFlowE2ETests.ExecAsync(SqlConnection conn, String sql)&#xD;
+[xUnit.net 00:02:50.13]         C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs(292,0): at GreenAi.E2E.LoginFlowE2ETests.CleanupUserAsync(Int32 userId, Int32[] customerIds)&#xD;
+[xUnit.net 00:02:50.13]         C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs(308,0): at GreenAi.E2E.LoginFlowE2ETests.CleanupUserAsync(Int32 userId, Int32[] customerIds)&#xD;
+[xUnit.net 00:02:50.13]         C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs(111,0): at GreenAi.E2E.LoginFlowE2ETests.Login_MultipleCustomers_SelectCustomer_NavigatesToBroadcasting()&#xD;
+[xUnit.net 00:02:50.13]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:03:22.49]       Microsoft.Data.SqlClient.SqlException : Invalid object name 'dbo.RefreshTokens'.&#xD;
+[xUnit.net 00:03:22.49]       Stack Trace:&#xD;
+[xUnit.net 00:03:22.49]            at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)&#xD;
+[xUnit.net 00:03:22.49]            at Microsoft.Data.SqlClient.Connection.SqlConnectionInternal.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)&#xD;
+[xUnit.net 00:03:22.49]            at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)&#xD;
+[xUnit.net 00:03:22.49]            at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean&amp; dataReady)&#xD;
+[xUnit.net 00:03:22.49]            at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)&#xD;
+[xUnit.net 00:03:22.49]            at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)&#xD;
+[xUnit.net 00:03:22.49]            at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)&#xD;
+[xUnit.net 00:03:22.49]            at Microsoft.Data.SqlClient.SqlCommand.&lt;&gt;c.&lt;InternalExecuteNonQueryAsync&gt;b__251_1(IAsyncResult asyncResult)&#xD;
+[xUnit.net 00:03:22.49]            at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)&#xD;
+[xUnit.net 00:03:22.49]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:03:22.49]         C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs(351,0): at GreenAi.E2E.LoginFlowE2ETests.ExecAsync(SqlConnection conn, String sql)&#xD;
+[xUnit.net 00:03:22.49]         C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs(351,0): at GreenAi.E2E.LoginFlowE2ETests.ExecAsync(SqlConnection conn, String sql)&#xD;
+[xUnit.net 00:03:22.49]         C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs(292,0): at GreenAi.E2E.LoginFlowE2ETests.CleanupUserAsync(Int32 userId, Int32[] customerIds)&#xD;
+[xUnit.net 00:03:22.49]         C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs(308,0): at GreenAi.E2E.LoginFlowE2ETests.CleanupUserAsync(Int32 userId, Int32[] customerIds)&#xD;
+[xUnit.net 00:03:22.49]         C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs(85,0): at GreenAi.E2E.LoginFlowE2ETests.Login_MultipleCustomers_ShowsSelectCustomerPage()&#xD;
+[xUnit.net 00:03:22.49]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:03:54.88]       Microsoft.Data.SqlClient.SqlException : Invalid object name 'dbo.RefreshTokens'.&#xD;
+[xUnit.net 00:03:54.88]       Stack Trace:&#xD;
+[xUnit.net 00:03:54.88]            at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)&#xD;
+[xUnit.net 00:03:54.88]            at Microsoft.Data.SqlClient.Connection.SqlConnectionInternal.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)&#xD;
+[xUnit.net 00:03:54.88]            at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)&#xD;
+[xUnit.net 00:03:54.88]            at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean&amp; dataReady)&#xD;
+[xUnit.net 00:03:54.88]            at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)&#xD;
+[xUnit.net 00:03:54.88]            at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)&#xD;
+[xUnit.net 00:03:54.88]            at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)&#xD;
+[xUnit.net 00:03:54.88]            at Microsoft.Data.SqlClient.SqlCommand.&lt;&gt;c.&lt;InternalExecuteNonQueryAsync&gt;b__251_1(IAsyncResult asyncResult)&#xD;
+[xUnit.net 00:03:54.88]            at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)&#xD;
+[xUnit.net 00:03:54.88]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:03:54.88]         C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs(351,0): at GreenAi.E2E.LoginFlowE2ETests.ExecAsync(SqlConnection conn, String sql)&#xD;
+[xUnit.net 00:03:54.88]         C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs(351,0): at GreenAi.E2E.LoginFlowE2ETests.ExecAsync(SqlConnection conn, String sql)&#xD;
+[xUnit.net 00:03:54.88]         C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs(292,0): at GreenAi.E2E.LoginFlowE2ETests.CleanupUserAsync(Int32 userId, Int32[] customerIds)&#xD;
+[xUnit.net 00:03:54.88]         C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs(308,0): at GreenAi.E2E.LoginFlowE2ETests.CleanupUserAsync(Int32 userId, Int32[] customerIds)&#xD;
+[xUnit.net 00:03:54.88]         C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs(165,0): at GreenAi.E2E.LoginFlowE2ETests.Login_SingleCustomerMultipleProfiles_SelectProfile_NavigatesToBroadcasting()&#xD;
+[xUnit.net 00:03:54.88]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:04:27.16]       Microsoft.Data.SqlClient.SqlException : Invalid object name 'dbo.RefreshTokens'.&#xD;
+[xUnit.net 00:04:27.16]       Stack Trace:&#xD;
+[xUnit.net 00:04:27.16]            at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)&#xD;
+[xUnit.net 00:04:27.16]            at Microsoft.Data.SqlClient.Connection.SqlConnectionInternal.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)&#xD;
+[xUnit.net 00:04:27.16]            at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)&#xD;
+[xUnit.net 00:04:27.16]            at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean&amp; dataReady)&#xD;
+[xUnit.net 00:04:27.16]            at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)&#xD;
+[xUnit.net 00:04:27.16]            at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)&#xD;
+[xUnit.net 00:04:27.16]            at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)&#xD;
+[xUnit.net 00:04:27.16]            at Microsoft.Data.SqlClient.SqlCommand.&lt;&gt;c.&lt;InternalExecuteNonQueryAsync&gt;b__251_1(IAsyncResult asyncResult)&#xD;
+[xUnit.net 00:04:27.16]            at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)&#xD;
+[xUnit.net 00:04:27.16]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:04:27.16]         C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs(351,0): at GreenAi.E2E.LoginFlowE2ETests.ExecAsync(SqlConnection conn, String sql)&#xD;
+[xUnit.net 00:04:27.16]         C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs(351,0): at GreenAi.E2E.LoginFlowE2ETests.ExecAsync(SqlConnection conn, String sql)&#xD;
+[xUnit.net 00:04:27.16]         C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs(292,0): at GreenAi.E2E.LoginFlowE2ETests.CleanupUserAsync(Int32 userId, Int32[] customerIds)&#xD;
+[xUnit.net 00:04:27.16]         C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs(308,0): at GreenAi.E2E.LoginFlowE2ETests.CleanupUserAsync(Int32 userId, Int32[] customerIds)&#xD;
+[xUnit.net 00:04:27.16]         C:\Udvikling\green-ai\tests\GreenAi.E2E\LoginFlowE2ETests.cs(57,0): at GreenAi.E2E.LoginFlowE2ETests.Login_SingleCustomerSingleProfile_NavigatesDirectlyToBroadcasting()&#xD;
+[xUnit.net 00:04:27.16]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:05:58.30]   Finished:    GreenAi.E2E (ID = 'b22c8369b1bbe770defd711cb8a9268ada6d4b894a82e516ae76dd9d44f93e08')&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LAPTOP-2Q5GS5I8" outcome="Error" timestamp="2026-04-05T17:12:31.7981721+02:00">
+        <Text>[xUnit.net 00:00:01.01]     GreenAi.E2E.VisualAnalysis.ExportVisualAnalysisTests.ExportVisualAnalysisPackage [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LAPTOP-2Q5GS5I8" outcome="Error" timestamp="2026-04-05T17:14:48.5794272+02:00">
+        <Text>[xUnit.net 00:02:17.79]     GreenAi.E2E.LoginFlowE2ETests.Login_SingleCustomerMultipleProfiles_ShowsSelectProfilePage [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LAPTOP-2Q5GS5I8" outcome="Error" timestamp="2026-04-05T17:15:20.9131248+02:00">
+        <Text>[xUnit.net 00:02:50.12]     GreenAi.E2E.LoginFlowE2ETests.Login_MultipleCustomers_SelectCustomer_NavigatesToBroadcasting [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LAPTOP-2Q5GS5I8" outcome="Error" timestamp="2026-04-05T17:15:53.2772710+02:00">
+        <Text>[xUnit.net 00:03:22.49]     GreenAi.E2E.LoginFlowE2ETests.Login_MultipleCustomers_ShowsSelectCustomerPage [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LAPTOP-2Q5GS5I8" outcome="Error" timestamp="2026-04-05T17:16:25.6694311+02:00">
+        <Text>[xUnit.net 00:03:54.88]     GreenAi.E2E.LoginFlowE2ETests.Login_SingleCustomerMultipleProfiles_SelectProfile_NavigatesToBroadcasting [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LAPTOP-2Q5GS5I8" outcome="Error" timestamp="2026-04-05T17:16:57.9488368+02:00">
+        <Text>[xUnit.net 00:04:27.16]     GreenAi.E2E.LoginFlowE2ETests.Login_SingleCustomerSingleProfile_NavigatesDirectlyToBroadcasting [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

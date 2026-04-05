@@ -167,7 +167,7 @@
                 {
                     <div class="status-mini-item" @onclick='() => GoToDetail(b.Id)'
                          data-testid="@($"sent-item-{b.Id}")">
-                        <div class="overflow-hidden mr-2">
+                        <div class="status-mini-text">
                             <MudText Typo="Typo.body2" Class="text-truncate">@b.Subject</MudText>
                             <MudText Typo="Typo.caption" Color="Color.Secondary">@b.Profile</MudText>
                         </div>
@@ -200,7 +200,7 @@
                 {
                     <div class="status-mini-item d-flex justify-space-between align-center"
                          data-testid="@($"planned-item-{b.Id}")">
-                        <div class="overflow-hidden mr-2" style="cursor:pointer"
+                        <div class="status-mini-text" style="cursor:pointer"
                              @onclick='() => GoToDetail(b.Id)'>
                             <MudText Typo="Typo.body2" Class="text-truncate">@b.Subject</MudText>
                             <MudText Typo="Typo.caption" Color="Color.Secondary">

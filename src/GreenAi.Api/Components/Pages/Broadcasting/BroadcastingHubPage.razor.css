@@ -59,6 +59,13 @@
     border-bottom: 1px solid var(--mud-palette-divider);
 }
 
+/* Flex child holding truncated text — needs flex:1 + min-width:0 for text-truncate to work in flex */
+.status-mini-text {
+    flex: 1 1 0;
+    min-width: 0;
+    overflow: hidden;
+}
+
 .status-mini-item:last-of-type {
     border-bottom: none;
 }

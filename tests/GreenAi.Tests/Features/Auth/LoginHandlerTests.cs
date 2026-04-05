@@ -117,6 +117,8 @@ public sealed class LoginHandlerTests
         Assert.True(result.IsSuccess);
         Assert.True(result.Value!.NeedsProfileSelection);
         Assert.Equal(2, result.Value.AvailableProfiles!.Count);
+        Assert.NotNull(result.Value.PreAuthToken);
+        Assert.NotEmpty(result.Value.PreAuthToken);
         await tokenWriter.DidNotReceive().SaveAsync(Arg.Any<UserId>(), Arg.Any<CustomerId>(), Arg.Any<ProfileId>(), Arg.Any<string>(), Arg.Any<DateTimeOffset>(), Arg.Any<int>());
     }
 
@@ -257,6 +259,9 @@ public sealed class LoginHandlerTests
 
         Assert.True(result.IsSuccess);
         Assert.True(result.Value!.NeedsCustomerSelection);
+        Assert.Equal(2, result.Value.AvailableCustomers!.Count);
+        Assert.NotNull(result.Value.PreAuthToken);
+        Assert.NotEmpty(result.Value.PreAuthToken);
         await tokenWriter.DidNotReceive().SaveAsync(
             Arg.Any<UserId>(), Arg.Any<CustomerId>(), Arg.Any<ProfileId>(),
             Arg.Any<string>(), Arg.Any<DateTimeOffset>(), Arg.Any<int>());

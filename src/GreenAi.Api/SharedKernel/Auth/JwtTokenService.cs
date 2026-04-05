@@ -77,6 +77,42 @@ public sealed class JwtTokenService
         }
     }
 
+    /// <summary>
+    /// Issues a short-lived pre-authentication token used during the customer/profile selection flow.
+    /// This token carries userId (and optionally customerId) so the selection MediatR handlers can
+    /// identify the user — it does NOT carry a real ProfileId and must never be used for operational requests.
+    ///
+    /// ProfileId is deliberately omitted from claims (no ProfileId claim present);
+    /// HttpContextCurrentUser.ProfileId will throw if accessed — which is correct, since
+    /// SelectCustomer/SelectProfile only implement IRequireAuthentication, not IRequireProfile.
+    /// </summary>
+    public string CreatePreAuthToken(UserId userId, CustomerId customerId, string email, int languageId, int expiryMinutes = 5)
+    {
+        var key         = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey));
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var expiresAt   = DateTimeOffset.UtcNow.AddMinutes(expiryMinutes);
+
+        var claims = new[]
+        {
+            new Claim(GreenAiClaims.Sub,        userId.Value.ToString()),
+            new Claim(GreenAiClaims.Name,       email),
+            new Claim(GreenAiClaims.Email,      email),
+            new Claim(GreenAiClaims.CustomerId, customerId.Value.ToString()),
+            new Claim(GreenAiClaims.LanguageId, languageId.ToString()),
+            new Claim("greenai_preauth",         "true"),
+        };
+
+        var token = new JwtSecurityToken(
+            issuer:            _options.Issuer,
+            audience:          _options.Audience,
+            claims:            claims,
+            expires:           expiresAt.UtcDateTime,
+            signingCredentials: credentials
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
     private static string GenerateRefreshToken()
     {
         var bytes = new byte[64];

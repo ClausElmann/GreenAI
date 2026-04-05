@@ -4,6 +4,7 @@
 @using GreenAi.Api.Features.Auth.Login
 @using GreenAi.Api.SharedKernel.Auth
 @using GreenAi.Api.SharedKernel.Localization
+@using GreenAi.Api.SharedKernel.State
 @using MediatR
 @using MudBlazor
 @using Microsoft.AspNetCore.Components.Forms
@@ -12,6 +13,9 @@
 @inject IMediator Mediator
 @inject NavigationManager Nav
 @inject ILocalizationContext Loc
+@inject AppState AppState
+@inject JwtTokenService JwtTokenService
+@inject BlazorPrincipalHolder PrincipalHolder
 
 <PageTitle>Log ind — GreenAi</PageTitle>
 
@@ -121,15 +125,23 @@
 
             if (result.Value!.NeedsCustomerSelection)
             {
-                // TODO: navigate to customer selection page (Step 5 — multi-tenant flow)
-                _errorMessage = "Multiple tenant memberships detected. Customer selection not yet implemented.";
+                // Multiple customers — set pre-auth principal so select-customer page can call Mediator
+                var preAuthPrincipal = JwtTokenService.ValidateToken(result.Value.PreAuthToken!);
+                if (preAuthPrincipal is not null)
+                    PrincipalHolder.Set(preAuthPrincipal);
+                AppState.SetPendingCustomers(result.Value.AvailableCustomers?.ToList() ?? []);
+                Nav.NavigateTo("/select-customer");
                 return;
             }
 
             if (result.Value.NeedsProfileSelection)
             {
-                // TODO: navigate to profile selection page (Step 6 — multi-profile flow)
-                _errorMessage = "Multiple profiles detected. Profile selection not yet implemented.";
+                // Single customer, multiple profiles — set pre-auth principal so select-profile page can call Mediator
+                var preAuthPrincipal = JwtTokenService.ValidateToken(result.Value.PreAuthToken!);
+                if (preAuthPrincipal is not null)
+                    PrincipalHolder.Set(preAuthPrincipal);
+                AppState.SetPendingProfiles(result.Value.AvailableProfiles?.ToList() ?? []);
+                Nav.NavigateTo("/select-profile");
                 return;
             }
 
@@ -138,7 +150,14 @@
                 result.Value.RefreshToken,
                 result.Value.ExpiresAt);
 
-            Nav.NavigateTo("/");
+            // Set PrincipalHolder so ICurrentUser.IsAuthenticated is true when Home.razor
+            // renders synchronously on navigation — localStorage-backed auth state is async
+            // and may not have propagated yet when the circuit navigates to the next route.
+            var fullPrincipal = JwtTokenService.ValidateToken(result.Value.AccessToken!);
+            if (fullPrincipal is not null)
+                PrincipalHolder.Set(fullPrincipal);
+
+            Nav.NavigateTo("/broadcasting");
         }
         finally
         {

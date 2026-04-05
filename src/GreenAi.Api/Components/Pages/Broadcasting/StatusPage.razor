@@ -5,7 +5,7 @@
 <AppShell Title='@Loc.Get("page.statusList.Title")' IsLoading="false">
 
     @* Filter bar *@
-    <MudPaper Elevation="1" Class="pa-3 mb-4" data-testid="status-filter-form">
+    <MudPaper Elevation="0" Class="pa-3 mb-3 mud-paper--outlined" data-testid="status-filter-form">
         <MudGrid Spacing="2" Class="align-items-center">
             <MudItem xs="12" sm="3">
                 <MudDatePicker @bind-Date="_filterFrom"
@@ -19,83 +19,81 @@
                                Variant="Variant.Outlined" Margin="Margin.Dense"
                                data-testid="filter-to" />
             </MudItem>
-            <MudItem xs="12" sm="4">
+            <MudItem xs="12" sm="5">
                 <MudTextField @bind-Value="_search"
                               Label='@Loc.Get("page.statusList.FilterSearch")'
                               Variant="Variant.Outlined" Margin="Margin.Dense"
                               Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search"
-                              Immediate="true" data-testid="filter-search" />
+                              Immediate="true" OnDebounceIntervalElapsed="ApplyFilter"
+                              DebounceInterval="350"
+                              data-testid="filter-search" />
             </MudItem>
-            <MudItem xs="12" sm="2">
-                <MudButton Variant='Variant.Filled' Color='Color.Primary'
-                           OnClick="ApplyFilter" FullWidth="true"
-                           data-testid="filter-search-btn">
-                    @Loc.Get("page.statusList.SearchButton")
-                </MudButton>
+            <MudItem xs="12" sm="1">
+                <MudIconButton Icon="@Icons.Material.Filled.Refresh"
+                               Color="Color.Default"
+                               title='@Loc.Get("page.statusList.SearchButton")'
+                               OnClick="ApplyFilter"
+                               data-testid="filter-search-btn" />
             </MudItem>
         </MudGrid>
     </MudPaper>
 
-    @* Results table *@
-    <MudTable T="BroadcastMock" Items="_results" Dense="true" Hover="true"
-             OnRowClick='@(e => { if (e.Item is not null) GoToDetail(e.Item.Id); })'
-             RowClass="cursor-pointer" data-testid="status-list-table">
-        <HeaderContent>
-            <MudTh>@Loc.Get("page.statusList.ColSubject")</MudTh>
-            <MudTh>@Loc.Get("page.statusList.ColProfile")</MudTh>
-            <MudTh>@Loc.Get("page.statusList.ColMethod")</MudTh>
-            <MudTh Style="text-align:right">@Loc.Get("page.statusList.ColRecipients")</MudTh>
-            <MudTh>@Loc.Get("page.statusList.ColCreated")</MudTh>
-            <MudTh>@Loc.Get("page.statusList.ColStatus")</MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd DataLabel="Emne">
-                <MudText Typo="Typo.body2" Style="max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-                    @context.Subject
-                </MudText>
-            </MudTd>
-            <MudTd DataLabel="Profil">
-                <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Style="margin:0">@context.Profile</MudChip>
-            </MudTd>
-            <MudTd DataLabel="Metode">
-                <MudText Typo="Typo.caption" Color="Color.Secondary">@MockData.GetSendMethodLabel(MockData.GetSendMethodKey(context.Id))</MudText>
-            </MudTd>
-            <MudTd DataLabel="Modtagere" Style="text-align:right">@context.Recipients.ToString("N0")</MudTd>
-            <MudTd DataLabel="Oprettet">
-                <MudText Typo="Typo.caption" Color="Color.Secondary">@context.CreatedAt.ToString("d. MMM HH:mm")</MudText>
-            </MudTd>
-            <MudTd DataLabel="Status">
-                @{ var chip = StatusChip(context.Status); }
-                <MudChip T="string" Size="Size.Small" Color="@chip.Color" Icon="@chip.Icon" Variant="Variant.Filled" Style="margin:0">
-                    @chip.Label
-                </MudChip>
-            </MudTd>
-        </RowTemplate>
-        <NoRecordsContent>
-            <MudText Typo="Typo.body2" Color="Color.Secondary" Class="pa-4">@Loc.Get("page.statusList.EmptyResult")</MudText>
-        </NoRecordsContent>
-    </MudTable>
+    @* Tabs: Sent / Scheduled / Failed *@
+    <MudTabs Elevation="1" Rounded="true" PanelClass="pt-3"
+             @bind-ActivePanelIndex="_activeTab"
+             data-testid="status-tabs">
+
+        <MudTabPanel Text='@($"{Loc.Get("page.statusList.StatusSent")} ({_sentResults.Count})")'
+                     Icon="@Icons.Material.Filled.CheckCircle"
+                     data-testid="tab-sent">
+            <BroadcastTable Items="_sentResults" OnRowClick="GoToDetail" Loc="Loc" />
+        </MudTabPanel>
+
+        <MudTabPanel Text='@($"{Loc.Get("page.statusList.StatusScheduled")} ({_scheduledResults.Count})")'
+                     Icon="@Icons.Material.Filled.Schedule"
+                     data-testid="tab-scheduled">
+            <BroadcastTable Items="_scheduledResults" OnRowClick="GoToDetail" Loc="Loc" ShowScheduled="true" />
+        </MudTabPanel>
+
+        <MudTabPanel Text='@($"{Loc.Get("page.statusList.StatusFailed")} ({_failedResults.Count})")'
+                     Icon="@Icons.Material.Filled.Error"
+                     data-testid="tab-failed">
+            <BroadcastTable Items="_failedResults" OnRowClick="GoToDetail" Loc="Loc" ShowFailed="true" />
+        </MudTabPanel>
+
+    </MudTabs>
 
 </AppShell>
 
 @code {
-    private record ChipDef(Color Color, string Icon, string Label);
-
-    private DateTime? _filterFrom = DateTime.Today.AddDays(-30);
+    private int       _activeTab   = 0;
+    private DateTime? _filterFrom  = DateTime.Today.AddDays(-30);
     private DateTime? _filterTo;
-    private string    _search  = string.Empty;
-    private IReadOnlyList<BroadcastMock> _results = [];
+    private string    _search      = string.Empty;
+
+    private IReadOnlyList<BroadcastMock> _sentResults      = [];
+    private IReadOnlyList<BroadcastMock> _scheduledResults = [];
+    private IReadOnlyList<BroadcastMock> _failedResults    = [];
 
     protected override void OnInitialized() => ApplyFilter();
-    private void ApplyFilter() => _results = MockData.FilterBroadcasts(_filterFrom, _filterTo, _search);
-    private void GoToDetail(int id) => Nav.NavigateTo($"/status/{id}");
 
-    private ChipDef StatusChip(string status) => status switch
+    private void ApplyFilter()
     {
-        "Sent"       => new(Color.Success, Icons.Material.Filled.CheckCircle, Loc.Get("page.statusList.StatusSent")),
-        "Scheduled"  => new(Color.Info,    Icons.Material.Filled.Schedule,    Loc.Get("page.statusList.StatusScheduled")),
-        "Failed"     => new(Color.Error,   Icons.Material.Filled.Error,       Loc.Get("page.statusList.StatusFailed")),
-        "Unapproved" => new(Color.Warning, Icons.Material.Filled.Pending,     Loc.Get("page.statusList.StatusUnapproved")),
-        _            => new(Color.Default, Icons.Material.Filled.Circle,      status),
-    };
+        _sentResults      = FilterByStatus("Sent");
+        _scheduledResults = FilterByStatus("Scheduled");
+        _failedResults    = FilterByStatus("Failed");
+    }
+
+    private IReadOnlyList<BroadcastMock> FilterByStatus(string status)
+    {
+        var q = MockData.AllBroadcasts.Where(b => b.Status == status);
+        if (_filterFrom.HasValue) q = q.Where(b => b.CreatedAt >= _filterFrom.Value);
+        if (_filterTo.HasValue)   q = q.Where(b => b.CreatedAt <  _filterTo.Value.AddDays(1));
+        if (!string.IsNullOrWhiteSpace(_search))
+            q = q.Where(b => b.Subject.Contains(_search, StringComparison.OrdinalIgnoreCase)
+                           || b.Profile.Contains(_search, StringComparison.OrdinalIgnoreCase));
+        return q.OrderByDescending(b => b.CreatedAt).ToList();
+    }
+
+    private void GoToDetail(int id) => Nav.NavigateTo($"/status/{id}");
 }

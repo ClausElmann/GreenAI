@@ -1,0 +1,118 @@
+@page "/select-customer"
+@layout EmptyLayout
+@inject NavigationManager Nav
+@inject AppState AppState
+@inject ILocalizationContext Loc
+@inject IMediator Mediator
+@inject GreenAiAuthenticationStateProvider AuthProvider
+@inject JwtTokenService JwtTokenService
+@inject BlazorPrincipalHolder PrincipalHolder
+@using GreenAi.Api.SharedKernel.State
+@using GreenAi.Api.SharedKernel.Auth
+@using GreenAi.Api.Components.Layout
+@using GreenAi.Api.Features.Auth.SelectCustomer
+@using MediatR
+
+<div class="select-context-page" data-testid="select-customer-page">
+
+    <div class="select-context-header">
+        <MudIcon Icon="@Icons.Material.Filled.Business"
+                 Color="Color.Primary"
+                 Style="font-size:3rem;opacity:.8" />
+        <MudText Typo="Typo.h5" Class="mt-2">
+            @Loc.Get("page.selectCustomer.Title")
+        </MudText>
+        <MudText Typo="Typo.body2" Color="Color.Secondary">
+            @Loc.Get("page.selectCustomer.Subtitle")
+        </MudText>
+    </div>
+
+    @if (_error is not null)
+    {
+        <MudAlert Severity="Severity.Error" Class="mb-4">@_error</MudAlert>
+    }
+
+    <MudGrid Spacing="3" Class="select-context-grid" data-testid="customer-list">
+        @foreach (var c in AppState.PendingCustomers)
+        {
+            var customerId = c.CustomerId;
+            <MudItem xs="12" sm="6">
+                <MudCard Class="select-context-card"
+                         Elevation="1"
+                         @onclick="() => SelectCustomerAsync(customerId, c.Name)"
+                         data-testid="@($"customer-card-{customerId}")">
+                    <MudCardContent Class="d-flex align-center gap-3">
+                        <MudAvatar Color="Color.Primary" Variant="Variant.Filled" Size="Size.Medium">
+                            @c.Name[0]
+                        </MudAvatar>
+                        <div>
+                            <MudText Typo="Typo.subtitle2"><b>@c.Name</b></MudText>
+                        </div>
+                        <MudSpacer />
+                        @if (_loading && _selectedId == customerId)
+                        {
+                            <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+                        }
+                        else
+                        {
+                            <MudIcon Icon="@Icons.Material.Filled.ChevronRight" Color="Color.Default" />
+                        }
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+
+</div>
+
+@code {
+    private string? _error;
+    private bool _loading;
+    private int _selectedId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Loc.EnsureLoadedAsync(1);
+    }
+
+    private async Task SelectCustomerAsync(int customerId, string customerName)
+    {
+        if (_loading) return;
+        _loading = true;
+        _selectedId = customerId;
+        _error = null;
+
+        try
+        {
+            var result = await Mediator.Send(new SelectCustomerCommand(customerId));
+
+            if (!result.IsSuccess)
+            {
+                _error = result.Error!.Message;
+                return;
+            }
+
+            AppState.SetActiveContext(null, customerName);
+
+            if (result.Value!.NeedsProfileSelection)
+            {
+                // Selected customer has multiple profiles — update pre-auth principal and go to select-profile
+                var preAuthPrincipal = JwtTokenService.ValidateToken(result.Value.PreAuthToken!);
+                if (preAuthPrincipal is not null)
+                    PrincipalHolder.Set(preAuthPrincipal);
+                AppState.SetPendingProfiles(result.Value.AvailableProfiles?.ToList() ?? []);
+                Nav.NavigateTo("/select-profile");
+                return;
+            }
+
+            // Full JWT — sign in and go to broadcasting hub
+            await AuthProvider.SignInAsync(result.Value.AccessToken, result.Value.RefreshToken, result.Value.ExpiresAt);
+            AppState.ClearPendingSelection();
+            Nav.NavigateTo("/broadcasting");
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+}

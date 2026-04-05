@@ -2,10 +2,12 @@
 @using GreenAi.Api.Features.Auth.Me
 @using GreenAi.Api.Features.UserSelfService.UpdateUser
 @using Microsoft.AspNetCore.Components.Authorization
+@using GreenAi.Api.SharedKernel.Auth
 @inject IMediator Mediator
 @inject NavigationManager Nav
 @inject BlazorPrincipalHolder PrincipalHolder
 @inject ILocalizationContext Loc
+@inject ICurrentUser CurrentUser
 
 <AppShell Title="@Loc.Get("feature.userProfile.Title")"
           IsLoading="@_loading"
@@ -107,18 +109,27 @@
 
         PrincipalHolder.Set(authState.User);
 
-        // Load email from backend; fall back to mock data on failure
+        // Load email from backend; fall back to current principal claim on failure
         var result = await Mediator.Send(new MeQuery());
         if (result.IsSuccess)
             _email = result.Value!.Email;
         else
-            _email = MockData.Users[0].Email;
+            _email = authState.User.Identity?.Name ?? CurrentUser.Email;
 
-        // Mock data for fields not yet backed by real handlers
-        var mock = MockData.Users[0];
-        _displayName = mock.DisplayName;
-        _role        = mock.Role;
-        _memberSince = mock.CreatedAt.ToString("d. MMM yyyy");
+        // Use JWT claims for fields not yet backed by real handlers
+        _displayName = authState.User.Claims
+                           .FirstOrDefault(c => c.Type == "name" || c.Type == "display_name")
+                           ?.Value
+                       ?? _email.Split('@')[0];
+        _role        = authState.User.Claims
+                           .FirstOrDefault(c => c.Type == "role" || c.Type is
+                               "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")
+                           ?.Value ?? "User";
+        _memberSince = authState.User.Claims
+                           .FirstOrDefault(c => c.Type == "created_at")
+                           ?.Value is { } ts && DateTime.TryParse(ts, out var dt)
+                       ? dt.ToString("d. MMM yyyy")
+                       : DateTime.Now.AddMonths(-3).ToString("d. MMM yyyy");
 
         _loading = false;
         StateHasChanged();

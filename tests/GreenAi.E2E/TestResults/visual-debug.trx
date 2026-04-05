@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="48d88de8-d6e8-40b5-b47c-e65a6cec7c5b" name="claus.elmann@LAPTOP-2Q5GS5I8 2026-04-05 16:04:15" runUser="F24\claus.elmann" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-04-05T16:04:15.4178114+02:00" queuing="2026-04-05T16:04:15.4178121+02:00" start="2026-04-05T16:04:04.6356394+02:00" finish="2026-04-05T16:04:15.4302954+02:00" />
+  <TestSettings name="default" id="2c72f74f-d45f-48c3-8378-740c5c492ff0">
+    <Deployment runDeploymentRoot="claus.elmann_LAPTOP-2Q5GS5I8_2026-04-05_16_04_15" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="0b4a90e7-851c-45f2-8cf5-e80db3ea53bd" testId="0ba964b3-666b-16d3-59cf-a76dd7414aa3" testName="GreenAi.E2E.Visual.NavigationVisualTests.Dashboard_AllDevices" computerName="LAPTOP-2Q5GS5I8" duration="00:00:09.0488850" startTime="2026-04-05T16:04:06.1939316+02:00" endTime="2026-04-05T16:04:15.2715787+02:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0b4a90e7-851c-45f2-8cf5-e80db3ea53bd">
+      <Output>
+        <ErrorInfo>
+          <Message>System.Exception : Visual test failed on 4/4 device(s):
+[Desktop 1920×1080] [Desktop] 1 spacing/size anomaly(s) detected:
+[Laptop 1366×768] [Laptop] 1 spacing/size anomaly(s) detected:
+[Tablet 1024×768] [Tablet] 1 spacing/size anomaly(s) detected:
+[Mobile 390×844] [Mobile] 1 spacing/size anomaly(s) detected:</Message>
+          <StackTrace>   at GreenAi.E2E.Visual.VisualTestBase.ForEachDeviceAsync(Func`3 testAction, String callerName) in c:\Udvikling\green-ai\tests\GreenAi.E2E\Visual\VisualTestBase.cs:line 113&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="GreenAi.E2E.Visual.NavigationVisualTests.Dashboard_AllDevices" storage="c:\udvikling\green-ai\tests\greenai.e2e\bin\debug\net10.0\greenai.e2e.dll" id="0ba964b3-666b-16d3-59cf-a76dd7414aa3">
+      <Execution id="0b4a90e7-851c-45f2-8cf5-e80db3ea53bd" />
+      <TestMethod codeBase="c:\Udvikling\green-ai\tests\GreenAi.E2E\bin\Debug\net10.0\GreenAi.E2E.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="GreenAi.E2E.Visual.NavigationVisualTests" name="Dashboard_AllDevices" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="0ba964b3-666b-16d3-59cf-a76dd7414aa3" executionId="0b4a90e7-851c-45f2-8cf5-e80db3ea53bd" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="1" executed="1" passed="0" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.5+1b188a7b0a (64-bit .NET 10.0.5)&#xD;
+[xUnit.net 00:00:00.22]   Discovering: GreenAi.E2E&#xD;
+[xUnit.net 00:00:00.47]   Discovered:  GreenAi.E2E&#xD;
+[xUnit.net 00:00:00.70]   Starting:    GreenAi.E2E&#xD;
+[xUnit.net 00:00:10.12]       System.Exception : Visual test failed on 4/4 device(s):
+[Desktop 1920×1080] [Desktop] 1 spacing/size anomaly(s) detected:
+[Laptop 1366×768] [Laptop] 1 spacing/size anomaly(s) detected:
+[Tablet 1024×768] [Tablet] 1 spacing/size anomaly(s) detected:
+[Mobile 390×844] [Mobile] 1 spacing/size anomaly(s) detected:&#xD;
+[xUnit.net 00:00:10.12]       Stack Trace:&#xD;
+[xUnit.net 00:00:10.12]         c:\Udvikling\green-ai\tests\GreenAi.E2E\Visual\VisualTestBase.cs(113,0): at GreenAi.E2E.Visual.VisualTestBase.ForEachDeviceAsync(Func`3 testAction, String callerName)&#xD;
+[xUnit.net 00:00:10.12]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:10.14]   Finished:    GreenAi.E2E (ID = '1664676f9c4ca76f06eaae5b19d70e8ec9611dfa47aaf636cb11cb74177f48f8')&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LAPTOP-2Q5GS5I8" outcome="Error" timestamp="2026-04-05T16:04:15.2804200+02:00">
+        <Text>[xUnit.net 00:00:10.12]     GreenAi.E2E.Visual.NavigationVisualTests.Dashboard_AllDevices [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

@@ -7,11 +7,15 @@ public sealed record SelectCustomerResponse(
     DateTimeOffset ExpiresAt,
     string RefreshToken,
     bool NeedsProfileSelection = false,
-    IReadOnlyCollection<ProfileSummary>? AvailableProfiles = null)
+    IReadOnlyCollection<ProfileSummary>? AvailableProfiles = null,
+    string? PreAuthToken = null)
 {
     public static SelectCustomerResponse WithToken(string accessToken, DateTimeOffset expiresAt, string refreshToken) =>
         new(accessToken, expiresAt, refreshToken);
 
-    public static SelectCustomerResponse RequiresProfileSelection(IReadOnlyCollection<ProfileSummary> profiles) =>
-        new(string.Empty, DateTimeOffset.MinValue, string.Empty, NeedsProfileSelection: true, AvailableProfiles: profiles);
+    public static SelectCustomerResponse RequiresProfileSelection(string preAuthToken, IReadOnlyCollection<ProfileSummary> profiles) =>
+        new(string.Empty, DateTimeOffset.MinValue, string.Empty,
+            NeedsProfileSelection: true,
+            AvailableProfiles: profiles,
+            PreAuthToken: preAuthToken);
 }

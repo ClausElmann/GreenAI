@@ -1,0 +1,110 @@
+@* BroadcastTable — reusable table for status list page tabs *@
+@using GreenAi.Api.Mocks
+@using GreenAi.Api.SharedKernel.Localization
+
+<MudTable T="BroadcastMock"
+          Items="Items"
+          Dense="true"
+          Hover="true"
+          OnRowClick='@(e => { if (e.Item is not null) OnRowClick.InvokeAsync(e.Item.Id); })'
+          RowClass="cursor-pointer"
+          data-testid="status-list-table">
+    <HeaderContent>
+        <MudTh>@Loc.Get("page.statusList.ColSubject")</MudTh>
+        <MudTh>@Loc.Get("page.statusList.ColProfile")</MudTh>
+        <MudTh>@Loc.Get("page.statusList.ColMethod")</MudTh>
+        <MudTh Style="text-align:right">@Loc.Get("page.statusList.ColRecipients")</MudTh>
+        @if (ShowScheduled)
+        {
+            <MudTh>@Loc.Get("page.statusList.ColScheduled")</MudTh>
+        }
+        else if (ShowFailed)
+        {
+            <MudTh Style="text-align:right">@Loc.Get("page.statusList.ColFailed")</MudTh>
+            <MudTh Style="text-align:right">@Loc.Get("page.statusList.ColDeliveryRate")</MudTh>
+        }
+        else
+        {
+            <MudTh Style="text-align:right">@Loc.Get("page.statusList.ColDelivered")</MudTh>
+        }
+        <MudTh>@Loc.Get("page.statusList.ColCreated")</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Emne">
+            <MudText Typo="Typo.body2"
+                     Style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                @context.Subject
+            </MudText>
+        </MudTd>
+        <MudTd DataLabel="Profil">
+            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Style="margin:0">
+                @context.Profile
+            </MudChip>
+        </MudTd>
+        <MudTd DataLabel="Metode">
+            <MudText Typo="Typo.caption" Color="Color.Secondary">
+                @MockData.GetSendMethodLabel(MockData.GetSendMethodKey(context.Id))
+            </MudText>
+        </MudTd>
+        <MudTd DataLabel="Modtagere" Style="text-align:right">
+            @context.Recipients.ToString("N0")
+        </MudTd>
+        @if (ShowScheduled)
+        {
+            <MudTd DataLabel="Planlagt">
+                <MudText Typo="Typo.caption" Color="Color.Info">
+                    @(context.ScheduledAt.HasValue
+                        ? context.ScheduledAt.Value.ToString("d. MMM HH:mm")
+                        : "—")
+                </MudText>
+            </MudTd>
+        }
+        else if (ShowFailed)
+        {
+            <MudTd DataLabel="Fejlede" Style="text-align:right">
+                <MudText Typo="Typo.body2" Color="Color.Error">
+                    @context.FailedCount.ToString("N0")
+                </MudText>
+            </MudTd>
+            <MudTd DataLabel="Leveringsrate" Style="text-align:right">
+                @{
+                    var rate = context.Recipients > 0
+                        ? (int)((context.Delivered * 100.0) / context.Recipients)
+                        : 0;
+                    var rateColor = rate >= 80 ? "var(--mud-palette-success)"
+                                  : rate >= 50 ? "var(--mud-palette-warning)"
+                                  : "var(--mud-palette-error)";
+                }
+                <MudText Typo="Typo.body2" Style="@($"color:{rateColor}")">
+                    @rate%
+                </MudText>
+            </MudTd>
+        }
+        else
+        {
+            <MudTd DataLabel="Leveret" Style="text-align:right">
+                <MudText Typo="Typo.body2" Color="Color.Success">
+                    @context.Delivered.ToString("N0")
+                </MudText>
+            </MudTd>
+        }
+        <MudTd DataLabel="Oprettet">
+            <MudText Typo="Typo.caption" Color="Color.Secondary">
+                @context.CreatedAt.ToString("d. MMM HH:mm")
+            </MudText>
+        </MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText Typo="Typo.body2" Color="Color.Secondary" Class="pa-4 text-center">
+            @Loc.Get("page.statusList.EmptyResult")
+        </MudText>
+    </NoRecordsContent>
+</MudTable>
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<BroadcastMock> Items  { get; set; } = [];
+    [Parameter, EditorRequired] public EventCallback<int>           OnRowClick { get; set; }
+    [Parameter, EditorRequired] public ILocalizationContext         Loc    { get; set; } = null!;
+    [Parameter] public bool ShowScheduled { get; set; }
+    [Parameter] public bool ShowFailed    { get; set; }
+}

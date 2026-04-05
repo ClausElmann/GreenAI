@@ -1,0 +1,123 @@
+@page "/select-profile"
+@layout EmptyLayout
+@inject NavigationManager Nav
+@inject AppState AppState
+@inject ILocalizationContext Loc
+@inject IMediator Mediator
+@inject GreenAiAuthenticationStateProvider AuthProvider
+@using GreenAi.Api.SharedKernel.State
+@using GreenAi.Api.SharedKernel.Auth
+@using GreenAi.Api.Components.Layout
+@using GreenAi.Api.Features.Auth.SelectProfile
+@using MediatR
+
+<div class="select-context-page" data-testid="select-profile-page">
+
+    <div class="select-context-header">
+        <MudIcon Icon="@Icons.Material.Filled.AccountTree"
+                 Color="Color.Primary"
+                 Style="font-size:3rem;opacity:.8" />
+        <MudText Typo="Typo.h5" Class="mt-2">
+            @Loc.Get("page.selectProfile.Title")
+        </MudText>
+        <MudText Typo="Typo.body2" Color="Color.Secondary">
+            @Loc.Get("page.selectProfile.Subtitle")
+        </MudText>
+        @if (AppState.ActiveCustomerName is not null)
+        {
+            <MudChip T="string" Color="Color.Primary" Variant="Variant.Outlined" Size="Size.Small" Class="mt-2">
+                @AppState.ActiveCustomerName
+            </MudChip>
+        }
+    </div>
+
+    @if (_error is not null)
+    {
+        <MudAlert Severity="Severity.Error" Class="mb-4">@_error</MudAlert>
+    }
+
+    <MudGrid Spacing="3" Class="select-context-grid" data-testid="profile-list">
+        @foreach (var p in AppState.PendingProfiles)
+        {
+            var profileId = p.ProfileId;
+            <MudItem xs="12" sm="6" md="4">
+                <MudCard Class="select-context-card"
+                         Elevation="1"
+                         @onclick="() => SelectProfileAsync(profileId, p.DisplayName)"
+                         data-testid="@($"profile-card-{profileId}")">
+                    <MudCardContent Class="d-flex align-center gap-3">
+                        <MudAvatar Color="Color.Secondary" Variant="Variant.Filled" Size="Size.Medium">
+                            @p.DisplayName[0]
+                        </MudAvatar>
+                        <div>
+                            <MudText Typo="Typo.subtitle2"><b>@p.DisplayName</b></MudText>
+                            @if (AppState.ActiveCustomerName is not null)
+                            {
+                                <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                    @Loc.Get("page.selectProfile.CustomerContext"): @AppState.ActiveCustomerName
+                                </MudText>
+                            }
+                        </div>
+                        <MudSpacer />
+                        @if (_loading && _selectedId == profileId)
+                        {
+                            <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+                        }
+                        else
+                        {
+                            <MudIcon Icon="@Icons.Material.Filled.ChevronRight" Color="Color.Default" />
+                        }
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+
+</div>
+
+@code {
+    private string? _error;
+    private bool _loading;
+    private int _selectedId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Loc.EnsureLoadedAsync(1);
+    }
+
+    private async Task SelectProfileAsync(int profileId, string profileName)
+    {
+        if (_loading) return;
+        _loading = true;
+        _selectedId = profileId;
+        _error = null;
+
+        try
+        {
+            var result = await Mediator.Send(new SelectProfileCommand(profileId));
+
+            if (!result.IsSuccess)
+            {
+                _error = result.Error!.Message;
+                return;
+            }
+
+            if (result.Value!.NeedsProfileSelection)
+            {
+                // Should not happen when an explicit profileId is passed — show error
+                _error = Loc.Get("page.selectProfile.ErrorAmbiguous");
+                return;
+            }
+
+            // Full JWT issued — sign in and navigate to broadcasting hub
+            await AuthProvider.SignInAsync(result.Value.AccessToken, result.Value.RefreshToken, result.Value.ExpiresAt);
+            AppState.SetActiveContext(profileName, AppState.ActiveCustomerName);
+            AppState.ClearPendingSelection();
+            Nav.NavigateTo("/broadcasting");
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+}

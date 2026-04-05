@@ -1,3 +1,4 @@
+using GreenAi.Api.SharedKernel.Auth;
 using GreenAi.Api.SharedKernel.Navigation;
 
 namespace GreenAi.Api.SharedKernel.State;
@@ -18,6 +19,18 @@ public sealed class AppState
 
     /// <summary>Whether the CommandPalette modal is open (not yet implemented).</summary>
     public bool IsCommandPaletteOpen { get; private set; }
+
+    /// <summary>
+    /// Customers available for selection after login (multi-customer accounts).
+    /// Cleared after customer is selected.
+    /// </summary>
+    public IReadOnlyList<CustomerSummary> PendingCustomers { get; private set; } = [];
+
+    /// <summary>
+    /// Profiles available for selection (single-customer/multi-profile or after customer selection).
+    /// Cleared after profile is selected.
+    /// </summary>
+    public IReadOnlyList<ProfileSummary> PendingProfiles { get; private set; } = [];
 
     /// <summary>Display name of the active profile. Set after login. Null until context is loaded.</summary>
     public string? ActiveProfileName { get; private set; }
@@ -70,6 +83,28 @@ public sealed class AppState
     {
         ActiveProfileName  = profileName;
         ActiveCustomerName = customerName;
+        StateChanged?.Invoke();
+    }
+
+    /// <summary>Stores customers available for selection and fires StateChanged.</summary>
+    public void SetPendingCustomers(IReadOnlyList<CustomerSummary> customers)
+    {
+        PendingCustomers = customers;
+        StateChanged?.Invoke();
+    }
+
+    /// <summary>Stores profiles available for selection and fires StateChanged.</summary>
+    public void SetPendingProfiles(IReadOnlyList<ProfileSummary> profiles)
+    {
+        PendingProfiles = profiles;
+        StateChanged?.Invoke();
+    }
+
+    /// <summary>Clears pending selection state after a context has been fully resolved.</summary>
+    public void ClearPendingSelection()
+    {
+        PendingCustomers = [];
+        PendingProfiles  = [];
         StateChanged?.Invoke();
     }
 

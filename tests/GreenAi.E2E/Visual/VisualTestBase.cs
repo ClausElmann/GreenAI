@@ -100,7 +100,7 @@ public abstract class VisualTestBase : IAsyncLifetime
             {
                 // Capture a diagnostic screenshot before moving to the next device.
                 await CaptureErrorAsync(page, device, callerName);
-                failures.Add($"[{device.Name} {device.Width}×{device.Height}] {ex.Message.Split('\n')[0]}");
+                failures.Add($"[{device.Name} {device.Width}×{device.Height}] {ex.Message}");
             }
             finally
             {
@@ -418,7 +418,8 @@ public abstract class VisualTestBase : IAsyncLifetime
                     // We only want to catch anomalies in our own layout containers.
                     const cls = typeof el.className === 'string' ? el.className : '';
                     const tag = el.tagName;
-                    if (cls.includes('mud-') || tag === 'HR' || tag === 'PATH' ||
+                    const eid = el.id ?? '';
+                    if (cls.includes('mud-') || eid.startsWith('mud') || tag === 'HR' || tag === 'PATH' ||
                         tag === 'SVG'        || tag === 'STYLE' || tag === 'SCRIPT')
                         continue;
                     const cs = window.getComputedStyle(el);

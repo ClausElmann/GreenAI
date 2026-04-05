@@ -4,28 +4,31 @@ namespace GreenAi.E2E;
 /// Label coverage smoke tests for pages not covered by CustomerAdminE2ETests or DetailPageE2ETests.
 ///
 /// Pages covered here:
-///   /dashboard             — DashboardPage (dashboard.*, nav.*, shared.*)
-///   /send/wizard           — SendWizardPage (nav.Send, page.wizard.*)
-///   /status                — StatusPage (page.statusList.*)
-///   /status/1              — StatusDetailPage (page.statusDetail.*)
+///   /dashboard             — deprecated redirect → /broadcasting
 ///   /broadcasting          — BroadcastingHubPage (page.broadcasting.*)
+///   /send/wizard           — SendWizardPage (nav.Send, page.wizard.*)
+///   /status                — StatusPage (page.statusList.*) — tabs: Sent/Scheduled/Failed
+///   /status/1              — StatusDetailPage (page.statusDetail.*)
 ///   /admin/super           — SuperAdminPage (page.superAdmin.*)
 ///   /drafts                — DraftsPage (nav.Drafts, page.drafts.*)
 ///   /user/profile          — UserProfilePage (feature.userProfile.*)
 ///   /admin/users           — AdminUserListPage (feature.adminUsers.*)
 ///   /admin/settings        — AdminSettingsPage (feature.adminSettings.*)
+///   /select-customer       — SelectCustomerPage (page.selectCustomer.*)
+///   /select-profile        — SelectProfilePage (page.selectProfile.*)
 /// </summary>
 [Collection("E2E")]
 public sealed class LabelCoverageE2ETests : E2ETestBase
 {
     [Fact]
-    public async Task Dashboard_NoMissingLabels()
+    public async Task Dashboard_RedirectsToBroadcasting()
     {
+        // /dashboard is deprecated — verifies it redirects to /broadcasting correctly
         await LoginAsync();
         await Page.GotoAsync($"{BaseUrl}/dashboard");
-        await WaitOrFailAsync("[data-testid='dashboard-placeholder']", timeoutMs: 15_000);
-        await AssertNoVisibleErrorsAsync("Dashboard page");
-        await AssertNoMissingLabelsAsync("Dashboard page");
+        await WaitOrFailAsync("[data-testid='send-methods-grid']", timeoutMs: 15_000);
+        await AssertNoVisibleErrorsAsync("Dashboard redirect → Broadcasting");
+        await AssertNoMissingLabelsAsync("Dashboard redirect → Broadcasting");
     }
 
     [Fact]
@@ -116,5 +119,27 @@ public sealed class LabelCoverageE2ETests : E2ETestBase
         await WaitOrFailAsync("[data-testid='settings-table']", timeoutMs: 15_000);
         await AssertNoVisibleErrorsAsync("AdminSettings page");
         await AssertNoMissingLabelsAsync("AdminSettings page");
+    }
+
+    [Fact]
+    public async Task SelectCustomer_NoMissingLabels()
+    {
+        await LoginAsync();
+        await Page.GotoAsync($"{BaseUrl}/select-customer");
+        // Wait for page container (cards are empty when accessed directly — card labels covered by LoginFlowE2ETests)
+        await WaitOrFailAsync("[data-testid='select-customer-page']", timeoutMs: 15_000);
+        await AssertNoVisibleErrorsAsync("SelectCustomer page");
+        await AssertNoMissingLabelsAsync("SelectCustomer page");
+    }
+
+    [Fact]
+    public async Task SelectProfile_NoMissingLabels()
+    {
+        await LoginAsync();
+        await Page.GotoAsync($"{BaseUrl}/select-profile");
+        // Wait for page container (cards are empty when accessed directly — card labels covered by LoginFlowE2ETests)
+        await WaitOrFailAsync("[data-testid='select-profile-page']", timeoutMs: 15_000);
+        await AssertNoVisibleErrorsAsync("SelectProfile page");
+        await AssertNoMissingLabelsAsync("SelectProfile page");
     }
 }
