@@ -1,0 +1,558 @@
+/* =============================================================================
+   GREEN AI — ENTERPRISE SKIN
+   Loaded AFTER MudBlazor.min.css so these overrides take precedence.
+   Uses --ga-* tokens defined in app.css.
+   ============================================================================= */
+
+/* ── MudBlazor palette override ────────────────────────────────────────────── */
+/* Overrides the default MudBlazor purple/blue with the GreenAI brand palette. */
+:root {
+    --mud-palette-primary:              #0B5FFF;
+    --mud-palette-primary-text:         #FFFFFF;
+    --mud-palette-primary-darken:       #084FD6;
+    --mud-palette-primary-lighten:      #4B87FF;
+    --mud-palette-primary-hover:        rgba(11,95,255,.06);
+    --mud-palette-secondary:            #4B5B6B;
+    --mud-palette-secondary-text:       #FFFFFF;
+    --mud-palette-secondary-darken:     #2E3B4B;
+    --mud-palette-surface:              #FFFFFF;
+    --mud-palette-background:           #F7F9FC;
+    --mud-palette-background-grey:      #F1F4F8;
+    --mud-palette-overlay-dark:         rgba(16,24,40,.5);
+    --mud-palette-divider:              #D7DEE7;
+    --mud-palette-divider-light:        rgba(215,222,231,.5);
+    --mud-palette-text-primary:         #16202A;
+    --mud-palette-text-secondary:       #4B5B6B;
+    --mud-palette-text-disabled:        #9AA0A6;
+    --mud-palette-action-default:       #4B5B6B;
+    --mud-palette-action-hover-opacity: 0.06;
+    --mud-palette-action-disabled:      #9AA0A6;
+    --mud-palette-success:              #117A37;
+    --mud-palette-success-text:         #FFFFFF;
+    --mud-palette-success-darken:       #0A5728;
+    --mud-palette-warning:              #A15C00;
+    --mud-palette-warning-text:         #FFFFFF;
+    --mud-palette-warning-darken:       #7A4500;
+    --mud-palette-error:                #B42318;
+    --mud-palette-error-text:           #FFFFFF;
+    --mud-palette-error-darken:         #8A1910;
+    --mud-palette-info:                 #005E7A;
+    --mud-palette-info-text:            #FFFFFF;
+    --mud-palette-info-darken:          #00445A;
+    --mud-default-borderradius:         8px;
+    --mud-typography-body1-size:        .875rem;
+    --mud-typography-body2-size:        .875rem;
+}
+
+/* ── AppBar / TopBar  ───────────────────────────────────────────────────────── */
+.mud-appbar {
+    background-color: var(--ga-surface) !important;
+    color: var(--ga-text) !important;
+    box-shadow: none !important;
+    border-bottom: 1px solid var(--ga-border) !important;
+    height: var(--ga-topbar-height) !important;
+    min-height: var(--ga-topbar-height) !important;
+}
+
+.mud-appbar .mud-icon-button {
+    color: var(--ga-text) !important;
+}
+
+.mud-appbar .mud-icon-button:hover {
+    background-color: var(--ga-surface-alt) !important;
+}
+
+/* Push content down by topbar height */
+.mud-main-content {
+    padding-top: var(--ga-topbar-height) !important;
+}
+
+/* ── Drawer / OverlayNav ────────────────────────────────────────────────────── */
+.mud-drawer {
+    border-right: 1px solid var(--ga-border) !important;
+}
+
+.mud-nav-link {
+    border-radius: var(--ga-radius-md) !important;
+    margin: 2px var(--ga-space-2) !important;
+    padding: var(--ga-space-2) var(--ga-space-3) !important;
+    color: var(--ga-text-muted) !important;
+    font-size: var(--ga-font-sm) !important;
+    font-weight: 500 !important;
+    transition: background 120ms, color 120ms !important;
+}
+
+.mud-nav-link:hover {
+    background-color: var(--ga-surface-alt) !important;
+    color: var(--ga-text) !important;
+}
+
+.mud-nav-link.active {
+    background-color: rgba(11,95,255,.08) !important;
+    color: var(--ga-primary) !important;
+    font-weight: 600 !important;
+}
+
+/* ── Buttons ────────────────────────────────────────────────────────────────── */
+/* Filled primary */
+.mud-button-filled.mud-button-filled-primary {
+    background-color: var(--ga-primary) !important;
+    color: var(--ga-primary-contrast) !important;
+    box-shadow: none !important;
+}
+
+.mud-button-filled.mud-button-filled-primary:hover {
+    background-color: var(--ga-primary-hover) !important;
+    box-shadow: none !important;
+}
+
+/* All buttons: min-height 40px desktop, 44px mobile */
+.mud-button-root {
+    min-height: 40px !important;
+    border-radius: var(--ga-radius-md) !important;
+    font-size: var(--ga-font-sm) !important;
+    font-weight: 500 !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+}
+
+@media (max-width: 599px) {
+    .mud-button-root {
+        min-height: 44px !important;
+    }
+}
+
+/* Icon buttons: no forced min-height override */
+.mud-icon-button.mud-button-root {
+    min-height: unset !important;
+    border-radius: 50% !important;
+}
+
+/* ── Text fields / Inputs ───────────────────────────────────────────────────── */
+.mud-input-outlined .mud-input-outlined-border {
+    border-color: var(--ga-border) !important;
+    border-radius: var(--ga-radius-md) !important;
+}
+
+.mud-input-outlined:hover .mud-input-outlined-border {
+    border-color: var(--ga-text-muted) !important;
+}
+
+.mud-input-control {
+    font-size: var(--ga-font-sm) !important;
+}
+
+/* Input height 40px */
+.mud-input-root {
+    min-height: 40px !important;
+}
+
+/* ── Cards / MudPaper ───────────────────────────────────────────────────────── */
+.mud-paper {
+    border-radius: var(--ga-radius-md) !important;
+}
+
+.mud-paper.mud-elevation-1 {
+    box-shadow: var(--ga-shadow-card) !important;
+}
+
+.mud-card {
+    border: 1px solid var(--ga-border) !important;
+    box-shadow: var(--ga-shadow-card) !important;
+    border-radius: var(--ga-radius-md) !important;
+}
+
+/* ── Tables ─────────────────────────────────────────────────────────────────── */
+.mud-table-head .mud-table-cell {
+    font-size: var(--ga-font-xs) !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: .05em !important;
+    color: var(--ga-text-muted) !important;
+    padding: 8px 12px !important;
+    border-bottom: 2px solid var(--ga-border) !important;
+    background-color: var(--ga-bg) !important;
+}
+
+.mud-table-body .mud-table-cell {
+    padding: 8px 12px !important;
+    font-size: var(--ga-font-sm) !important;
+    border-bottom: 1px solid var(--ga-border) !important;
+}
+
+.mud-table-row:nth-child(even) td {
+    background-color: var(--ga-surface-alt) !important;
+}
+
+.mud-table-row:hover td {
+    background-color: rgba(11,95,255,.04) !important;
+}
+
+/* ── Chips ──────────────────────────────────────────────────────────────────── */
+.mud-chip {
+    font-size: var(--ga-font-xs) !important;
+    font-weight: 500 !important;
+    border-radius: var(--ga-radius-sm) !important;
+    height: 24px !important;
+    letter-spacing: 0 !important;
+}
+
+/* ── MudText overrides ──────────────────────────────────────────────────────── */
+.mud-typography-h5 {
+    font-size: 1.125rem !important;
+    font-weight: 600 !important;
+    color: var(--ga-text) !important;
+    letter-spacing: -0.01em !important;
+}
+
+.mud-typography-h6 {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: var(--ga-text) !important;
+}
+
+.mud-typography-subtitle2 {
+    font-size: var(--ga-font-xs) !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: .06em !important;
+    color: var(--ga-text-muted) !important;
+}
+
+/* ── MudAlert (status / error messages) ────────────────────────────────────── */
+.mud-alert {
+    border-radius: var(--ga-radius-md) !important;
+    font-size: var(--ga-font-sm) !important;
+}
+
+/* ── Select-context card hover colours (skin-level) ────────────────────────── */
+/* These override the app.css generic hover since MudCard styles load after */
+.select-context-card:hover .mud-card-header,
+.select-context-card:hover {
+    border-color: var(--ga-primary) !important;
+}
+
+/* ── Global focus ring — applied to MudBlazor interactive elements ──────────── */
+/* app.css sets *:focus-visible but MudBlazor uses JS-driven focus classes too */
+.mud-button-root:focus-visible,
+.mud-icon-button:focus-visible,
+.mud-input-root:focus-visible,
+.mud-select:focus-visible,
+.mud-nav-link:focus-visible,
+.mud-list-item:focus-visible,
+.mud-chip:focus-visible {
+    outline: var(--ga-focus-ring) !important;
+    outline-offset: 2px !important;
+}
+
+/* ── Page title decoration ──────────────────────────────────────────────────── */
+/* AppShell uses MudText Typo.h5 for page titles — enforce enterprise weight */
+.ga-page-title.mud-typography-h5 {
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+    color: var(--ga-text) !important;
+    letter-spacing: -0.02em !important;
+}
+
+/* ── Status badge overrides (full broadcast lifecycle) ──────────────────────── */
+/* Apply to MudChip or any element for broadcast/message lifecycle states */
+/* Draft = neutral */
+.ga-status-draft       { background-color: rgba(75,  91, 107, .10) !important; color: #4B5B6B !important; border: 1px solid rgba(75, 91,107,.25) !important; }
+/* PendingApproval = warning */
+.ga-status-pending     { background-color: rgba(161, 92,   0, .10) !important; color: #A15C00 !important; border: 1px solid rgba(161,92,  0,.25) !important; }
+/* Approved = info */
+.ga-status-approved    { background-color: rgba(0,   94, 122, .10) !important; color: #005E7A !important; border: 1px solid rgba(0, 94,122,.25) !important; }
+/* Scheduled = info */
+.ga-status-scheduled   { background-color: rgba(0,   94, 122, .10) !important; color: #005E7A !important; border: 1px solid rgba(0, 94,122,.25) !important; }
+/* Sending = primary */
+.ga-status-sending     { background-color: rgba(11,  95, 255, .10) !important; color: #0B5FFF !important; border: 1px solid rgba(11,95,255,.25) !important; }
+/* Sent = success */
+.ga-status-sent        { background-color: rgba(17, 122,  55, .10) !important; color: #117A37 !important; border: 1px solid rgba(17,122, 55,.25) !important; }
+/* Failed = danger */
+.ga-status-failed      { background-color: rgba(180, 35,  24, .10) !important; color: #B42318 !important; border: 1px solid rgba(180,35, 24,.25) !important; }
+/* Rejected = danger */
+.ga-status-rejected    { background-color: rgba(180, 35,  24, .10) !important; color: #B42318 !important; border: 1px solid rgba(180,35, 24,.25) !important; }
+/* Unknown / fallback */
+.ga-status-unknown     { background-color: rgba(75,  91, 107, .10) !important; color: #4B5B6B !important; border: 1px solid rgba(75, 91,107,.25) !important; }
+
+/* ── Wizard step indicator ──────────────────────────────────────────────────── */
+.ga-wizard-step {
+    display: flex;
+    align-items: center;
+    gap: var(--ga-space-2);
+    font-size: var(--ga-font-sm);
+    color: var(--ga-text-muted);
+}
+
+.ga-wizard-step.active {
+    color: var(--ga-primary);
+    font-weight: 600;
+}
+
+.ga-wizard-step.completed {
+    color: var(--ga-success);
+}
+
+.ga-wizard-step-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid var(--ga-border);
+    font-size: var(--ga-font-xs);
+    font-weight: 700;
+    flex-shrink: 0;
+    background: var(--ga-surface);
+}
+
+.ga-wizard-step.active .ga-wizard-step-number {
+    border-color: var(--ga-primary);
+    background: var(--ga-primary);
+    color: #FFFFFF;
+}
+
+.ga-wizard-step.completed .ga-wizard-step-number {
+    border-color: var(--ga-success);
+    background: var(--ga-success);
+    color: #FFFFFF;
+}
+
+/* ── Typography scale — enterprise hierarchy ────────────────────────────────── */
+/* AppShell page title — 24px / 700 */
+[data-testid="page-title"].mud-typography-h5 {
+    font-size: 1.5rem !important;    /* 24px */
+    font-weight: 700 !important;
+    color: var(--ga-text) !important;
+    letter-spacing: -0.02em !important;
+    line-height: 1.25 !important;
+    margin-bottom: 0.5rem !important;
+}
+
+/* Section title — 20px / 600 */
+.mud-typography-h6 {
+    font-size: 1.25rem !important;   /* 20px */
+    font-weight: 600 !important;
+    color: var(--ga-text) !important;
+    letter-spacing: -0.01em !important;
+}
+
+/* Card title — 16px / 600 */
+.mud-typography-h5 {
+    font-size: 1rem !important;      /* 16px */
+    font-weight: 600 !important;
+    color: var(--ga-text) !important;
+}
+
+/* Stat value (large number in stat cards) */
+.mud-typography-h4 {
+    font-size: 1.75rem !important;   /* 28px — emphasised metric */
+    font-weight: 700 !important;
+    color: var(--ga-text) !important;
+    line-height: 1.1 !important;
+}
+
+/* Body text */
+.mud-typography-body1,
+.mud-typography-body2 {
+    font-size: var(--ga-font-sm) !important;  /* 14px */
+    color: var(--ga-text) !important;
+}
+
+/* Caption / secondary info */
+.mud-typography-caption {
+    font-size: var(--ga-font-xs) !important;  /* 12px */
+    color: var(--ga-text-muted) !important;
+}
+
+/* Overline / section labels */
+.mud-typography-overline {
+    font-size: var(--ga-font-xs) !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: .07em !important;
+    color: var(--ga-text-muted) !important;
+}
+
+/* ── MudTabs ────────────────────────────────────────────────────────────────── */
+.mud-tabs .mud-tab {
+    font-size: var(--ga-font-sm) !important;
+    font-weight: 500 !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+    color: var(--ga-text-muted) !important;
+    min-width: 80px !important;
+}
+
+.mud-tabs .mud-tab.mud-tab-active {
+    color: var(--ga-primary) !important;
+    font-weight: 600 !important;
+}
+
+.mud-tabs .mud-tab-slider-active {
+    background-color: var(--ga-primary) !important;
+}
+
+.mud-tab-panel {
+    background: var(--ga-surface) !important;
+}
+
+/* ── MudBreadcrumbs ─────────────────────────────────────────────────────────── */
+.mud-breadcrumb-item a {
+    color: var(--ga-text-muted) !important;
+    font-size: var(--ga-font-xs) !important;
+    text-decoration: none !important;
+}
+
+.mud-breadcrumb-item a:hover {
+    color: var(--ga-primary) !important;
+    text-decoration: underline !important;
+}
+
+.mud-breadcrumb-item.mud-breadcrumb-item--last span {
+    color: var(--ga-text) !important;
+    font-size: var(--ga-font-xs) !important;
+    font-weight: 500 !important;
+}
+
+.mud-breadcrumb-separator {
+    color: var(--ga-border) !important;
+}
+
+/* ── Secondary / Outlined buttons ──────────────────────────────────────────── */
+.mud-button-outlined {
+    border-color: var(--ga-border) !important;
+    color: var(--ga-text) !important;
+    background-color: var(--ga-surface) !important;
+}
+
+.mud-button-outlined:hover {
+    background-color: var(--ga-surface-alt) !important;
+    border-color: var(--ga-text-muted) !important;
+}
+
+/* Text-only buttons (low hierarchy) */
+.mud-button-text {
+    color: var(--ga-primary) !important;
+    font-weight: 500 !important;
+}
+
+.mud-button-text:hover {
+    background-color: rgba(11,95,255,.06) !important;
+}
+
+/* Danger / destructive buttons */
+.mud-button-filled.mud-button-filled-error,
+.mud-button-filled.mud-button-filled-danger {
+    background-color: var(--ga-danger) !important;
+    color: #FFFFFF !important;
+    box-shadow: none !important;
+}
+
+/* ── MudDivider ─────────────────────────────────────────────────────────────── */
+.mud-divider {
+    border-color: var(--ga-border) !important;
+}
+
+/* ── MudList ────────────────────────────────────────────────────────────────── */
+.mud-list-item {
+    font-size: var(--ga-font-sm) !important;
+    color: var(--ga-text) !important;
+}
+
+.mud-list-item:hover {
+    background-color: var(--ga-surface-alt) !important;
+}
+
+/* ── Filter bar (outlined paper for search forms) ───────────────────────────── */
+.mud-paper--outlined {
+    border-color: var(--ga-border) !important;
+    background-color: var(--ga-surface) !important;
+}
+
+/* ── Wizard method card selection (used in SendWizardPage) ──────────────────── */
+.wizard-method-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--ga-space-4) var(--ga-space-3);
+    cursor: pointer;
+    border: 2px solid var(--ga-border) !important;
+    border-radius: var(--ga-radius-md) !important;
+    box-shadow: none !important;
+    transition: border-color 120ms, background 120ms !important;
+    min-height: 100px;
+    text-align: center;
+    gap: 6px;
+    user-select: none;
+    background: var(--ga-surface) !important;
+}
+
+.wizard-method-card:hover {
+    border-color: var(--ga-primary) !important;
+    background: rgba(11,95,255,.04) !important;
+}
+
+.wizard-method-card:focus-visible {
+    outline: var(--ga-focus-ring) !important;
+    outline-offset: 2px !important;
+}
+
+.wizard-method-card--selected {
+    border-color: var(--ga-primary) !important;
+    background: rgba(11,95,255,.07) !important;
+    box-shadow: 0 0 0 1px var(--ga-primary) !important;
+}
+
+/* Check icon inside selected method card */
+.wizard-method-check {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+}
+
+/* Make method card container relative for check positioning */
+.mud-paper.wizard-method-card {
+    position: relative;
+}
+
+/* ── Stat card value size override ─────────────────────────────────────────── */
+/* Per spec: 28px / 700 for metrics */
+.stat-card .mud-typography-h4,
+.stat-card .stat-value {
+    font-size: 1.75rem !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+}
+
+/* ── MudSnackbar ────────────────────────────────────────────────────────────── */
+.mud-snackbar {
+    border-radius: var(--ga-radius-md) !important;
+    font-size: var(--ga-font-sm) !important;
+}
+
+/* ── MudDialog ──────────────────────────────────────────────────────────────── */
+.mud-dialog {
+    border-radius: var(--ga-radius-lg) !important;
+    box-shadow: var(--ga-shadow-palette) !important;
+}
+
+.mud-dialog-title {
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: var(--ga-text) !important;
+    padding: var(--ga-space-4) var(--ga-space-5) var(--ga-space-3) !important;
+}
+
+.mud-dialog-content {
+    padding: 0 var(--ga-space-5) var(--ga-space-4) !important;
+    font-size: var(--ga-font-sm) !important;
+}
+
+.mud-dialog-actions {
+    padding: var(--ga-space-3) var(--ga-space-5) var(--ga-space-4) !important;
+    border-top: 1px solid var(--ga-border) !important;
+    gap: var(--ga-space-2) !important;
+}

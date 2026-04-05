@@ -84,3 +84,23 @@
         font-size: 0.8rem;
     }
 }
+
+/* ── Wizard method card (step 1 — method selection) ─────────────────────── */
+/* Base styles already in greenai-skin.css; scoped overrides only here */
+::deep .wizard-method-card:focus {
+    outline: var(--ga-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Sticky footer for mobile wizard actions */
+@media (max-width: 599px) {
+    .wizard-footer {
+        position: sticky;
+        bottom: 0;
+        background: var(--ga-surface);
+        padding: var(--ga-space-3) var(--ga-space-4);
+        margin-top: var(--ga-space-5);
+        border-top: 1px solid var(--ga-border);
+        z-index: 10;
+    }
+}

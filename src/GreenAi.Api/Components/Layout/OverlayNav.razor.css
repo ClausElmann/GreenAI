@@ -1,7 +1,7 @@
 .overlay-nav-backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.65);
+    background: rgba(15, 23, 42, 0.68);
     z-index: var(--ga-z-overlay);
 }
 
@@ -46,14 +46,27 @@
     }
 }
 
-/* Active route highlight — MudNavLink applies .mud-nav-link-active on match */
+/* Active route highlight — spec: rgba(11,95,255,.10) bg + ga-primary text */
 ::deep .overlay-nav-section .mud-nav-link-active {
-    background-color: var(--mud-palette-action-default-hover);
-    border-radius: 4px;
-    color: var(--mud-palette-primary) !important;
+    background-color: rgba(11,95,255,.10) !important;
+    border-radius: var(--ga-radius-md);
+    color: var(--ga-primary) !important;
     font-weight: 600;
+    position: relative;
+}
+
+/* Left accent bar on active item */
+::deep .overlay-nav-section .mud-nav-link-active::before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 20%;
+    height: 60%;
+    width: 3px;
+    border-radius: 0 2px 2px 0;
+    background: var(--ga-primary);
 }
 
 ::deep .overlay-nav-section .mud-nav-link-active .mud-nav-link-icon {
-    color: var(--mud-palette-primary) !important;
+    color: var(--ga-primary) !important;
 }

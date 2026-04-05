@@ -1,36 +1,17 @@
-.select-context-page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-    padding: 2rem 1rem;
-    background: var(--mud-palette-background);
-}
-
-.select-context-header {
-    text-align: center;
-    margin-bottom: 2rem;
-    max-width: 500px;
-}
-
-.select-context-grid {
-    width: 100%;
-    max-width: 700px;
-}
-
+/* Scoped overrides only — layout classes are in app.css (.select-context-page etc.) */
 .select-context-card {
     cursor: pointer;
-    transition: box-shadow 0.15s ease, transform 0.1s ease;
-    border: 1px solid transparent;
+    transition: box-shadow 150ms, border-color 150ms, transform 150ms;
+    border: 1px solid var(--ga-border) !important;
 }
 
-    .select-context-card:hover {
-        box-shadow: var(--mud-elevation-4);
-        border-color: var(--mud-palette-primary);
-        transform: translateY(-1px);
-    }
+.select-context-card:hover {
+    border-color: var(--ga-primary) !important;
+    box-shadow: var(--ga-shadow-card) !important;
+    transform: translateY(-1px);
+}
 
-    .select-context-card:focus-visible {
-        outline: 2px solid var(--mud-palette-primary);
-        outline-offset: 2px;
-    }
+.select-context-card:focus-visible {
+    outline: var(--ga-focus-ring) !important;
+    outline-offset: 2px;
+}
