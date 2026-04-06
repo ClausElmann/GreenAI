@@ -10,7 +10,7 @@
 
 | File | Topic |
 |------|-------|
-| [patterns/blazor-page-pattern.md](patterns/blazor-page-pattern.md) | Authenticated page lifecycle — OnAfterRenderAsync, PrincipalHolder, loading state |
+| [backend/patterns/blazor-page-pattern.md](../backend/patterns/blazor-page-pattern.md) | Authenticated page lifecycle — OnAfterRenderAsync, PrincipalHolder, loading state |
 | [patterns/blazor-component-pattern.md](patterns/blazor-component-pattern.md) | Reusable components — parameter contracts, event callbacks, no auth |
 | [patterns/mudblazor-conventions.md](patterns/mudblazor-conventions.md) | MudBlazor usage rules — allowed components, forbidden patterns |
 | [models/ui-navigation-schema.json](models/ui-navigation-schema.json) | Machine-readable navigation model — routes, auth requirements, breadcrumbs |

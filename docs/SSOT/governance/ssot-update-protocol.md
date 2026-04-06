@@ -34,6 +34,7 @@ rule: SSOT update is NOT optional — it is part of the same atomic operation as
 | New `IRequireAuthentication` or `IRequireProfile` usage | `pipeline-behaviors.md` decision table reviewed | Code review |
 | New handler emits `Result<T>.Fail("NEW_CODE")` | `ResultExtensions.cs` + `result-pattern.md` updated **before** handler is written | `RESULT-001` static scan |
 | EXECUTION_MEMORY appended | `SSOT_GAP_PLAN.md` items marked COMPLETED if applicable | AI post-execution step |
+| EXECUTION_MEMORY appended | `AI_STATE.md` opdateres i **samme operation** — features, tests, active work, last decisions | AI post-execution step — MANDATORY |
 
 ---
 

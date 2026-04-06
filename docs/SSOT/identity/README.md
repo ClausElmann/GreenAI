@@ -13,7 +13,7 @@
 | [auth-flow.md](auth-flow.md) | Login → customer selection → profile selection → JWT |
 | [current-user.md](current-user.md) | ICurrentUser, BlazorPrincipalHolder, DI registration, Blazor usage contract |
 | [tenant-isolation.md](tenant-isolation.md) | CustomerId rules, pre-auth exceptions |
-| [permissions.md](patterns/permissions.md) | IPermissionService, role checks, SuperAdmin |
+| [permissions.md](permissions.md) | IPermissionService, role checks, SuperAdmin |
 | [jwt-claims.md](patterns/jwt-claims.md) | Claim names (GreenAiClaims), token content |
 
 ---

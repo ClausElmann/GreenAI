@@ -545,4 +545,27 @@ log:
     autonomy_score: 9.8
     status: LEVEL_5_READY
 
+  - id: EXEC_016
+    date: 2026-04-06
+    task: SSOT DRY audit — remove redirect stubs, fix stale links, purge stale token tables from greenai-ui-skin.md, fix authority claim in greenai-ui-architecture.md.
+    red_threads: []
+    pattern_used:
+      - docs/SSOT/ui/greenai-ui-skin.md
+      - docs/SSOT/ui/greenai-ui-architecture.md
+      - docs/SSOT/backend/README.md
+      - docs/SSOT/identity/README.md
+      - docs/SSOT/ui/README.md
+    result: SUCCESS
+    issues: []
+    improvement_found:
+      - "Redirect stub pattern detected: 3 files existed solely to redirect to another file. Root cause was wrong paths in README files. Fix: fix the paths, delete the stubs."
+      - "Stale token tables (wrong hex values) in skin.md can mislead AI. Fix: replace entire token section with pointer to design-tokens.css + color-system.md."
+    ssot_updated: yes
+    changes:
+      - "Fixed 3 README bad links (backend/README, identity/README, ui/README)"
+      - "Deleted 3 redirect stubs: pipeline-behaviors.md, permissions.md, blazor-page-pattern.md"
+      - "greenai-ui-skin.md: removed §2(stale colors), §3(stale palette), §4(stale load order) → replaced with summary table pointing to design-tokens.css + color-system.md"
+      - "greenai-ui-architecture.md: removed 'single source of truth' authority claim (superseded by ui-architecture-decisions.md), marked /dashboard routes as deprecated"
+    governance_tests: 9/9 passed
+
 ```

@@ -53,7 +53,7 @@
 | "governance" / "red thread" / "protokol" / "mangler"   | `read_file docs/SSOT/governance/README.md`                                | Se SSOT_GAP_PLAN → sprint prioritet |
 | "ssot update" / "hvornår opdater ssot" / "ssot drift"  | `read_file docs/SSOT/governance/ssot-update-protocol.md`                  | Trigger table → mandatory actions   |
 | "ai grænser" / "hvad må ai" / "autonomi" / "stop"       | `read_file docs/SSOT/governance/ai-boundaries.md`                         | ALLOWED vs FORBIDDEN vs STOP_AND_ASK || \"ssot map\" / \"find ssot\" / \"trigger index\" / \"context loader\" | `read_file docs/SSOT/_system/ssot-map.json`                        | trigger → pattern → file path        |
-| \"feature contract\" / \"feature map\" / \"hvilke features\" / \"EXEC_\" | `read_file docs/SSOT/_system/feature-contract-map.json`          | feature → handler → endpoint → tests || "hvad skal jeg huske" / "ny session" / "resumé"        | `read_file docs/SSOT/governance/EXECUTION_MEMORY.md`                      | Se seneste log-entries              |
+| \"feature contract\" / \"feature map\" / \"hvilke features\" / \"EXEC_\" | `read_file docs/SSOT/_system/feature-contract-map.json`          | feature → handler → endpoint → tests || "hvad skal jeg huske" / "ny session" / "resumé"        | `read_file AI_STATE.md`                                                   | Compact: features, tests, active work, last 5 decisions. Fuld audit-log → EXECUTION_MEMORY.md |
 | "fejl signal" / "kompile fejl" / "SIG_"                | `read_file docs/SSOT/governance/ERROR_DETECTION.md`                       | Klassificér → fix → log             |
 | ANYTHING ELSE                                          | `grep_search "<emne>" docs/SSOT/`                                         | Læs → implementér                   |
 
@@ -109,6 +109,7 @@ Invoke-Sqlcmd -ServerInstance "(localdb)\MSSQLLocalDB" -Database "GreenAI_DEV" `
 ✅ 0 compiler warnings efter enhver ændring
 ✅ Result<T> fra alle handlers
 ✅ Valider kun ved system-grænser (ikke interne metoder)
+✅ AI_STATE.md opdateres i SAMME operation som EXECUTION_MEMORY.md-entry skrives
 ```
 
 ### SSOT-DOCS

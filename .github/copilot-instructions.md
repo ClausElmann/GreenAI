@@ -3,11 +3,11 @@
 ## SESSION START — KØR DETTE ALTID FØRST
 
 ```
-read_file AI_WORK_CONTRACT.md
-→ match bruger-input til trigger-tabel
-→ kør "First Tool" fra tabellen
-→ læs fundne doc KOMPLET
-→ implementér
+1. read_file AI_WORK_CONTRACT.md   ← trigger-tabel + regler
+2. read_file AI_STATE.md           ← current codebase state (features, tests, active work)
+→ match bruger-input til trigger-tabel i AI_WORK_CONTRACT.md
+→ kør "First Tool" fra tabellen — ingen undtagelser
+→ læs fundne doc KOMPLET → implementér
 ```
 
 ---
@@ -88,37 +88,7 @@ Features/[Domain]/[Feature]/
 
 ---
 
-## SSOT-MAP (topic → fil)
-
-```
-endpoint/API mønster    → docs/SSOT/backend/patterns/endpoint-pattern.md
-migration/skema         → docs/SSOT/database/patterns/migration-pattern.md
-auth/JWT/tenant         → docs/SSOT/identity/README.md
-lokalisering/labels     → docs/SSOT/localization/label-creation-guide.md
-tests/unit              → docs/SSOT/testing/patterns/unit-test-pattern.md
-testing strategi        → docs/SSOT/testing/testing-strategy.md
-tests/integration       → docs/SSOT/testing/patterns/http-integration-test-pattern.md
-tests/automation rules  → docs/SSOT/testing/test-automation-rules.md
-tests/execution         → docs/SSOT/testing/test-execution-protocol.md
-debug/fejlsøgning       → docs/SSOT/testing/debug-protocol.md
-doc-placering           → docs/SSOT/_system/ssot-document-placement-rules.md
-governance/regler       → docs/SSOT/governance/README.md
-red threads             → docs/SSOT/governance/RED_THREAD_REGISTRY.md
-manglende SSOT          → docs/SSOT/governance/SSOT_GAP_PLAN.md
-execution protocol      → docs/SSOT/governance/EXECUTION_PROTOCOL.md
-enforcement/stop        → docs/SSOT/governance/ENFORCEMENT_PROTOCOL.md
-governance map          → docs/SSOT/governance/GOVERNANCE_MAP.md
-fejl/signaler           → docs/SSOT/governance/ERROR_DETECTION.md
-patterns extract        → docs/SSOT/governance/PATTERN_EXTRACTION.md
-forbedringer            → docs/SSOT/governance/AUTO_IMPROVEMENT.md
-udførte tasks           → docs/SSOT/governance/EXECUTION_MEMORY.md
-auth flow               → docs/SSOT/identity/auth-flow.md
-current user / principal→ docs/SSOT/identity/current-user.md
-result pattern          → docs/SSOT/backend/patterns/result-pattern.md
-blazor page pattern     → docs/SSOT/backend/patterns/blazor-page-pattern.md
-e2e test pattern        → docs/SSOT/testing/patterns/e2e-test-pattern.md
-tool registry/ps tools  → docs/ai-governance/tool-registry.yaml
-```
+> **SSOT navigation:** Se `AI_WORK_CONTRACT.md` trigger-tabel eller `AI_STATE.md` §SSOT Navigation.
 
 ---
 

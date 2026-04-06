@@ -62,11 +62,11 @@ The overlay MUST close on:
 ### 3.2 Route Hierarchy
 
 ```
-/                   → redirect → /dashboard (authenticated) or /login (unauthenticated)
+/                   → redirect → /broadcasting (authenticated) or /login (unauthenticated)  [superseded — see ui-architecture-decisions.md]
 /login              → EmptyLayout — no TopBar  [KEEP UNCHANGED]
 /select-customer    → EmptyLayout — no TopBar
 /select-profile     → EmptyLayout — no TopBar
-/dashboard          → MainLayout — intent-based entry point  [REPLACES Home.razor]
+/broadcasting       → MainLayout — intent-based entry point  [superseded — see ui-architecture-decisions.md]
 /send/wizard        → WizardLayout — route placeholder now; full flow later
 /send/wizard/:step  → WizardLayout — step 1..N
 /status             → MainLayout — tabs: Sent / Scheduled / Failed
@@ -259,5 +259,5 @@ This is a **breaking change to MainLayout** — implement in a dedicated slice, 
 
 ---
 
-**Authority:** This file is the single source of truth for Green AI UI layout decisions.  
+**Note:** Routing and navigation decisions are locked in [`ui-architecture-decisions.md`](ui-architecture-decisions.md). This file documents the architectural design rationale and component hierarchy.
 **Next step:** Implement AppState → TopBar → OverlayNav → CommandPalette (in that order).

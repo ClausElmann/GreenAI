@@ -24,7 +24,7 @@
 | File | Topic |
 |------|-------|
 | [vertical-slice.md](architecture/vertical-slice.md) | Feature folder structure, one operation per folder |
-| [pipeline-behaviors.md](architecture/pipeline-behaviors.md) | Logging, Auth, Validation, RequireProfile |
+| [pipeline-behaviors.md](patterns/pipeline-behaviors.md) | Logging, Auth, Validation, RequireProfile |
 
 ---
 

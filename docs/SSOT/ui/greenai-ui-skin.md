@@ -1,7 +1,12 @@
 # GreenAI Enterprise UI Skin
 
-**SSOT for:** colors, typography, spacing, accessibility, component skin rules.  
-**Last updated:** 2026-04-05
+**SSOT for:** design principles, component skin rules, accessibility, responsive rules.  
+**Last updated:** 2026-04-06
+
+> **Token SSOT moved (2026-04-06):** Color + typography + spacing tokens are now in  
+> `wwwroot/css/design-tokens.css` + `docs/SSOT/ui/color-system.md`.  
+> Load order: `docs/SSOT/ui/color-system.md` §CSS Load Order.  
+> Component classes (`.ga-*`): `docs/SSOT/ui/component-system.md`.
 
 ---
 
@@ -17,123 +22,19 @@
 
 ---
 
-## 2. Token System
+## 2. Token Reference (summary — see SSOT for values)
 
-Defined in `wwwroot/app.css` `:root`. **Always use tokens — never hardcode hex values.**
-
-### Colors
-
-| Token | Value | Contrast on white |
+| System | File | Tokens |
 |---|---|---|
-| `--ga-bg` | `#F7F9FC` | — |
-| `--ga-surface` | `#FFFFFF` | — |
-| `--ga-surface-alt` | `#F1F4F8` | — |
-| `--ga-border` | `#D7DEE7` | — |
-| `--ga-text` | `#16202A` | 15.5:1 ✅ |
-| `--ga-text-muted` | `#4B5B6B` | 5.9:1 ✅ |
-| `--ga-text-disabled` | `#9AA0A6` | 3.0:1 — UI-only, never body text |
-| `--ga-primary` | `#0B5FFF` | 4.6:1 ✅ |
-| `--ga-primary-hover` | `#084FD6` | — |
-| `--ga-primary-contrast` | `#FFFFFF` | — |
-| `--ga-success` | `#117A37` | 5.1:1 ✅ |
-| `--ga-warning` | `#A15C00` | 4.5:1 ✅ |
-| `--ga-danger` | `#B42318` | 5.2:1 ✅ |
-| `--ga-info` | `#005E7A` | 6.1:1 ✅ |
-| `--ga-focus` | `#111827` | near-black |
+| Color | `wwwroot/css/design-tokens.css` | `--color-primary/success/warning/error/info/text-*/bg-*/border-*` |
+| Typography | `wwwroot/css/design-tokens.css` | `--font-xs` … `--font-3xl`, `--font-weight-*`, `--line-height-*` |
+| Spacing | `wwwroot/css/design-tokens.css` | `--space-1` … `--space-6` |
+| Legacy layout/radius/z-index | `wwwroot/app.css` | `--ga-radius-*`, `--ga-z-*`, `--ga-shadow-*`, `--ga-content-max`, `--ga-topbar-height` |
+| MudTheme palette | `Components/Layout/MainLayout.razor` | `--mud-palette-*` → `var(--color-*)` |
 
-### Spacing (4px base grid)
+**Rule:** Never hardcode hex. Use `var(--color-*)` for semantic values, `var(--ga-*)` for structural values.
 
-| Token | Value |
-|---|---|
-| `--ga-space-1` | 4px |
-| `--ga-space-2` | 8px |
-| `--ga-space-3` | 12px |
-| `--ga-space-4` | 16px |
-| `--ga-space-5` | 24px |
-| `--ga-space-6` | 32px |
-| `--ga-space-7` | 40px |
 
-**Rules:**  
-- Control gap = `--ga-space-3` (12px) or `--ga-space-4` (16px)  
-- Section separator = `--ga-space-5` (24px)  
-- Page section gap = `--ga-space-6` (32px)
-
-### Typography Scale
-
-| Role | Size | Weight | Token |
-|---|---|---|---|
-| Page title (AppShell) | 24px | 700 | `--ga-font-2xl` via `[data-testid="page-title"]` |
-| Section title | 20px | 600 | `--ga-font-xl` / `Typo.h6` |
-| Card title | 16px | 600 | `--ga-font-lg` / `Typo.h5` |
-| Body | 14px | 400 | `--ga-font-sm` / `--ga-font-base` |
-| Small / help text | 12px | 400 | `--ga-font-xs` |
-| Stat metric (large) | 28px | 700 | `--ga-font-2xl` / `Typo.h4` |
-
-Font stack: `'Roboto', 'Inter', 'Helvetica Neue', Arial, sans-serif`
-
-### Border Radius
-
-| Token | Value | Use |
-|---|---|---|
-| `--ga-radius-sm` | 6px | Chips, badges |
-| `--ga-radius-md` | 8px | Cards, buttons, inputs |
-| `--ga-radius-lg` | 10px | Dialogs, command palette |
-
-### Elevation (restrained)
-
-| Token | Value | Use |
-|---|---|---|
-| `--ga-shadow-card` | `0 1px 2px rgba(…,.06), 0 1px 3px rgba(…,.10)` | Cards, papers |
-| `--ga-shadow-overlay` | `0 8px 24px rgba(…,.12), …` | Panels, drawers |
-| `--ga-shadow-palette` | `0 8px 32px rgba(…,.18), …` | Command palette, dialogs |
-
-### Z-index Stack
-
-| Token | Value |
-|---|---|
-| `--ga-z-topbar` | 100 |
-| `--ga-z-overlay` | 1300 |
-| `--ga-z-palette` | 1500 |
-| `--ga-z-modal` | 1600 |
-
-### Layout
-
-| Token | Value |
-|---|---|
-| `--ga-content-max` | 1200px |
-| `--ga-form-max` | 480px |
-| `--ga-topbar-height` | 56px |
-
----
-
-## 3. MudBlazor Palette Override
-
-Defined in `wwwroot/css/greenai-skin.css`. Maps `--ga-*` tokens to `--mud-palette-*`.  
-This file is loaded **after** `MudBlazor.min.css` in `App.razor`.
-
-Key mappings:
-- `--mud-palette-primary` → `#0B5FFF`
-- `--mud-palette-background` → `#F7F9FC`
-- `--mud-palette-surface` → `#FFFFFF`
-- `--mud-palette-divider` → `#D7DEE7`
-- `--mud-palette-text-primary` → `#16202A`
-- etc. (see file for complete list)
-
----
-
-## 4. Load Order (App.razor)
-
-```
-1. bootstrap.min.css   (reset / grid)
-2. app.css             (--ga-* tokens + structural base)
-3. GreenAi.Api.styles.css  (component-scoped CSS bundles)
-4. MudBlazor.min.css   (component library)
-5. greenai-skin.css    (--mud-palette-* overrides, component skin)  ← MUST be last
-```
-
----
-
-## 5. Component Skin Rules
 
 ### TopBar
 - Height: `var(--ga-topbar-height)` (56px)
