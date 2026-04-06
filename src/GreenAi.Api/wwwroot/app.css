@@ -6,15 +6,19 @@
 /* ── Design Tokens ─────────────────────────────────────────────────────────── */
 :root {
     /* Colors — WCAG AA compliant */
-    --ga-bg:               #F7F9FC;
-    --ga-surface:          #FFFFFF;
-    --ga-surface-alt:      #F1F4F8;
-    --ga-border:           #D7DEE7;
-    --ga-text:             #16202A;  /* 15.5:1 on white */
-    --ga-text-muted:       #4B5B6B;  /* 5.9:1 on white */
-    --ga-text-disabled:    #9AA0A6;  /* 3.0:1 — UI-only, never body text */
-    --ga-primary:          #0B5FFF;  /* 4.6:1 on white */
-    --ga-primary-hover:    #084FD6;
+    /* ── Color bridges → design-tokens.css SSOT (--color-*) ──────────────── */
+    /* These alias --ga-* names to the canonical --color-* tokens so that        */
+    /* greenai-skin.css / greenai-enterprise.css and the new portal-skin.css      */
+    /* always resolve the same primary/surface/text/border values.               */
+    --ga-bg:               var(--color-bg-main);
+    --ga-surface:          var(--color-bg-surface);
+    --ga-surface-alt:      #F1F4F8;         /* no direct --color-* equivalent */
+    --ga-border:           var(--color-border-light);
+    --ga-text:             var(--color-text-primary);
+    --ga-text-muted:       var(--color-text-secondary);
+    --ga-text-disabled:    var(--color-text-disabled);
+    --ga-primary:          var(--color-primary);
+    --ga-primary-hover:    var(--color-primary-hover);
     --ga-primary-contrast: #FFFFFF;
     --ga-success:          #117A37;  /* 5.1:1 on white */
     --ga-warning:          #A15C00;  /* 4.5:1 on white */

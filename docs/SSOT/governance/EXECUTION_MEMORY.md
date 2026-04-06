@@ -458,6 +458,86 @@ log:
       - src/GreenAi.Api/Components/Pages/Counter.razor
       - src/GreenAi.Api/Components/Pages/Weather.razor
       - src/GreenAi.Api/Features/Broadcasting/ (empty folder)
+
+  - id: EXEC_013
+    date: 2026-04-06
+    task: >
+      Enterprise color system — full implementation pass.
+      Created design-tokens.css (--color-*, --font-*, --space-*, --font-icon-* tokens).
+      Created portal-skin.css (semantic skin, typography, spacing, status badges, utility classes).
+      Updated App.razor CSS load order (canonical cascade).
+      Updated MainLayout.razor + WizardLayout.razor — MudTheme palette override via var(--color-*).
+      Added data-testid="layout-root" and data-testid="btn-primary".
+      Removed duplicate --mud-palette-* block from greenai-skin.css (was SSOT conflict).
+      Fixed --color-info: #0EA5A4 (teal, distinct from primary blue).
+      Consolidated badge sizing in portal-skin.css + greenai-enterprise.css.
+      Created docs/SSOT/ui/color-system.md.
+    red_threads: [zero_warnings]
+    pattern_used:
+      - docs/SSOT/ui/color-system.md  # created this task
+    result: SUCCESS
+    issues:
+      - data-role="btn-primary" was used instead of data-testid — corrected
+      - SSOT duplication: greenai-skin.css and MainLayout.razor both defined --mud-palette-* — removed skin block
+    improvement_found:
+      - design-tokens.css is SSOT for all design values; greenai-skin.css/enterprise.css consume via var()
+      - CSS cascade order: MudBlazor → design-tokens.css → greenai-skin.css → greenai-enterprise.css → portal-skin.css → inline palette override
+      - MudTheme override must use var(--color-*) not hex — enforced by NoCssSourceFiles test
+    ssot_updated: yes
+    ssot_files_created:
+      - wwwroot/css/design-tokens.css
+      - wwwroot/css/portal-skin.css
+      - docs/SSOT/ui/color-system.md
+
+  - id: EXEC_014
+    date: 2026-04-06
+    task: >
+      Component system — standardize inline styles and establish CSS utility library.
+      Replaced all inline Style= attributes across 8 Razor files (25 total replacements).
+      Added .ga-col-numeric, .ga-chip-reset, .ga-text-cell-truncate, .ga-icon-xl/2xl helpers to portal-skin.css.
+      Added .ga-btn-secondary, .ga-btn-danger (with --color-error-hover token).
+      Added .ga-card, .ga-table, .ga-label, .ga-input, .ga-error, .ga-interactive-label.
+      Added 2 new governance tests: MudTables_MustUseDenseMode, AppButtons_PlainHtml_MustHaveGaClass + extended inline-style ban.
+      Added 2 more governance tests: CssOutlineNone_MustHaveFocusReplacement (fail), MudButton_ColorError_Advisory (warn).
+      Bridged --ga-* legacy tokens to var(--color-*) SSOT in app.css.
+      Removed dead rgba table-hover in greenai-skin.css.
+      Created docs/SSOT/ui/component-system.md.
+      Governance tests: 5 → 9, all passing ~130ms.
+    red_threads: [zero_warnings]
+    pattern_used:
+      - docs/SSOT/ui/component-system.md  # created this task
+      - docs/SSOT/ui/color-system.md
+    result: SUCCESS
+    issues:
+      - Icon font-size in portal-skin.css triggered PortalSkin_FontSizes_UseTokensNotHardcodedValues
+        Fix: extracted --font-icon-lg/xl/2xl tokens to design-tokens.css
+      - --ga-primary was #0B5FFF (app.css) vs --color-primary: #2563EB (design-tokens.css) — two different primary colors
+        Fix: bridged --ga-primary: var(--color-primary) in app.css — single resolved value everywhere
+    improvement_found:
+      - When adding new font-size values to portal-skin.css: ALWAYS extract to a --font-* token first
+      - All --ga-* color tokens in app.css are now aliases of --color-* — no more split primary
+      - outline:none governance: allowed if same rule block has box-shadow OR border-color replacement
+    ssot_updated: yes
+    ssot_files_created:
+      - docs/SSOT/ui/component-system.md
+    ssot_files_updated:
+      - wwwroot/app.css (--ga-* → var(--color-*) bridges)
+      - wwwroot/css/design-tokens.css (--font-icon-* tokens, --color-error-hover)
+      - wwwroot/css/portal-skin.css (full component library)
+      - wwwroot/css/greenai-skin.css (dead hover rule removed)
+      - Components/Layout/TopBar.razor (Style= → Class="ga-interactive-label")
+      - tests/GreenAi.E2E/Governance/CssTokenComplianceTests.cs (9 governance tests)
+
+  - id: EXEC_015
+    date: 2026-04-06
+    task: Persist UI system session to SSOT (this entry). Updated UI README, AI_WORK_CONTRACT triggers, EXECUTION_MEMORY.
+    red_threads: []
+    pattern_used:
+      - docs/SSOT/governance/EXECUTION_MEMORY.md
+    result: SUCCESS
+    issues: []
+    improvement_found: []
+    ssot_updated: yes
     compliance_rules_before: 26
     compliance_rules_after: 27  # FEATURE-003 added
     test_count_before: 190

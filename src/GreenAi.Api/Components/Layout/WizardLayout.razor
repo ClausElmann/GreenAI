@@ -12,21 +12,23 @@
 <MudSnackbarProvider />
 @* Override MudBlazor default palette — see MainLayout.razor for explanation. *@
 <style id="greenai-palette-override">
+    /* Derives from design-tokens.css (--color-*) — single source of truth. */
     :root {
-        --mud-palette-primary:              #0B5FFF;
-        --mud-palette-primary-text:         #FFFFFF;
-        --mud-palette-secondary:            #4B5B6B;
-        --mud-palette-secondary-text:       #FFFFFF;
-        --mud-palette-text-secondary:       #4B5B6B;
-        --mud-palette-text-disabled:        #9AA0A6;
-        --mud-palette-surface:              #FFFFFF;
-        --mud-palette-background:           #F7F9FC;
-        --mud-palette-error:                #B42318;
-        --mud-palette-error-text:           #FFFFFF;
-        --mud-palette-warning:              #A15C00;
-        --mud-palette-warning-text:         #FFFFFF;
-        --mud-palette-success:              #117A37;
-        --mud-palette-success-text:         #FFFFFF;
+        --mud-palette-primary:              var(--color-primary);
+        --mud-palette-primary-text:         white;
+        --mud-palette-secondary:            var(--color-text-secondary);
+        --mud-palette-secondary-text:       white;
+        --mud-palette-text-primary:         var(--color-text-primary);
+        --mud-palette-text-secondary:       var(--color-text-secondary);
+        --mud-palette-text-disabled:        var(--color-text-disabled);
+        --mud-palette-surface:              var(--color-bg-surface);
+        --mud-palette-background:           var(--color-bg-main);
+        --mud-palette-error:                var(--color-error);
+        --mud-palette-error-text:           white;
+        --mud-palette-warning:              var(--color-warning);
+        --mud-palette-warning-text:         white;
+        --mud-palette-success:              var(--color-success);
+        --mud-palette-success-text:         white;
     }
 </style>
 

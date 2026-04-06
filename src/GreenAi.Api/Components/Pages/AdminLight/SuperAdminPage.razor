@@ -97,7 +97,7 @@
     {
         <MudPaper Elevation="0" Class="pa-8 text-center" data-testid="context-placeholder">
             <MudIcon Icon="@Icons.Material.Filled.ManageSearch"
-                     Style="font-size:5rem;opacity:.2" />
+                     Class="ga-icon-2xl-faded" />
             <MudText Typo="Typo.body1" Color="Color.Secondary" Class="mt-2">
                 @Loc.Get("page.superAdmin.SelectContextHint")
             </MudText>
@@ -118,8 +118,8 @@
                           data-testid="customers-table">
                     <HeaderContent>
                         <MudTh>@Loc.Get("page.superAdmin.ColCustomerName")</MudTh>
-                        <MudTh Style="text-align:right">@Loc.Get("page.superAdmin.ColUsers")</MudTh>
-                        <MudTh Style="text-align:right">@Loc.Get("page.superAdmin.ColProfiles")</MudTh>
+                        <MudTh Class="ga-col-numeric">@Loc.Get("page.superAdmin.ColUsers")</MudTh>
+                        <MudTh Class="ga-col-numeric">@Loc.Get("page.superAdmin.ColProfiles")</MudTh>
                         <MudTh>@Loc.Get("page.superAdmin.ColLastActivity")</MudTh>
                     </HeaderContent>
                     <RowTemplate>
@@ -135,8 +135,8 @@
                                 }
                             </MudText>
                         </MudTd>
-                        <MudTd Style="text-align:right">@context.UserCount</MudTd>
-                        <MudTd Style="text-align:right">@context.ProfileCount</MudTd>
+                        <MudTd Class="ga-col-numeric">@context.UserCount</MudTd>
+                        <MudTd Class="ga-col-numeric">@context.ProfileCount</MudTd>
                         <MudTd>
                             <MudText Typo="Typo.caption" Color="Color.Secondary">
                                 @context.LastActivity.ToString("d. MMM HH:mm")
@@ -167,14 +167,14 @@
                         <MudTd>@context.Email</MudTd>
                         <MudTd>@context.DisplayName</MudTd>
                         <MudTd>
-                            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Style="margin:0">
+                            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Class="ga-chip-reset">
                                 @context.Role
                             </MudChip>
                         </MudTd>
                         <MudTd>
                             <MudChip T="string" Size="Size.Small"
                                      Color="@(context.Status == "Active" ? Color.Success : context.Status == "Pending" ? Color.Warning : Color.Default)"
-                                     Variant="Variant.Filled" Style="margin:0">
+                                     Variant="Variant.Filled" Class="ga-chip-reset">
                                 @context.Status
                             </MudChip>
                         </MudTd>
@@ -191,7 +191,7 @@
                           data-testid="super-broadcasts-table">
                     <HeaderContent>
                         <MudTh>@Loc.Get("page.superAdmin.ColBroadcastSubject")</MudTh>
-                        <MudTh Style="text-align:right">@Loc.Get("page.superAdmin.ColBroadcastRecipients")</MudTh>
+                        <MudTh Class="ga-col-numeric">@Loc.Get("page.superAdmin.ColBroadcastRecipients")</MudTh>
                         <MudTh>@Loc.Get("page.superAdmin.ColBroadcastDate")</MudTh>
                         <MudTh></MudTh>
                     </HeaderContent>
@@ -199,7 +199,7 @@
                         <MudTd>
                             <MudText Typo="Typo.body2">@context.Subject</MudText>
                         </MudTd>
-                        <MudTd Style="text-align:right">@context.Recipients.ToString("N0")</MudTd>
+                        <MudTd Class="ga-col-numeric">@context.Recipients.ToString("N0")</MudTd>
                         <MudTd>
                             <MudText Typo="Typo.caption" Color="Color.Secondary">
                                 @context.CreatedAt.ToString("d. MMM HH:mm")

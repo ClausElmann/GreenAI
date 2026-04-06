@@ -89,7 +89,7 @@
                 <MudChip T="string" Size="Size.Small"
                          Color="@GetRoleColor(context.Role)"
                          Variant="Variant.Outlined"
-                         Style="margin:0">
+                         Class="ga-chip-reset">
                     @context.Role
                 </MudChip>
             </MudTd>
@@ -97,7 +97,7 @@
                 <MudChip T="string" Size="Size.Small"
                          Color="@GetStatusColor(context.Status)"
                          Variant="Variant.Filled"
-                         Style="margin:0">
+                         Class="ga-chip-reset">
                     @Loc.Get($"feature.adminUsers.Status{context.Status}")
                 </MudChip>
             </MudTd>

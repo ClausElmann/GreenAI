@@ -1,0 +1,92 @@
+/* =============================================================================
+   Green AI semantic design tokens — SSOT
+   These are the canonical color tokens for the GreenAI portal.
+   All UI components, skins, and MudTheme mappings derive from these values.
+   RULE: Never hardcode hex values in components — always reference a token.
+   RULE: Blue = actions/navigation. Red = errors ONLY.
+   ============================================================================= */
+
+:root {
+  /* BACKGROUND */
+  --color-bg-main:        #F7F8FA;
+  --color-bg-surface:     #FFFFFF;
+  --color-bg-elevated:    #FFFFFF;
+
+  /* BORDER */
+  --color-border-light:   #E5E7EB;
+  --color-border-medium:  #D1D5DB;
+
+  /* TEXT */
+  --color-text-primary:   #1F2937;
+  --color-text-secondary: #6B7280;
+  --color-text-disabled:  #9CA3AF;
+
+  /* PRIMARY — blue: actions, navigation, primary buttons */
+  --color-primary:        #2563EB;
+  --color-primary-hover:  #1D4ED8;
+  --color-primary-light:  #DBEAFE;
+  --color-primary-subtle: #EFF6FF;
+
+  /* SUCCESS */
+  --color-success:        #16A34A;
+  --color-success-light:  #DCFCE7;
+
+  /* WARNING — pending states, caution, non-critical alerts */
+  --color-warning:        #D97706;
+  --color-warning-light:  #FEF3C7;
+
+  /* ERROR — errors and failures ONLY, never for primary actions */
+  --color-error:          #DC2626;
+  --color-error-hover:    #B91C1C;
+  --color-error-light:    #FEE2E2;
+
+  /* INFO — teal: distinct from primary blue, clearly informational */
+  --color-info:           #0EA5A4;
+  --color-info-light:     #CCFBF1;
+}
+
+/* =============================================================================
+   TYPOGRAPHY TOKENS
+   RULE: Never hardcode font-size or font-weight in components — use tokens.
+   ============================================================================= */
+:root {
+  /* Font family */
+  --font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  /* Font scale */
+  --font-xs:  12px;
+  --font-sm:  14px;
+  --font-md:  16px;
+  --font-lg:  18px;
+  --font-xl:  20px;
+  --font-2xl: 24px;
+  --font-3xl: 30px;
+
+  /* Font weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold:   600;
+
+  /* Line heights */
+  --line-height-tight:  1.2;
+  --line-height-normal: 1.5;
+  --line-height-loose:  1.7;
+
+  /* Icon sizes — for MudIcon Class="ga-icon-*" helpers in portal-skin.css */
+  --font-icon-lg:  3rem;
+  --font-icon-xl:  4rem;
+  --font-icon-2xl: 5rem;
+}
+
+/* =============================================================================
+   SPACING TOKENS
+   RULE: Never hardcode margin/padding values — use tokens.
+   ============================================================================= */
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+}

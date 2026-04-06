@@ -20,21 +20,26 @@ public static class DesignSystemAssertions
     private static readonly double[] AllowedFontSizesPx = [11, 12, 13, 14, 15, 16, 18, 20, 24, 28, 32, 36, 48];
 
     // ── Expected CSS custom property values ──────────────────────────────────
-    // Only brand colours — omit palette derivations that could legitimately vary.
+    // Checks --color-* SSOT tokens (design-tokens.css) — these have literal hex values.
+    // --ga-primary/bg/border/text/surface are now var(--color-*) aliases; checking
+    // the canonical --color-* token is the correct approach post-bridge (2026-04-06).
     private static readonly IReadOnlyDictionary<string, string> ExpectedTokenValues =
         new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
-            { "--ga-primary",      "#0B5FFF" },
-            { "--ga-success",      "#117A37" },
-            { "--ga-warning",      "#A15C00" },
-            { "--ga-danger",       "#B42318" },
-            { "--ga-info",         "#005E7A" },
-            { "--ga-focus",        "#111827" },
-            { "--ga-text",         "#16202A" },
-            { "--ga-text-muted",   "#4B5B6B" },
-            { "--ga-surface",      "#FFFFFF" },
-            { "--ga-bg",           "#F7F9FC" },
-            { "--ga-border",       "#D7DEE7" },
+            // --color-* canonical tokens (design-tokens.css SSOT)
+            { "--color-primary",      "#2563EB" },
+            { "--color-success",      "#16A34A" },
+            { "--color-warning",      "#D97706" },
+            { "--color-error",        "#DC2626" },
+            { "--color-info",         "#0EA5A4" },
+            { "--color-text-primary", "#1F2937" },
+            { "--color-bg-surface",   "#FFFFFF" },
+            { "--color-bg-main",      "#F7F8FA" },
+            { "--color-border-light", "#E5E7EB" },
+            // --ga-* tokens that still have literal values (not bridged)
+            { "--ga-focus",   "#111827" },
+            { "--ga-success", "#117A37" },
+            { "--ga-danger",  "#B42318" },
         };
 
     // ── Allowed border-radius values (px) ────────────────────────────────────

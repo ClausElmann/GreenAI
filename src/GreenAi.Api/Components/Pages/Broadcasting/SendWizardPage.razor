@@ -100,7 +100,7 @@
     else if (_selectedMethod == "by-excel")
     {
         <MudPaper Class="wizard-upload-area pa-6" data-testid="wizard-upload-area">
-            <MudIcon Icon="@Icons.Material.Filled.CloudUpload" Color="Color.Primary" Style="font-size:3rem" />
+            <MudIcon Icon="@Icons.Material.Filled.CloudUpload" Color="Color.Primary" Class="ga-icon-xl" />
             <MudText Typo="Typo.subtitle2" Class="mt-2">@Loc.Get("page.wizard.ExcelDropHere")</MudText>
             <MudText Typo="Typo.caption" Color="Color.Secondary">@Loc.Get("page.wizard.ExcelFormats")</MudText>
             <InputFile id="wizard-file-input" OnChange="HandleFileSelected" accept=".xlsx,.xls,.csv" style="display:none" />
@@ -121,7 +121,7 @@
     else if (_selectedMethod == "by-map")
     {
         <MudPaper Class="wizard-map-placeholder" data-testid="wizard-map-area">
-            <MudIcon Icon="@Icons.Material.Filled.Map" Color="Color.Primary" Style="font-size:4rem;opacity:.4" />
+            <MudIcon Icon="@Icons.Material.Filled.Map" Color="Color.Primary" Class="ga-icon-xl-faded" />
             <MudText Typo="Typo.subtitle2" Color="Color.Secondary" Class="mt-2">
                 @Loc.Get("page.wizard.MapPlaceholder")
             </MudText>
@@ -281,7 +281,7 @@
         <div class="wizard-complete" data-testid="wizard-complete">
             <MudIcon Icon="@Icons.Material.Filled.CheckCircle"
                      Color="Color.Success"
-                     Style="font-size:5rem" />
+                     Class="ga-icon-2xl" />
             <MudText Typo="Typo.h5" Class="mt-3">@Loc.Get("page.wizard.CompleteTitle")</MudText>
             <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-4">
                 @($"~{RecipientEstimate:N0} {Loc.Get("page.wizard.RecipientsEstimate")} · {_channel}")

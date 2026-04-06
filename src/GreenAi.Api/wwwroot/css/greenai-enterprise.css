@@ -23,12 +23,12 @@
 
 /* Zebra rows — enterprise scanability (every even row gets alt bg) */
 .mud-table-body .mud-table-row:nth-child(even) > .mud-table-cell {
-    background-color: rgba(241,244,248,.7) !important;  /* --ga-surface-alt at 70% */
+    background-color: var(--color-bg-main) !important;  /* --color-bg-main: #F7F8FA — token-based */
 }
 
-/* Stronger hover */
+/* Stronger hover — primary-subtle tint on row */
 .mud-table-row:hover td {
-    background-color: rgba(11,95,255,.07) !important;
+    background-color: var(--color-primary-subtle) !important;
     cursor: pointer;
 }
 
@@ -76,7 +76,8 @@
 }
 
 /* ── Status badge sizing consistency ────────────────────────────────────────── */
-/* Ensures .ga-status-* badges have consistent height/padding wherever used      */
+/* Canonical sizing is defined in portal-skin.css (.ga-status-base shared rule). */
+/* This block is retained for !important override protection in table contexts.   */
 .ga-status-draft,
 .ga-status-pending,
 .ga-status-approved,
@@ -88,10 +89,10 @@
 .ga-status-unknown {
     display: inline-flex !important;
     align-items: center !important;
-    padding: 2px 8px !important;
-    border-radius: var(--ga-radius-sm) !important;
-    font-size: var(--ga-font-xs) !important;
-    font-weight: 600 !important;
+    padding: var(--space-1) var(--space-3) !important;  /* 4px 12px */
+    border-radius: 100px !important;                    /* pill */
+    font-size: var(--font-xs) !important;               /* 12px */
+    font-weight: var(--font-weight-medium) !important;  /* 500 */
     white-space: nowrap !important;
     line-height: 1.6 !important;
 }
@@ -122,7 +123,7 @@
 /* Active MudChip — tinted bg + primary border for selected filters */
 .mud-chip.mud-chip-default.mud-chip-selected,
 .mud-chip[aria-pressed="true"] {
-    background-color: rgba(11,95,255,.10) !important;
+    background-color: var(--color-primary-subtle) !important;
     border-color: var(--ga-primary) !important;
     color: var(--ga-primary) !important;
     font-weight: 600 !important;
@@ -130,7 +131,7 @@
 
 /* Active row in tables (when .mud-selected applied by MudBlazor) */
 .mud-table-row.mud-selected td {
-    background-color: rgba(11,95,255,.07) !important;
+    background-color: var(--color-primary-light) !important;
     border-left: 3px solid var(--ga-primary) !important;
 }
 

@@ -12,7 +12,7 @@
         <HeaderContent>
             <MudTh>@Loc.Get("page.drafts.ColMessage")</MudTh>
             <MudTh>@Loc.Get("page.drafts.ColProfile")</MudTh>
-            <MudTh Style="text-align:right">@Loc.Get("page.drafts.ColRecipients")</MudTh>
+            <MudTh Class="ga-col-numeric">@Loc.Get("page.drafts.ColRecipients")</MudTh>
             <MudTh>@Loc.Get("page.drafts.ColLastModified")</MudTh>
             <MudTh></MudTh>
         </HeaderContent>
@@ -21,15 +21,15 @@
                 <MudText Typo="Typo.body2" Class="draft-subject-cell">@context.Subject</MudText>
             </MudTd>
             <MudTd DataLabel="Profil">
-                <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Style="margin:0">
+                <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Class="ga-chip-reset">
                     @context.Profile
                 </MudChip>
             </MudTd>
-            <MudTd DataLabel="Modtagere" Style="text-align:right">@context.Recipients.ToString("N0")</MudTd>
+            <MudTd DataLabel="Modtagere" Class="ga-col-numeric">@context.Recipients.ToString("N0")</MudTd>
             <MudTd DataLabel="Sidst ændret">
                 <MudText Typo="Typo.caption" Color="Color.Secondary">@FormatRelative(context.LastModified)</MudText>
             </MudTd>
-            <MudTd Style="text-align:right">
+            <MudTd Class="ga-col-numeric">
                 <MudStack Row="true" Spacing="1" Justify="Justify.FlexEnd">
                     <MudButton Variant="Variant.Filled"
                                Size="Size.Small"

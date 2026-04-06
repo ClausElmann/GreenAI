@@ -13,31 +13,30 @@
         <MudTh>@Loc.Get("page.statusList.ColSubject")</MudTh>
         <MudTh>@Loc.Get("page.statusList.ColProfile")</MudTh>
         <MudTh>@Loc.Get("page.statusList.ColMethod")</MudTh>
-        <MudTh Style="text-align:right">@Loc.Get("page.statusList.ColRecipients")</MudTh>
+        <MudTh Class="ga-col-numeric">@Loc.Get("page.statusList.ColRecipients")</MudTh>
         @if (ShowScheduled)
         {
             <MudTh>@Loc.Get("page.statusList.ColScheduled")</MudTh>
         }
         else if (ShowFailed)
         {
-            <MudTh Style="text-align:right">@Loc.Get("page.statusList.ColFailed")</MudTh>
-            <MudTh Style="text-align:right">@Loc.Get("page.statusList.ColDeliveryRate")</MudTh>
+            <MudTh Class="ga-col-numeric">@Loc.Get("page.statusList.ColFailed")</MudTh>
+            <MudTh Class="ga-col-numeric">@Loc.Get("page.statusList.ColDeliveryRate")</MudTh>
         }
         else
         {
-            <MudTh Style="text-align:right">@Loc.Get("page.statusList.ColDelivered")</MudTh>
+            <MudTh Class="ga-col-numeric">@Loc.Get("page.statusList.ColDelivered")</MudTh>
         }
         <MudTh>@Loc.Get("page.statusList.ColCreated")</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Emne">
-            <MudText Typo="Typo.body2"
-                     Style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+            <MudText Typo="Typo.body2" Class="ga-text-cell-truncate">
                 @context.Subject
             </MudText>
         </MudTd>
         <MudTd DataLabel="Profil">
-            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Style="margin:0">
+            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Class="ga-chip-reset">
                 @context.Profile
             </MudChip>
         </MudTd>
@@ -46,7 +45,7 @@
                 @MockData.GetSendMethodLabel(MockData.GetSendMethodKey(context.Id))
             </MudText>
         </MudTd>
-        <MudTd DataLabel="Modtagere" Style="text-align:right">
+        <MudTd DataLabel="Modtagere" Class="ga-col-numeric">
             @context.Recipients.ToString("N0")
         </MudTd>
         @if (ShowScheduled)
@@ -61,12 +60,12 @@
         }
         else if (ShowFailed)
         {
-            <MudTd DataLabel="Fejlede" Style="text-align:right">
+            <MudTd DataLabel="Fejlede" Class="ga-col-numeric">
                 <MudText Typo="Typo.body2" Color="Color.Error">
                     @context.FailedCount.ToString("N0")
                 </MudText>
             </MudTd>
-            <MudTd DataLabel="Leveringsrate" Style="text-align:right">
+            <MudTd DataLabel="Leveringsrate" Class="ga-col-numeric">
                 @{
                     var rate = context.Recipients > 0
                         ? (int)((context.Delivered * 100.0) / context.Recipients)
@@ -82,7 +81,7 @@
         }
         else
         {
-            <MudTd DataLabel="Leveret" Style="text-align:right">
+            <MudTd DataLabel="Leveret" Class="ga-col-numeric">
                 <MudText Typo="Typo.body2" Color="Color.Success">
                     @context.Delivered.ToString("N0")
                 </MudText>

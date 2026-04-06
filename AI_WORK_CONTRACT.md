@@ -35,6 +35,9 @@
 | "permission" / "IPermissionService" / "UserRole" / "ProfileRole" | `read_file docs/SSOT/identity/permissions.md`                    | Two systems: UserRoles (global) vs ProfileRoles (operational) |
 | "Blazor komponent" / "reusable component" / "@Parameter"       | `read_file docs/SSOT/ui/patterns/blazor-component-pattern.md`    | Parameters in, EventCallback out, no Mediator injection       |
 | "MudBlazor" / "MudTable" / "MudChip" / "MudAlert"             | `read_file docs/SSOT/ui/patterns/mudblazor-conventions.md`       | Approved components, loading/error contracts, anti-patterns   |
+| "design token" / "css token" / "farve token" / "--color-"      | `read_file docs/SSOT/ui/color-system.md`                         | Token SSOT — aldrig hardcoded hex. Cascade: design-tokens.css → greenai-skin → enterprise → portal-skin |
+| "css klasse" / "utility class" / ".ga-" / "inline style"       | `read_file docs/SSOT/ui/component-system.md`                     | .ga-btn-* / .ga-card / .ga-table / .ga-col-numeric / .ga-chip-reset / .ga-icon-* — governance tests håndhæver |
+| "governance test" / "css compliance" / "CssTokenCompliance"    | `read_file docs/SSOT/ui/component-system.md`                     | 9 tests i CssTokenComplianceTests.cs — alle Category=Governance |
 | "navigation" / "ruter" / "ui model" / "ui-navigation"         | `read_file docs/SSOT/ui/models/ui-navigation-schema.json`        | Route → auth → breadcrumb → query mapping                    |
 | "test strategi" / "hvilken test" / "test layer"         | `read_file docs/SSOT/testing/testing-strategy.md`                         | Vælg lag per trigger-tabel          |
 | "test automation" / "hvornår test" / "test regel"       | `read_file docs/SSOT/testing/test-automation-rules.md`                    | Trigger table → required tests      |

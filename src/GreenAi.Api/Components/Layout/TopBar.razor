@@ -18,8 +18,7 @@
                    data-testid="top-bar-nav-toggle"
                    aria-label="@Loc.Get("nav.OpenMenu")" />
     <MudText Typo="Typo.body2"
-             Class="ml-n1 mr-1 d-none d-sm-inline top-bar-nav-label"
-             Style="cursor:pointer;user-select:none"
+             Class="ml-n1 mr-1 d-none d-sm-inline top-bar-nav-label ga-interactive-label"
              @onclick="AppState.ToggleOverlayNav">
         @Loc.Get("nav.Menu")
     </MudText>
@@ -36,7 +35,7 @@
                StartIcon="@Icons.Material.Filled.Send"
                Href="/send/wizard"
                Class="mr-2 d-none d-sm-flex"
-               data-testid="top-bar-send-button">
+               data-testid="btn-primary">
         @Loc.Get("nav.Send")
     </MudButton>
     <MudIconButton Icon="@Icons.Material.Filled.Send"

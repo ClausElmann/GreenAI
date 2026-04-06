@@ -1,0 +1,447 @@
+/* =============================================================================
+   GREEN AI — PORTAL SKIN
+   Loaded last — applies semantic design tokens to portal-level elements.
+   Uses --color-* tokens from design-tokens.css as SSOT.
+   Additive only: supplements greenai-skin.css and greenai-enterprise.css.
+   RULE: No hardcoded hex values. Use semantic tokens only.
+   ============================================================================= */
+
+/* ── Body / main background + base typography ───────────────────────────── */
+body {
+    background-color: var(--color-bg-main);
+    color: var(--color-text-primary);
+    font-family: var(--font-family);
+    font-size: var(--font-md);
+    line-height: var(--line-height-normal);
+}
+
+/* ── Headings ────────────────────────────────────────────────────────────── */
+h1 {
+    font-size: var(--font-2xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+}
+
+h2 {
+    font-size: var(--font-xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+}
+
+h3 {
+    font-size: var(--font-lg);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-tight);
+}
+
+/* ── Surface containers (cards, panels, drawers) ─────────────────────────────── */
+.mud-card,
+.mud-paper,
+.mud-drawer-content {
+    background-color: var(--color-bg-surface);
+}
+
+/* ── Border defaults ─────────────────────────────────────────────────────────── */
+.mud-card,
+.mud-paper {
+    border-color: var(--color-border-light);
+}
+
+/* ── Primary button ──────────────────────────────────────────────────────────── */
+.mud-button-filled.mud-button-filled-primary,
+.mud-button-filled.mud-button-filled-primary:not(:disabled) {
+    background-color: var(--color-primary) !important;
+    color: white !important;
+}
+
+.mud-button-filled.mud-button-filled-primary:hover:not(:disabled) {
+    background-color: var(--color-primary-hover) !important;
+}
+
+/* ── Links and active nav ────────────────────────────────────────────────────── */
+a:not(.mud-button):not(.mud-nav-link) {
+    color: var(--color-primary);
+}
+
+a:not(.mud-button):not(.mud-nav-link):hover {
+    color: var(--color-primary-hover);
+}
+
+.mud-nav-link.active,
+.mud-nav-link:hover {
+    color: var(--color-primary) !important;
+}
+
+/* ── Focus ring — WCAG 2.4.11 visible focus ──────────────────────────────────── */
+*:focus-visible {
+    outline: 3px solid var(--color-primary) !important;
+    outline-offset: 2px !important;
+}
+
+/* ── Status colour helpers ───────────────────────────────────────────────────── */
+.portal-status-success {
+    color: var(--color-success);
+    background-color: var(--color-success-light);
+}
+
+.portal-status-warning {
+    color: var(--color-warning);
+    background-color: var(--color-warning-light);
+}
+
+.portal-status-error {
+    color: var(--color-error);
+    background-color: var(--color-error-light);
+}
+
+.portal-status-info {
+    color: var(--color-info);
+    background-color: var(--color-info-light);
+}
+
+/* ── .ga-status-* per-role semantic colors (sizing in greenai-enterprise.css) ── */
+/* Each broadcast / domain status maps to a semantic color role.                  */
+/* All badges share: pill shape, 4px 12px padding, 12px font, weight 500.         */
+.ga-status-sent,
+.ga-status-approved {
+    color: var(--color-success);
+    background-color: var(--color-success-light);
+}
+
+.ga-status-pending,
+.ga-status-scheduled,
+.ga-status-sending {
+    color: var(--color-warning);
+    background-color: var(--color-warning-light);
+}
+
+.ga-status-failed,
+.ga-status-rejected {
+    color: var(--color-error);
+    background-color: var(--color-error-light);
+}
+
+.ga-status-draft,
+.ga-status-unknown {
+    color: var(--color-text-secondary);
+    background-color: var(--color-border-light);
+}
+
+/* ── MudAlert warning — light variant for non-critical context ────────────────── */
+/* Filled warning (Variant.Filled) keeps full-strength orange for action-required.*/
+/* Default/outlined warning alerts use light background for calmer presentation.  */
+.mud-alert-severity-warning:not(.mud-alert-filled) {
+    background-color: var(--color-warning-light) !important;
+    color: var(--color-text-primary) !important;
+    border-color: var(--color-warning) !important;
+}
+
+.mud-alert-severity-warning:not(.mud-alert-filled) .mud-alert-message {
+    color: var(--color-text-primary) !important;
+}
+
+.mud-alert-severity-warning:not(.mud-alert-filled) .mud-alert-icon {
+    color: var(--color-warning) !important;
+}
+
+/* =============================================================================
+   UTILITY CLASSES
+   .ga-* prefix — safe, reusable, consistent with existing token conventions.
+   ============================================================================= */
+
+/* ── Surface ─────────────────────────────────────────────────────────────────── */
+.ga-surface {
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border-light);
+    border-radius: 8px;
+}
+
+/* ── Border ──────────────────────────────────────────────────────────────────── */
+.ga-border {
+    border: 1px solid var(--color-border-light);
+}
+
+/* ── Text ────────────────────────────────────────────────────────────────────── */
+.ga-text-secondary {
+    color: var(--color-text-secondary);
+}
+
+/* ── Status badges (utility: .ga-status-success/warning/error/info) ────────────── */
+/* Shared base — inline-flex pill, token padding + font. */
+.ga-status-success,
+.ga-status-warning,
+.ga-status-error,
+.ga-status-info {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--space-1) var(--space-3);
+    border-radius: 100px;
+    font-size: var(--font-xs);
+    font-weight: var(--font-weight-medium);
+    white-space: nowrap;
+    line-height: 1.6;
+}
+
+.ga-status-success {
+    color: var(--color-success);
+    background-color: var(--color-success-light);
+}
+
+.ga-status-warning {
+    color: var(--color-warning);
+    background-color: var(--color-warning-light);
+}
+
+.ga-status-error {
+    color: var(--color-error);
+    background-color: var(--color-error-light);
+}
+
+.ga-status-info {
+    color: var(--color-info);
+    background-color: var(--color-info-light);
+}
+
+/* ── Primary button utility ──────────────────────────────────────────────────── */
+.ga-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-3) var(--space-4);
+    border-radius: 8px;
+    border: none;
+    background-color: var(--color-primary);
+    color: white;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: background-color 150ms;
+    text-decoration: none;
+}
+
+.ga-btn-primary:hover:not(:disabled) {
+    background-color: var(--color-primary-hover);
+    color: white;
+    text-decoration: none;
+}
+
+.ga-btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ── Secondary button (outlined, neutral) ────────────────────────────────────── */
+.ga-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-3) var(--space-4);
+    border-radius: 8px;
+    border: 1px solid var(--color-border-medium);
+    background-color: var(--color-bg-surface);
+    color: var(--color-text-primary);
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: background-color 150ms, border-color 150ms;
+    text-decoration: none;
+}
+
+.ga-btn-secondary:hover:not(:disabled) {
+    background-color: var(--color-bg-main);
+    border-color: var(--color-text-secondary);
+    color: var(--color-text-primary);
+    text-decoration: none;
+}
+
+.ga-btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ── Danger button (destructive actions) ─────────────────────────────────────── */
+.ga-btn-danger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-3) var(--space-4);
+    border-radius: 8px;
+    border: none;
+    background-color: var(--color-error);
+    color: white;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: background-color 150ms;
+    text-decoration: none;
+}
+
+.ga-btn-danger:hover:not(:disabled) {
+    background-color: var(--color-error-hover);
+    color: white;
+    text-decoration: none;
+}
+
+.ga-btn-danger:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ── Interactive label (nav menu toggle label) ─────────────────────────────── */
+/* Replaces Style="cursor:pointer;user-select:none" on nav label elements. */
+.ga-interactive-label {
+    cursor: pointer;
+    user-select: none;
+}
+
+/* ── Focusable — explicit visible focus for custom interactive elements ───────── */
+.ga-focusable:focus-visible {
+    outline: 3px solid var(--color-primary) !important;
+    outline-offset: 2px !important;
+}
+
+/* =============================================================================
+   SPACING APPLICATION — core elements use space tokens
+   ============================================================================= */
+
+/* Cards */
+.mud-card-content {
+    padding: var(--space-4);
+}
+
+/* Sections */
+.ga-section {
+    margin-bottom: var(--space-5);
+}
+
+/* Page containers */
+.ga-page-content {
+    padding: var(--space-6);
+}
+
+/* Form groups */
+.ga-form-group {
+    margin-bottom: var(--space-4);
+}
+
+/* =============================================================================
+   SPACING UTILITY CLASSES
+   ============================================================================= */
+
+.ga-space-sm { margin-bottom: var(--space-2); }
+.ga-space-md { margin-bottom: var(--space-4); }
+.ga-space-lg { margin-bottom: var(--space-5); }
+
+/* =============================================================================
+   TYPOGRAPHY UTILITY CLASSES
+   ============================================================================= */
+
+.ga-text-sm { font-size: var(--font-sm); }
+.ga-text-md { font-size: var(--font-md); }
+.ga-text-lg { font-size: var(--font-lg); }
+
+/* =============================================================================
+   COMPONENT SYSTEM — token-based replacements for inline styles
+   Use these classes instead of inline Style= attributes in .razor files.
+   ============================================================================= */
+
+/* ── Table column helpers ────────────────────────────────────────────────────── */
+/* Applied to MudTh / MudTd for numeric data columns */
+.ga-col-numeric {
+    text-align: right !important;
+}
+
+/* ── Chip reset ──────────────────────────────────────────────────────────────── */
+/* Applied to MudChip to remove the default margin MudBlazor adds */
+.ga-chip-reset {
+    margin: 0 !important;
+}
+
+/* ── Text cell truncation ────────────────────────────────────────────────────── */
+/* Applied to MudText inside a table cell to truncate long content */
+.ga-text-cell-truncate {
+    max-width: 280px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ── Icon size helpers ───────────────────────────────────────────────────────── */
+/* Applied to MudIcon. Font-size drives icon scale (icon SVG uses 1em). */
+.ga-icon-xl          { font-size: var(--font-icon-lg); }
+.ga-icon-xl-dim      { font-size: var(--font-icon-lg); opacity: .8; }
+.ga-icon-xl-faded    { font-size: var(--font-icon-xl); opacity: .4; }
+.ga-icon-2xl         { font-size: var(--font-icon-2xl); }
+.ga-icon-2xl-faded   { font-size: var(--font-icon-2xl); opacity: .2; }
+
+/* =============================================================================
+   CARD COMPONENT
+   .ga-card — portal card with surface background, light border and padding.
+   Optional enhancement on top of MudCard: add Class="ga-card" for extra hooks.
+   ============================================================================= */
+
+.ga-card {
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border-light);
+    border-radius: 8px;
+    padding: var(--space-4);
+}
+
+/* =============================================================================
+   TABLE COMPONENT
+   .ga-table — applied to MudTable Class= for consistent portal table style.
+   ============================================================================= */
+
+.ga-table {
+    border: 1px solid var(--color-border-light);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* =============================================================================
+   FORM SYSTEM
+   For custom HTML forms (rare in Blazor). MudBlazor form fields (MudTextField,
+   MudSelect etc.) use their own controlled theming.
+   ============================================================================= */
+
+/* Form group — wraps label + input + error message */
+/* Note: .ga-form-group already defined in Spacing Application section above */
+
+/* Label */
+.ga-label {
+    display: block;
+    font-size: var(--font-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-1);
+}
+
+/* Input */
+.ga-input {
+    display: block;
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-border-medium);
+    border-radius: 6px;
+    font-size: var(--font-sm);
+    color: var(--color-text-primary);
+    background-color: var(--color-bg-surface);
+    transition: border-color 150ms;
+}
+
+.ga-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-subtle);
+}
+
+.ga-input::placeholder {
+    color: var(--color-text-disabled);
+}
+
+/* Validation error message */
+.ga-error {
+    font-size: var(--font-xs);
+    color: var(--color-error);
+    margin-top: var(--space-1);
+}
