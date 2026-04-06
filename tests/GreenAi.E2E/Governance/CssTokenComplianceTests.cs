@@ -18,6 +18,19 @@ public sealed class CssTokenComplianceTests
     private static readonly string SourceRoot = Path.GetFullPath(
         Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", "src", "GreenAi.Api"));
 
+    // ── All governed Razor files: Components/ + Features/ ────────────────────
+    // Features/ can contain [Feature]Page.razor in vertical-slice architecture.
+    // Governance rules apply equally — both folders are scanned.
+    private static IEnumerable<string> AllRazorFiles()
+    {
+        var components = Path.Combine(SourceRoot, "Components");
+        var features   = Path.Combine(SourceRoot, "Features");
+        var files      = Directory.GetFiles(components, "*.razor", SearchOption.AllDirectories).AsEnumerable();
+        if (Directory.Exists(features))
+            files = files.Concat(Directory.GetFiles(features, "*.razor", SearchOption.AllDirectories));
+        return files;
+    }
+
     // ── CSS files owned by us (never examine third-party) ────────────────────
     private static string[] OurCssFiles() =>
         Directory.GetFiles(SourceRoot, "*.css", SearchOption.AllDirectories)
@@ -222,21 +235,25 @@ public sealed class CssTokenComplianceTests
     [Trait("Category", "Governance")]
     public void RazorFiles_DoNotContainBannedInlineStyles()
     {
-        var componentsRoot = Path.Combine(SourceRoot, "Components");
-        var razorFiles = Directory.GetFiles(componentsRoot, "*.razor", SearchOption.AllDirectories);
-        Assert.True(razorFiles.Length > 0, $"No .razor files found under {componentsRoot}");
+        var razorFiles = AllRazorFiles().ToArray();
+        Assert.True(razorFiles.Length > 0, $"No .razor files found under {SourceRoot} (Components/ or Features/)");
 
-        // Banned patterns — extended with hardcoded colour values and remaining spacing patterns
+        // Banned patterns — spacing, colour, font-size, and dimension inline styles.
+        // AI must never emit these — use ga-space-*, ga-form-group, ga-section, or MudStack instead.
         var bannedPatterns = new (string Pattern, string Suggestion)[]
         {
-            (@"Style=""text-align:right""",                       "ga-col-numeric"),
-            (@"Style=""margin:0""",                               "ga-chip-reset"),
-            (@"Style=""font-size:",                               "ga-icon-* helpers"),
-            (@"Style=""max-width:280px;overflow:hidden",          "ga-text-cell-truncate"),
+            (@"Style=""text-align:right""",            "ga-col-numeric"),
+            (@"Style=""margin:",                        "ga-space-* class / ga-form-group / ga-section / MudStack"),
+            (@"Style=""padding:",                       "ga-space-* class / ga-form-group / ga-section / MudStack"),
+            (@"Style=""gap:",                           "MudStack Spacing= / ga-space-* class"),
+            (@"Style=""font-size:",                    "ga-icon-* helpers"),
+            (@"Style=""width:",                         "MudBlazor Width= param or ga-* layout class"),
+            (@"Style=""height:",                        "MudBlazor Height= param or ga-* layout class"),
+            (@"Style=""max-width:280px;overflow:hidden", "ga-text-cell-truncate"),
             // Hardcoded colours in Blazor Style= (hex values) — must use semantic token class
-            (@"Style=""color:#",                                  "semantic token class or MudBlazor Color= param"),
-            (@"Style=""background-color:#",                       "ga-status-* / ga-card / semantic token class"),
-            (@"Style=""background:#",                             "ga-status-* / ga-card / semantic token class"),
+            (@"Style=""color:#",                        "semantic token class or MudBlazor Color= param"),
+            (@"Style=""background-color:#",             "ga-status-* / ga-card / semantic token class"),
+            (@"Style=""background:#",                   "ga-status-* / ga-card / semantic token class"),
         };
 
         var violations = new List<string>();
@@ -267,10 +284,9 @@ public sealed class CssTokenComplianceTests
     [Trait("Category", "Governance")]
     public void MudTables_MustUseDenseMode()
     {
-        var componentsRoot = Path.Combine(SourceRoot, "Components");
         var violations = new List<string>();
 
-        foreach (var file in Directory.GetFiles(componentsRoot, "*.razor", SearchOption.AllDirectories))
+        foreach (var file in AllRazorFiles())
         {
             var content = File.ReadAllText(file);
             if (!content.Contains("<MudTable")) continue;
@@ -288,6 +304,33 @@ public sealed class CssTokenComplianceTests
     }
 
     /// <summary>
+    /// Verifies that every MudTable component in Razor files uses Hover="true".
+    /// Hover feedback is part of the enterprise row interaction contract —
+    /// row highlight on hover signals clickability and aids scanability.
+    /// </summary>
+    [Fact]
+    [Trait("Category", "Governance")]
+    public void MudTables_MustUseHoverMode()
+    {
+        var violations = new List<string>();
+
+        foreach (var file in AllRazorFiles())
+        {
+            var content = File.ReadAllText(file);
+            if (!content.Contains("<MudTable")) continue;
+
+            if (!content.Contains("Hover=\"true\""))
+                violations.Add(Path.GetFileName(file));
+        }
+
+        if (violations.Count > 0)
+            Assert.Fail(
+                $"MudTable without Hover=\"true\" found in {violations.Count} file(s). " +
+                $"All portal data tables must use Hover=\"true\" for row interaction feedback:\n" +
+                string.Join("\n", violations.Select(v => $"  • {v}")));
+    }
+
+    /// <summary>
     /// Verifies that plain HTML &lt;button&gt; elements in application components
     /// (i.e. outside the Layout/ infrastructure folder) carry a ga-btn-* CSS class.
     /// Application buttons must use MudButton, MudIconButton, or — when a plain HTML
@@ -298,10 +341,9 @@ public sealed class CssTokenComplianceTests
     [Trait("Category", "Governance")]
     public void AppButtons_PlainHtml_MustHaveGaClass()
     {
-        var componentsRoot = Path.Combine(SourceRoot, "Components");
         var violations = new List<string>();
 
-        var razorFiles = Directory.GetFiles(componentsRoot, "*.razor", SearchOption.AllDirectories)
+        var razorFiles = AllRazorFiles()
             .Where(f => !f.Contains(Path.DirectorySeparatorChar + "Layout" + Path.DirectorySeparatorChar));
 
         foreach (var file in razorFiles)
@@ -445,4 +487,189 @@ public sealed class CssTokenComplianceTests
 
         // Always passes — advisory only, does not block CI
     }
+
+    /// <summary>
+    /// Verifies that no --font-* token in design-tokens.css is set below 11px.
+    /// This prevents "size creep downward" where AI or contributors introduce
+    /// unreadably small type. 11px is the absolute floor for screen legibility.
+    ///
+    /// Enforcement: fails if any --font-* token's px value is less than 11.
+    /// </summary>
+    [Fact]
+    [Trait("Category", "Governance")]
+    public void TypographyTokens_NoFontSizeBelowMinimum_11px()
+    {
+        var designTokens = OurCssFiles()
+            .FirstOrDefault(f => f.EndsWith("design-tokens.css"));
+        Assert.NotNull(designTokens);
+
+        var lines = File.ReadAllLines(designTokens!);
+        var fontTokenPx = new Regex(@"--font-[a-z0-9-]+\s*:\s*(\d+)px", RegexOptions.Compiled);
+
+        var violations = new List<string>();
+        for (var i = 0; i < lines.Length; i++)
+        {
+            var match = fontTokenPx.Match(lines[i]);
+            if (!match.Success) continue;
+            if (int.TryParse(match.Groups[1].Value, out var px) && px < 11)
+                violations.Add($"design-tokens.css:{i + 1}  {lines[i].Trim()}  [value: {px}px — minimum is 11px]");
+        }
+
+        if (violations.Count > 0)
+            Assert.Fail(
+                $"Font token(s) set below 11px minimum in design-tokens.css. " +
+                $"Smallest allowed screen-legible size is 11px:\n" +
+                string.Join("\n", violations.Select(v => $"  • {v}")));
+    }
+
+    /// <summary>
+    /// Verifies that greenai-enterprise.css uses --font-* tokens for font-size,
+    /// not hardcoded px/rem/em values. Enterprise.css is an application-layer CSS file
+    /// (loaded after skin.css) and must follow the same token contract as portal-skin.css.
+    ///
+    /// Scope: greenai-enterprise.css only.
+    /// greenai-skin.css uses rem intentionally for MudBlazor heading specificity — excluded.
+    /// </summary>
+    [Fact]
+    [Trait("Category", "Governance")]
+    public void EnterpriseCss_FontSizes_UseTokensNotHardcodedValues()
+    {
+        var enterpriseCss = OurCssFiles()
+            .FirstOrDefault(f => f.EndsWith("greenai-enterprise.css"));
+        Assert.NotNull(enterpriseCss);
+
+        var hardcodedFontSize = new Regex(
+            @"font-size\s*:\s*\d+(\.\d+)?(px|rem|em|%)",
+            RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+        var violations = new List<string>();
+        var lines = File.ReadAllLines(enterpriseCss!);
+
+        for (var i = 0; i < lines.Length; i++)
+        {
+            var line = lines[i];
+            if (line.TrimStart().StartsWith("//") ||
+                line.TrimStart().StartsWith("*") ||
+                line.TrimStart().StartsWith("/*"))
+                continue;
+
+            if (hardcodedFontSize.IsMatch(line))
+                violations.Add($"greenai-enterprise.css:{i + 1}  {line.Trim()}");
+        }
+
+        if (violations.Count > 0)
+        {
+            var msg = string.Join("\n", violations.Select(v => $"  • {v}"));
+            Assert.Fail(
+                $"Hardcoded font-size values found in greenai-enterprise.css. " +
+                $"Use var(--font-*) tokens from design-tokens.css instead:\n{msg}");
+        }
+    }
+
+    /// <summary>
+    /// Bans &lt;style&gt; blocks in application Razor files (Components/ + Features/).
+    /// All CSS must live in .css files — style blocks in Razor bypass the token system.
+    ///
+    /// Exception: Layout/ files may use &lt;style id="greenai-palette-override"&gt;
+    /// for dynamic MudBlazor theme injection (a legitimate runtime-only pattern).
+    ///
+    /// If a developer needs to add CSS: add it to portal-skin.css with a .ga-* class.
+    /// </summary>
+    [Fact]
+    [Trait("Category", "Governance")]
+    public void RazorFiles_NoInlineStyleBlocks()
+    {
+        var violations = new List<string>();
+
+        var razorFiles = AllRazorFiles()
+            .Where(f => !f.Contains(Path.DirectorySeparatorChar + "Layout" + Path.DirectorySeparatorChar));
+
+        foreach (var file in razorFiles)
+        {
+            var content = File.ReadAllText(file);
+            // Match opening <style> or <style ...> (case-insensitive, any attributes)
+            if (Regex.IsMatch(content, @"<style[\s>]", RegexOptions.IgnoreCase))
+                violations.Add($"{Path.GetFileName(file)}: contains <style> block — move CSS to portal-skin.css with a .ga-* class");
+        }
+
+        if (violations.Count > 0)
+            Assert.Fail(
+                $"Inline <style> blocks found in {violations.Count} application Razor file(s). " +
+                $"All CSS must live in .css files to stay within the token system:\n" +
+                string.Join("\n", violations.Select(v => $"  • {v}")));
+    }
+
+    /// <summary>
+    /// Verifies that MudButton Color.Error advisory also covers the full Razor
+    /// file scope including Features/ (vertical-slice pages).
+    /// Advisory only — always passes, findings logged to console.
+    /// </summary>
+    [Fact]
+    [Trait("Category", "Governance")]
+    public void MudButton_ColorError_Advisory_AllScopes()
+    {
+        var findings = new List<string>();
+
+        foreach (var file in AllRazorFiles())
+        {
+            var content = File.ReadAllText(file);
+            if (!content.Contains("MudButton")) continue;
+
+            var lines = File.ReadAllLines(file);
+            for (var i = 0; i < lines.Length; i++)
+            {
+                if (lines[i].Contains("MudButton") && lines[i].Contains("Color.Error"))
+                    findings.Add($"{Path.GetFileName(file)}:{i + 1}  {lines[i].Trim()}");
+                else if (lines[i].Contains("Color.Error") && lines[i].Contains("Color=\""))
+                {
+                    var context = string.Join(" ",
+                        lines[Math.Max(0, i - 2)..(Math.Min(lines.Length, i + 3))]);
+                    if (context.Contains("MudButton"))
+                        findings.Add($"{Path.GetFileName(file)}:{i + 1}  {lines[i].Trim()}");
+                }
+            }
+        }
+
+        findings = findings.Distinct().ToList();
+
+        if (findings.Count > 0)
+            Console.WriteLine(
+                $"[ADVISORY] MudButton Color.Error (full scope) — {findings.Count} location(s). " +
+                $"Destructive actions should use Class=\"ga-btn-danger\":\n" +
+                string.Join("\n", findings.Select(f => $"  ⚠  {f}")));
+    }
+
+    /// <summary>
+    /// Bans computed inline color styles in Razor files: <c>Style="@($"color:</c> and
+    /// <c>Style="@($"background:</c> patterns produce invisible-to-governance inline colors.
+    ///
+    /// All color states must be expressed as semantic CSS classes (ga-rate-*, ga-status-*,
+    /// ga-chip-count-*, etc.) so the design system controls all rendered colors deterministically.
+    ///
+    /// Allowed exception: Layout/ infrastructure files (palette injection).
+    /// </summary>
+    [Fact]
+    [Trait("Category", "Governance")]
+    public void RazorFiles_NoDynamicInlineColorStyles()
+    {
+        var violations = new List<string>();
+
+        var razorFiles = AllRazorFiles()
+            .Where(f => !f.Contains(Path.DirectorySeparatorChar + "Layout" + Path.DirectorySeparatorChar));
+
+        foreach (var file in razorFiles)
+        {
+            var content = File.ReadAllText(file);
+            // Match computed inline color/background styles: Style="@($"color: or Style="@($"background:
+            if (content.Contains("Style=\"@($\"color:") || content.Contains("Style=\"@($\"background:"))
+                violations.Add($"{Path.GetFileName(file)}: computed inline color Style= — use a semantic ga-* CSS class instead");
+        }
+
+        if (violations.Count > 0)
+            Assert.Fail(
+                $"Computed inline color Style= found in {violations.Count} file(s). " +
+                $"Add a semantic class to portal-skin.css (e.g. ga-rate-good/medium/bad) and use Class=:\n" +
+                string.Join("\n", violations.Select(v => $"  • {v}")));
+    }
 }
+

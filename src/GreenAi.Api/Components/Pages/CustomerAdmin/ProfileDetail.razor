@@ -54,6 +54,7 @@
                     <MudTextField @bind-Value="_editName"
                                   Label="@Loc.Get("feature.profile.NameLabel")"
                                   Variant="Variant.Outlined"
+                                  Margin="Margin.Dense"
                                   Required="true"
                                   Class="mb-3"
                                   UserAttributes="@(new Dictionary<string, object>{ ["data-testid"] = "profile-name" })" />

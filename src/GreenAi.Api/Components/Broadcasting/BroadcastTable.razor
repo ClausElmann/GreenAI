@@ -70,11 +70,11 @@
                     var rate = context.Recipients > 0
                         ? (int)((context.Delivered * 100.0) / context.Recipients)
                         : 0;
-                    var rateColor = rate >= 80 ? "var(--mud-palette-success)"
-                                  : rate >= 50 ? "var(--mud-palette-warning)"
-                                  : "var(--mud-palette-error)";
+                    var rateClass = rate >= 80 ? "ga-rate-good"
+                                  : rate >= 50 ? "ga-rate-medium"
+                                  : "ga-rate-bad";
                 }
-                <MudText Typo="Typo.body2" Style="@($"color:{rateColor}")">
+                <MudText Typo="Typo.body2" Class="@rateClass">
                     @rate%
                 </MudText>
             </MudTd>
@@ -94,9 +94,10 @@
         </MudTd>
     </RowTemplate>
     <NoRecordsContent>
-        <MudText Typo="Typo.body2" Color="Color.Secondary" Class="pa-4 text-center">
-            @Loc.Get("page.statusList.EmptyResult")
-        </MudText>
+        <div class="ga-empty-state">
+            <MudIcon Icon="@Icons.Material.Filled.SearchOff" Class="ga-icon-xl-faded" />
+            <MudText Typo="Typo.body2">@Loc.Get("page.statusList.EmptyResult")</MudText>
+        </div>
     </NoRecordsContent>
 </MudTable>
 
@@ -106,4 +107,25 @@
     [Parameter, EditorRequired] public ILocalizationContext         Loc    { get; set; } = null!;
     [Parameter] public bool ShowScheduled { get; set; }
     [Parameter] public bool ShowFailed    { get; set; }
+
+    // Prevent re-renders when Items reference and bool params haven't changed.
+    // StatusPage creates new list instances on every ApplyFilter(), so reference
+    // equality is a reliable signal. Called after SetParametersAsync — params are current.
+    private IReadOnlyList<BroadcastMock>? _prevItems;
+    private bool _prevShowScheduled;
+    private bool _prevShowFailed;
+
+    protected override bool ShouldRender()
+    {
+        if (!ReferenceEquals(_prevItems, Items)
+            || _prevShowScheduled != ShowScheduled
+            || _prevShowFailed    != ShowFailed)
+        {
+            _prevItems         = Items;
+            _prevShowScheduled = ShowScheduled;
+            _prevShowFailed    = ShowFailed;
+            return true;
+        }
+        return false;
+    }
 }

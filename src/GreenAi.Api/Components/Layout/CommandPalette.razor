@@ -49,7 +49,7 @@
             {
                 var capturedItem  = item;
                 var capturedIndex = idx;
-                <li class="cmd-item @(capturedIndex == _selectedIndex ? "cmd-item--active" : "")"
+                <li @key="item.LabelKey" class="cmd-item @(capturedIndex == _selectedIndex ? "cmd-item--active" : "")"
                     @onclick="() => SelectItem(capturedItem)"
                     data-testid="cmd-item">
                     <MudIcon Icon="@item.Icon" Class="cmd-item-icon" />

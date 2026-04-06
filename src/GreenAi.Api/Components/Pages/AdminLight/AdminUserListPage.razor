@@ -18,6 +18,7 @@
                       Adornment="Adornment.Start"
                       AdornmentIcon="@Icons.Material.Filled.Search"
                       Variant="Variant.Outlined"
+                      Margin="Margin.Dense"
                       Immediate="true"
                       Clearable="true"
                       Class="flex-grow-1"
@@ -40,6 +41,7 @@
                     <MudTextField @bind-Value="_newEmail"
                                   Label="@Loc.Get("shared.EmailLabel")"
                                   Variant="Variant.Outlined"
+                                  Margin="Margin.Dense"
                                   data-testid="new-user-email-input" />
                 </MudItem>
                 <MudItem xs="12" sm="6">
@@ -47,6 +49,7 @@
                                   Label="@Loc.Get("shared.NameLabel")"
                                   InputType="InputType.Password"
                                   Variant="Variant.Outlined"
+                                  Margin="Margin.Dense"
                                   data-testid="new-user-password-input" />
                 </MudItem>
             </MudGrid>

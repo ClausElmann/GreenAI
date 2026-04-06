@@ -103,7 +103,7 @@
 .overlay-nav-group-label {
     display: block;
     padding: var(--ga-space-3) var(--ga-space-4) var(--ga-space-1);
-    font-size: 0.65rem;
+    font-size: var(--font-xs);  /* 12px token — uppercase + letter-spacing make it read smaller */
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: .09em;

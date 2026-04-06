@@ -130,7 +130,7 @@
                     <MudList T="string" Dense="true" data-testid="addresses-list">
                         @foreach (var addr in _mockAddresses)
                         {
-                            <MudListItem T="string" Icon="@Icons.Material.Filled.Home">
+                            <MudListItem @key="addr" T="string" Icon="@Icons.Material.Filled.Home">
                                 <MudText Typo="Typo.body2">@addr</MudText>
                             </MudListItem>
                         }

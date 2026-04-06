@@ -21,6 +21,7 @@
             <MudTextField Value="@_email"
                           Label="@Loc.Get("shared.EmailLabel")"
                           Variant="Variant.Outlined"
+                          Margin="Margin.Dense"
                           ReadOnly="true"
                           data-testid="email-display" />
         </MudItem>
@@ -28,12 +29,14 @@
             <MudTextField @bind-Value="_displayName"
                           Label="@Loc.Get("feature.userProfile.DisplayNameLabel")"
                           Variant="Variant.Outlined"
+                          Margin="Margin.Dense"
                           data-testid="display-name-input" />
         </MudItem>
         <MudItem xs="12" sm="6">
             <MudTextField Value="@_role"
                           Label="@Loc.Get("feature.userProfile.RoleLabel")"
                           Variant="Variant.Outlined"
+                          Margin="Margin.Dense"
                           ReadOnly="true"
                           data-testid="role-display" />
         </MudItem>
@@ -41,6 +44,7 @@
             <MudTextField Value="@_memberSince"
                           Label="@Loc.Get("feature.userProfile.MemberSince")"
                           Variant="Variant.Outlined"
+                          Margin="Margin.Dense"
                           ReadOnly="true"
                           data-testid="member-since-display" />
         </MudItem>
@@ -54,6 +58,7 @@
             <MudSelect @bind-Value="_languageId"
                        Label="@Loc.Get("feature.userProfile.LanguageLabel")"
                        Variant="Variant.Outlined"
+                       Margin="Margin.Dense"
                        data-testid="language-select">
                 <MudSelectItem Value="1">@Loc.Get("feature.userProfile.LanguageDanish")</MudSelectItem>
                 <MudSelectItem Value="2">@Loc.Get("feature.userProfile.LanguageEnglish")</MudSelectItem>

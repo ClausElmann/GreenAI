@@ -40,7 +40,7 @@
         @foreach (var p in AppState.PendingProfiles)
         {
             var profileId = p.ProfileId;
-            <MudItem xs="12" sm="6" md="4">
+            <MudItem @key="p.ProfileId" xs="12" sm="6" md="4">
                 <MudCard Class="select-context-card"
                          Elevation="1"
                          @onclick="() => SelectProfileAsync(profileId, p.DisplayName)"

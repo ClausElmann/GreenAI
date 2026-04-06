@@ -104,12 +104,41 @@
 }
 
 .mud-input-control {
-    font-size: var(--ga-font-sm) !important;
+    font-size: var(--font-md) !important; /* 16px — prevents iOS auto-zoom, improves readability */
+    margin-bottom: var(--space-2) !important; /* 8px — consistent vertical gap between stacked form controls */
 }
 
-/* Input height 40px */
+/* Input height 44px — reduce MudBlazor default 56px to 44px.
+   MudBlazor's height comes from .mud-input-slot padding (18.5px top/bottom by default).
+   We override slot padding to 10px → 10+10+24(line-height) = 44px. */
 .mud-input-root {
-    min-height: 40px !important;
+    min-height: 44px !important;
+}
+
+.mud-input:not(.mud-input-multiline) .mud-input-slot {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+}
+
+/* Inner input/textarea: explicit font + balanced vertical padding */
+.mud-input-root input,
+.mud-input-root textarea {
+    font-size: var(--font-md) !important;
+    line-height: 1.4 !important;
+    padding: 0 !important; /* padding lives on .mud-input-slot, not the native element */
+}
+
+/* Input label: 16px so shrunken/floating state = 16px × 0.75 = 12px (readable).
+   14px would give 10.5px when shrunken — too small.  */
+.mud-input-label,
+.mud-input-label-animated {
+    font-size: var(--font-md) !important;
+    font-weight: var(--font-weight-medium) !important;
+}
+
+/* MudSelect <select> element — must also be 16px (some variants render native <select>) */
+.mud-input-root select {
+    font-size: var(--font-md) !important;
 }
 
 /* ── Cards / MudPaper ───────────────────────────────────────────────────────── */
@@ -189,11 +218,30 @@
     font-size: var(--ga-font-sm) !important;
 }
 
-/* ── Select-context card hover colours (skin-level) ────────────────────────── */
-/* These override the app.css generic hover since MudCard styles load after */
-.select-context-card:hover .mud-card-header,
-.select-context-card:hover {
+/* ── Select-context card interaction (skin-level — GLOBAL required) ─────────── */
+/* Scoped .razor.css rules don't apply to MudCard (Blazor CSS isolation skips  */
+/* third-party component roots). These global rules are the effective source.  */
+.select-context-card {
+    cursor: pointer !important;
+    transition: box-shadow 150ms ease, border-color 150ms ease, transform 150ms ease !important;
+    border: 1px solid var(--ga-border) !important;
+}
+
+.select-context-card:hover,
+.select-context-card:hover .mud-card-header {
     border-color: var(--ga-primary) !important;
+    box-shadow: var(--ga-shadow-card) !important;
+    transform: translateY(-1px) !important;
+}
+
+.select-context-card:active {
+    transform: translateY(0) scale(0.995) !important;
+    box-shadow: none !important;
+}
+
+.select-context-card:focus-visible {
+    outline: var(--ga-focus-ring) !important;
+    outline-offset: 2px !important;
 }
 
 /* ── Global focus ring — applied to MudBlazor interactive elements ──────────── */

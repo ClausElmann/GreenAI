@@ -36,7 +36,7 @@
         @foreach (var c in AppState.PendingCustomers)
         {
             var customerId = c.CustomerId;
-            <MudItem xs="12" sm="6">
+            <MudItem @key="c.CustomerId" xs="12" sm="6">
                 <MudCard Class="select-context-card"
                          Elevation="1"
                          @onclick="() => SelectCustomerAsync(customerId, c.Name)"

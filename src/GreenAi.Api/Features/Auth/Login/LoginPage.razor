@@ -33,6 +33,7 @@
                               InputType="InputType.Email"
                               Adornment="Adornment.Start"
                               AdornmentIcon="@Icons.Material.Filled.Email"
+                              Margin="Margin.Dense"
                               Class="mb-4"
                               UserAttributes="@(new Dictionary<string, object>{ ["data-testid"] = "login-email" })"
                               Disabled="_loading" />
@@ -44,6 +45,7 @@
                               Adornment="Adornment.End"
                               AdornmentIcon="@(_showPassword ? Icons.Material.Filled.VisibilityOff : Icons.Material.Filled.Visibility)"
                               OnAdornmentClick="() => _showPassword = !_showPassword"
+                              Margin="Margin.Dense"
                               Class="mb-2"
                               UserAttributes="@(new Dictionary<string, object>{ ["data-testid"] = "login-password" })"
                               Disabled="_loading" />

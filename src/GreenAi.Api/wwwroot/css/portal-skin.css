@@ -215,7 +215,7 @@ a:not(.mud-button):not(.mud-nav-link):hover {
     font-size: var(--font-sm);
     font-weight: var(--font-weight-medium);
     cursor: pointer;
-    transition: background-color 150ms;
+    transition: background-color 150ms, transform 100ms;
     text-decoration: none;
 }
 
@@ -223,6 +223,10 @@ a:not(.mud-button):not(.mud-nav-link):hover {
     background-color: var(--color-primary-hover);
     color: white;
     text-decoration: none;
+}
+
+.ga-btn-primary:active:not(:disabled) {
+    transform: scale(0.97);
 }
 
 .ga-btn-primary:disabled {
@@ -243,7 +247,7 @@ a:not(.mud-button):not(.mud-nav-link):hover {
     font-size: var(--font-sm);
     font-weight: var(--font-weight-medium);
     cursor: pointer;
-    transition: background-color 150ms, border-color 150ms;
+    transition: background-color 150ms, border-color 150ms, transform 100ms;
     text-decoration: none;
 }
 
@@ -252,6 +256,10 @@ a:not(.mud-button):not(.mud-nav-link):hover {
     border-color: var(--color-text-secondary);
     color: var(--color-text-primary);
     text-decoration: none;
+}
+
+.ga-btn-secondary:active:not(:disabled) {
+    transform: scale(0.97);
 }
 
 .ga-btn-secondary:disabled {
@@ -272,7 +280,7 @@ a:not(.mud-button):not(.mud-nav-link):hover {
     font-size: var(--font-sm);
     font-weight: var(--font-weight-medium);
     cursor: pointer;
-    transition: background-color 150ms;
+    transition: background-color 150ms, transform 100ms;
     text-decoration: none;
 }
 
@@ -280,6 +288,10 @@ a:not(.mud-button):not(.mud-nav-link):hover {
     background-color: var(--color-error-hover);
     color: white;
     text-decoration: none;
+}
+
+.ga-btn-danger:active:not(:disabled) {
+    transform: scale(0.97);
 }
 
 .ga-btn-danger:disabled {
@@ -444,4 +456,91 @@ a:not(.mud-button):not(.mud-nav-link):hover {
     font-size: var(--font-xs);
     color: var(--color-error);
     margin-top: var(--space-1);
+}
+
+/* =============================================================================
+   MUDBUTTON — press feedback
+   Applies scale-down on :active for MudBlazor's rendered button root.
+   Disabled state excluded to avoid jarring flash on no-op clicks.
+   ============================================================================= */
+
+.mud-button-root:active:not(:disabled),
+.mud-icon-button:active:not(:disabled) {
+    transform: scale(0.97);
+    transition: transform 100ms;
+}
+
+/* =============================================================================
+   EMPTY STATE — .ga-empty-state
+   Use: <div class="ga-empty-state"> + MudIcon + MudText inside.
+   Renders a centered column with muted icon and help text.
+   Common pattern: no results, no data, first-time-use prompts.
+   ============================================================================= */
+
+.ga-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    padding: var(--space-6) var(--space-4);
+    color: var(--color-text-secondary);
+    text-align: center;
+}
+
+.ga-empty-state .ga-empty-state-title {
+    font-size: var(--font-lg);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+}
+
+.ga-empty-state .ga-empty-state-body {
+    font-size: var(--font-sm);
+    color: var(--color-text-secondary);
+    max-width: 360px;
+    line-height: var(--line-height-normal);
+}
+
+/* =============================================================================
+   ACCESSIBILITY — WCAG 2.1 AA fixes
+   ============================================================================= */
+
+/* Top-bar secondary context label — italic style only.
+   Color contrast comes from the token (--color-text-secondary → #4B5B6B → 6.97:1). */
+.top-bar-context-customer {
+    font-style: italic;
+}
+
+/* =============================================================================
+   DELIVERY RATE — semantic classes for broadcast/%delivery coloring.
+   Replaces the one dynamic Style="@($"color:{rateColor}")" in BroadcastTable.
+   good  ≥ 80%  success green
+   medium 50-79% warning amber
+   bad   < 50%  error red
+   ============================================================================= */
+
+.ga-rate-good   { color: var(--color-success) !important; }
+.ga-rate-medium { color: var(--color-warning) !important; }
+.ga-rate-bad    { color: var(--color-error)   !important; }
+
+/* Count badge chips — accessible AA color combinations.
+   Light bg + dark text: all combinations give ≥ 12:1 contrast (WCAG AAA+).
+   Replaces Color.Success/Info/Warning Variant.Filled which use saturated MudBlazor
+   chip fill colors that fail AA contrast with their computed text colors. */
+.ga-chip-count-success {
+    background-color: var(--color-success-light) !important;
+    color: var(--color-text-primary) !important;
+    border-color: var(--color-success) !important;
+}
+
+.ga-chip-count-info {
+    background-color: var(--color-info-light) !important;
+    color: var(--color-text-primary) !important;
+    border-color: var(--color-info) !important;
+}
+
+.ga-chip-count-warning {
+    background-color: var(--color-warning-light) !important;
+    color: var(--color-text-primary) !important;
+    border-color: var(--color-warning) !important;
 }

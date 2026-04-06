@@ -18,7 +18,7 @@
 
   /* TEXT */
   --color-text-primary:   #1F2937;
-  --color-text-secondary: #6B7280;
+  --color-text-secondary: #4B5B6B;  /* 6.97:1 on white — WCAG AA ✓ */
   --color-text-disabled:  #9CA3AF;
 
   /* PRIMARY — blue: actions, navigation, primary buttons */

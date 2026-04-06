@@ -41,10 +41,18 @@
                     <MudIconButton Icon="@Icons.Material.Filled.Delete"
                                    Color="Color.Default"
                                    Size="Size.Small"
-                                   data-testid="@($"draft-delete-{context.Id}")" />
+                                   aria-label="@Loc.Get("shared.DeleteButton")"
+                                   data-testid="@($"draft-delete-{context.Id}")"
+                                   OnClick="() => { }" />
                 </MudStack>
             </MudTd>
         </RowTemplate>
+        <NoRecordsContent>
+            <div class="ga-empty-state">
+                <MudIcon Icon="@Icons.Material.Filled.EditNote" Class="ga-icon-xl-faded" />
+                <MudText Typo="Typo.body2">@Loc.Get("page.drafts.NoDrafts")</MudText>
+            </div>
+        </NoRecordsContent>
     </MudTable>
 
 </AppShell>
