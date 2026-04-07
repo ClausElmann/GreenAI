@@ -10,6 +10,23 @@ Run enforcement: `dotnet test --filter "Category=Governance"` → 9 tests, ~130m
 
 ---
 
+## GreenAiTheme komponent (SSOT for MudBlazor theme)
+
+**Fil:** `Components/Layout/GreenAiTheme.razor`
+
+Indeholder `MudThemeProvider`, MudBlazor providers og `<style id="greenai-palette-override">`.  
+**Inkluderes i ALLE layouts** — MainLayout, WizardLayout, EmptyLayout.
+
+```razor
+<GreenAiTheme />
+```
+
+**Regel:** Opret ALDRIG et nyt layout uden `<GreenAiTheme />` som første element. Uden den mangler `--mud-typography-body1-size: .875rem` og inputfelter/tekst skalerer til MudBlazors default (1rem = for stor).
+
+Ændringer til palette → kun i `GreenAiTheme.razor`. Aldrig duplikér.
+
+---
+
 ## Governance Tests (9 total — all Category=Governance)
 
 | Test | Type | What it checks |
@@ -118,6 +135,125 @@ All applied to `MudIcon`. Font-size drives scale because the SVG inside uses `1e
 
 ---
 
+## Section Labels
+
+Use `ga-section-label` div (defined in `app.css`) for ALL uppercase section headers that divide page content into named groups.
+
+```razor
+<div class="ga-section-label">@Loc.Get("feature.X.SomeSection")</div>
+```
+
+| Used on | Label key examples |
+|---|---|
+| `UserProfilePage.razor` | `feature.userProfile.AccountSection`, `feature.userProfile.PreferencesSection` |
+| `BroadcastingHubPage.razor` | `page.broadcasting.SendMethodsTitle`, `page.broadcasting.RecentTitle` |
+
+**Rules:**
+- ✅ Required on any page with ≥2 logical sections or a named group of fields
+- ✅ Required when tabs have multiple content groups inside one panel
+- ❌ Do NOT use `Typo.h6` or `Typo.subtitle1` for section labels — use `.ga-section-label` only
+
+---
+
+## Action Button Groups
+
+After an info/data display region, always separate action buttons with a `<MudDivider>` before the `<MudStack>`:
+
+```razor
+@* Actions *@
+<MudDivider Class="mb-4" />
+<MudStack Row="true" Spacing="2" Wrap="Wrap.Wrap">
+    <MudButton Variant="Variant.Outlined" ...>...</MudButton>
+    <MudButton Variant="Variant.Outlined" ...>...</MudButton>
+</MudStack>
+```
+
+**Rules:**
+- ✅ Always use `<MudDivider Class="mb-4" />` before action button groups in detail/overview panels
+- ✅ Action groups use `Wrap="Wrap.Wrap"` for responsive behaviour
+- ❌ Do NOT place action buttons immediately after content without visual separation
+
+---
+
+## MudTextField Inside MudTable Rows
+
+When a `MudTextField` appears inside a `MudTable` row, always add `Margin="Margin.Dense"` to prevent row height bloat (even when table has `Dense="true"`):
+
+```razor
+<MudTd DataLabel="Value">
+    <MudTextField @bind-Value="@context.Value"
+                  Variant="Variant.Text"
+                  Margin="Margin.Dense"
+                  Immediate="true" />
+</MudTd>
+```
+
+**Rule:** `Dense="true"` on `MudTable` controls row padding but NOT TextField internal height. `Margin.Dense` is **always required** on editable fields inside table rows.
+
+---
+
+## Wizard Layout
+
+All wizard pages use `WizardLayout` which wraps `@Body` in a `MudPaper Elevation="1" Class="pa-6"`. This gives a clean white card on the grey `--color-bg-main` background.
+
+- ✅ Wizard content renders in a contained white surface — never floats on grey
+- ✅ `WizardLayout` handles the card — wizard pages do NOT need their own outer paper
+- ❌ Do NOT add a second `MudPaper` wrapper inside wizard page content
+
+---
+
+## AppShell — Mandatory Page Wrapper
+
+**All authenticated pages use `<AppShell>` as the outermost content wrapper.** This provides: `PageTitle`, `MudText h5` heading, breadcrumbs, `ErrorAlert`, and `LoadingOverlay`.
+
+```razor
+<AppShell Title="@Loc.Get("page.myPage.Title")"
+          IsLoading="@_loading"
+          ErrorMessage="@_errorMessage"
+          Breadcrumbs="_breadcrumbs">
+    @* page content *@
+</AppShell>
+```
+
+**Parameters:**
+- `Title` (required) — rendered as `MudText Typo.h5` + `PageTitle`
+- `IsLoading` — shows loading overlay over ChildContent
+- `ErrorMessage` — shows `ErrorAlert` below heading
+- `Breadcrumbs` — `List<BreadcrumbItem>?` rendered above content
+
+**Detail page pattern** (entity with avatar/status chip):
+```razor
+<AppShell Title="@(_entity?.Name ?? string.Empty)"
+          IsLoading="@_loading"
+          Breadcrumbs="_breadcrumbs">
+
+    @if (!_loading && _entity is null)
+    {
+        <MudAlert Severity="Severity.Warning">@Loc.Get(...)</MudAlert>
+        <MudButton Href="/parent-list">@Loc.Get(...)</MudButton>
+    }
+    else if (_entity is not null)
+    {
+        <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-4" Spacing="2">
+            <MudIcon ... />  @* or MudAvatar *@
+            <MudSpacer />
+            <MudChip T="string" Color="..." Size="Size.Small">...</MudChip>
+        </MudStack>
+        <MudTabs ...>...</MudTabs>
+    }
+
+</AppShell>
+```
+
+**Rules:**
+- ✅ EVERY authenticated page must use `<AppShell>` — never use raw `MudProgressLinear`, `MudBreadcrumbs`, or `PageTitle` directly in pages
+- ✅ Detail pages (entities, profiles, users) follow the null-guard + avatar/chip row pattern above
+- ✅ `Title` is the loaded entity name for detail pages (empty string while loading — AppShell skips empty title)
+- ❌ Do NOT use `MudText Typo.overline` for section headers — use `ga-section-label`
+- ❌ Do NOT use `MudText Typo.h5` manually — AppShell renders it from `Title`
+
+---
+
 ## Governance
 
 `CssTokenComplianceTests.RazorFiles_DoNotContainBannedInlineStyles` (Category=Governance) enforces these rules.  
@@ -125,4 +261,4 @@ Run with filter: `dotnet test --filter "Category=Governance"`
 
 ---
 
-*Last updated: 2026-04-04*
+*Last updated: 2026-04-08*

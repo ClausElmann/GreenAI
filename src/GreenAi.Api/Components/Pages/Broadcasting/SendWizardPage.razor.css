@@ -103,4 +103,9 @@
         border-top: 1px solid var(--ga-border);
         z-index: 10;
     }
+    /* Scroll clearance — sticky footer is ~72px; reserve space so last card
+       can scroll fully into view above it */
+    .wizard-step-content {
+        padding-bottom: 80px;
+    }
 }

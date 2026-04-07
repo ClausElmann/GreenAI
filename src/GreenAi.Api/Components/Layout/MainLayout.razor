@@ -11,63 +11,7 @@
 @inject AppState AppState
 @inject IPermissionService Permissions
 
-<MudThemeProvider />
-<MudPopoverProvider />
-<MudDialogProvider />
-<MudSnackbarProvider />
-@* Override MudBlazor default palette; must come AFTER <MudThemeProvider /> in DOM
-   order so our :root variables take precedence over the default theme injection. *@
-<style id="greenai-palette-override">
-    /* All hex values come from design-tokens.css (--color-*) — single source of truth.
-       MudBlazor-specific darken/lighten variants (hover states) are kept here as
-       they are internal MudBlazor states with no semantic meaning beyond the component. */
-    :root {
-        /* Primary */
-        --mud-palette-primary:              var(--color-primary);
-        --mud-palette-primary-text:         white;
-        --mud-palette-primary-darken:       var(--color-primary-hover);
-        --mud-palette-primary-lighten:      #60A5FA;  /* MudBlazor focus ring tint */
-        --mud-palette-primary-hover:        rgba(37,99,235,.07);
-        --mud-palette-secondary:            var(--color-text-secondary);
-        --mud-palette-secondary-text:       white;
-        --mud-palette-secondary-darken:     #4B5563;
-        --mud-palette-secondary-lighten:    var(--color-text-disabled);
-        /* Surfaces */
-        --mud-palette-surface:              var(--color-bg-surface);
-        --mud-palette-background:           var(--color-bg-main);
-        --mud-palette-background-grey:      #F3F4F6;  /* MudBlazor table alt-row tint */
-        --mud-palette-overlay-dark:         rgba(16,24,40,.5);
-        /* Borders */
-        --mud-palette-divider:              var(--color-border-light);
-        --mud-palette-divider-light:        rgba(229,231,235,.5);
-        /* Text */
-        --mud-palette-text-primary:         var(--color-text-primary);
-        --mud-palette-text-secondary:       var(--color-text-secondary);
-        --mud-palette-text-disabled:        var(--color-text-disabled);
-        --mud-palette-action-default:       var(--color-text-secondary);
-        --mud-palette-action-hover-opacity: 0.06;
-        --mud-palette-action-disabled:      var(--color-text-disabled);
-        /* Success */
-        --mud-palette-success:              var(--color-success);
-        --mud-palette-success-text:         white;
-        --mud-palette-success-darken:       #15803D;  /* MudBlazor success hover */
-        /* Warning — pending/caution, never primary actions */
-        --mud-palette-warning:              var(--color-warning);
-        --mud-palette-warning-text:         white;
-        --mud-palette-warning-darken:       #B45309;  /* MudBlazor warning hover */
-        /* Error — errors and failures ONLY */
-        --mud-palette-error:                var(--color-error);
-        --mud-palette-error-text:           white;
-        --mud-palette-error-darken:         #B91C1C;  /* MudBlazor error hover */
-        /* Info */
-        --mud-palette-info:                 var(--color-info);
-        --mud-palette-info-text:            white;
-        --mud-palette-info-darken:          #0369A1;  /* MudBlazor info hover */
-        --mud-default-borderradius:         8px;
-        --mud-typography-body1-size:        .875rem;
-        --mud-typography-body2-size:        .875rem;
-    }
-</style>
+<GreenAiTheme />
 
 <MudLayout data-testid="layout-root">
     <TopBar />

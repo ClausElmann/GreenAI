@@ -18,17 +18,16 @@ public sealed class CssTokenComplianceTests
     private static readonly string SourceRoot = Path.GetFullPath(
         Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", "src", "GreenAi.Api"));
 
-    // ── All governed Razor files: Components/ + Features/ ────────────────────
-    // Features/ can contain [Feature]Page.razor in vertical-slice architecture.
-    // Governance rules apply equally — both folders are scanned.
+    // ── All governed Razor files: ALL of src/GreenAi.Api/ ───────────────────
+    // Scanning the full source root (not just Components/ + Features/) ensures
+    // governance covers any Razor file regardless of where it is placed —
+    // enforces Step 3 "src/**" scope. Build outputs (obj/, bin/) are excluded.
     private static IEnumerable<string> AllRazorFiles()
     {
-        var components = Path.Combine(SourceRoot, "Components");
-        var features   = Path.Combine(SourceRoot, "Features");
-        var files      = Directory.GetFiles(components, "*.razor", SearchOption.AllDirectories).AsEnumerable();
-        if (Directory.Exists(features))
-            files = files.Concat(Directory.GetFiles(features, "*.razor", SearchOption.AllDirectories));
-        return files;
+        return Directory.GetFiles(SourceRoot, "*.razor", SearchOption.AllDirectories)
+            .Where(f =>
+                !f.Contains(Path.DirectorySeparatorChar + "obj" + Path.DirectorySeparatorChar) &&
+                !f.Contains(Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar));
     }
 
     // ── CSS files owned by us (never examine third-party) ────────────────────
@@ -200,7 +199,7 @@ public sealed class CssTokenComplianceTests
         var requiredTokens = new[]
         {
             "--font-xs", "--font-sm", "--font-md", "--font-lg",
-            "--font-xl", "--font-2xl", "--font-3xl",
+            "--font-xl", "--font-2xl", "--font-3xl", "--font-display",
             "--font-weight-normal", "--font-weight-medium", "--font-weight-bold",
             "--line-height-tight", "--line-height-normal", "--line-height-loose",
             "--space-1", "--space-2", "--space-3",
@@ -250,10 +249,11 @@ public sealed class CssTokenComplianceTests
             (@"Style=""width:",                         "MudBlazor Width= param or ga-* layout class"),
             (@"Style=""height:",                        "MudBlazor Height= param or ga-* layout class"),
             (@"Style=""max-width:280px;overflow:hidden", "ga-text-cell-truncate"),
-            // Hardcoded colours in Blazor Style= (hex values) — must use semantic token class
-            (@"Style=""color:#",                        "semantic token class or MudBlazor Color= param"),
-            (@"Style=""background-color:#",             "ga-status-* / ga-card / semantic token class"),
-            (@"Style=""background:#",                   "ga-status-* / ga-card / semantic token class"),
+            // ANY inline colour Style= is banned — use ga-* class or MudBlazor Color= param.
+            // This covers hex (#fff), named (red), and var() values — all must be in CSS classes.
+            (@"Style=""color:",                         "semantic token class or MudBlazor Color= param"),
+            (@"Style=""background-color:",              "ga-status-* / ga-card / semantic token class"),
+            (@"Style=""background:",                    "ga-status-* / ga-card / semantic token class"),
         };
 
         var violations = new List<string>();
@@ -670,6 +670,51 @@ public sealed class CssTokenComplianceTests
                 $"Computed inline color Style= found in {violations.Count} file(s). " +
                 $"Add a semantic class to portal-skin.css (e.g. ga-rate-good/medium/bad) and use Class=:\n" +
                 string.Join("\n", violations.Select(v => $"  • {v}")));
+    }
+
+    /// <summary>
+    /// Verifies that greenai-skin.css uses --font-* tokens for font-size, not
+    /// hardcoded px/rem/em values. Skin.css targets MudBlazor component selectors
+    /// and must follow the same token contract as enterprise.css and portal-skin.css.
+    ///
+    /// All hardcoded rem values (1rem, 1.125rem, 1.25rem, 1.75rem) must be
+    /// replaced with var(--font-*) tokens from design-tokens.css.
+    /// </summary>
+    [Fact]
+    [Trait("Category", "Governance")]
+    public void SkinCss_FontSizes_UseTokensNotHardcodedValues()
+    {
+        var skinCss = OurCssFiles()
+            .FirstOrDefault(f => f.EndsWith("greenai-skin.css"));
+        Assert.NotNull(skinCss);
+
+        // Matches font-size with a hardcoded value (px, rem, em, %)
+        var hardcodedFontSize = new System.Text.RegularExpressions.Regex(
+            @"font-size\s*:\s*\d+(\.\d+)?(px|rem|em|%)",
+            System.Text.RegularExpressions.RegexOptions.Compiled | System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+        var violations = new List<string>();
+        var lines = File.ReadAllLines(skinCss!);
+
+        for (var i = 0; i < lines.Length; i++)
+        {
+            var line = lines[i];
+            if (line.TrimStart().StartsWith("//") ||
+                line.TrimStart().StartsWith("*") ||
+                line.TrimStart().StartsWith("/*"))
+                continue;
+
+            if (hardcodedFontSize.IsMatch(line))
+                violations.Add($"greenai-skin.css:{i + 1}  {line.Trim()}");
+        }
+
+        if (violations.Count > 0)
+        {
+            var msg = string.Join("\n", violations.Select(v => $"  • {v}"));
+            Assert.Fail(
+                $"Hardcoded font-size values found in greenai-skin.css. " +
+                $"Use var(--font-*) tokens from design-tokens.css instead:\n{msg}");
+        }
     }
 }
 

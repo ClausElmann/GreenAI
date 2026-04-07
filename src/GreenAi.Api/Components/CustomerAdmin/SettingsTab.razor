@@ -3,16 +3,19 @@
 @inject ILocalizationContext Loc
 
 <MudForm @ref="_form">
+    <div class="ga-section-label">@Loc.Get("feature.customerAdmin.SettingsSection")</div>
     <MudGrid>
         <MudItem xs="12" sm="6">
             <MudTextField @bind-Value="_name"
                           Label="@Loc.Get("shared.NameLabel")"
                           Variant="Variant.Outlined"
+                          Margin="Margin.Dense"
                           Required="true"
                           Class="mb-3"
                           UserAttributes="@(new Dictionary<string, object>{ ["data-testid"] = "settings-customer-name" })" />
         </MudItem>
         <MudItem xs="12">
+            <MudDivider Class="mb-4" />
             <MudButton Variant="Variant.Filled"
                        Color="Color.Primary"
                        StartIcon="@Icons.Material.Filled.Save"

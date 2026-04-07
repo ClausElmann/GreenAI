@@ -24,6 +24,8 @@
 
 <MudDivider Class="my-4" />
 
+<div class="wizard-step-content">
+
 @* ── Step 1: Method selection ────────────────────────────────────────────────── *@
 @if (_step == 1)
 {
@@ -216,9 +218,9 @@
                 <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mb-1 d-block">
                     @Loc.Get("page.wizard.MergeFieldsHint")
                 </MudText>
-                <MudChip T="string" Size="Size.Small" OnClick='() => _message += " {{navn}}"'>{{navn}}</MudChip>
-                <MudChip T="string" Size="Size.Small" OnClick='() => _message += " {{adresse}}"'>{{adresse}}</MudChip>
-                <MudChip T="string" Size="Size.Small" OnClick='() => _message += " {{dato}}"'>{{dato}}</MudChip>
+                <MudChip T="string" Size="Size.Small" OnClick='() => _message += " {{navn}}"' data-inline-action="true">{{navn}}</MudChip>
+                <MudChip T="string" Size="Size.Small" OnClick='() => _message += " {{adresse}}"' data-inline-action="true">{{adresse}}</MudChip>
+                <MudChip T="string" Size="Size.Small" OnClick='() => _message += " {{dato}}"' data-inline-action="true">{{dato}}</MudChip>
             </MudPaper>
         </MudItem>
     </MudGrid>
@@ -309,6 +311,8 @@
         </div>
     }
 }
+
+</div>
 
 @* ── Navigation footer ──────────────────────────────────────────────────────── *@
 @if (!_sent)

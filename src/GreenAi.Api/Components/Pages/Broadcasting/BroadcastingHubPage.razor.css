@@ -25,11 +25,27 @@
     outline-offset: 2px;
 }
 
+@media (max-width: 599px) {
+    .send-method-card {
+        padding: var(--ga-space-2) 4px;
+        min-height: 68px;
+        gap: 2px;
+        font-size: 11px;
+    }
+}
+
 /* ── Hub panels shared ──────────────────────────────────────────────────────── */
 .hub-panel {
     height: 100%;
     display: flex;
     flex-direction: column;
+}
+
+/* ── Quick-send tab panels — fixed min-height so SMS ≈ Email height ─────────── */
+/* Email has 3 fields (address, subject, message) vs SMS (phone, message).
+   min-height prevents the panel container from jumping when switching tabs. */
+::deep .quick-send-tab-panel {
+    min-height: 260px;
 }
 
 .hub-panel-header {

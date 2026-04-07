@@ -145,3 +145,100 @@
 @media (max-width: 599px) {
     .ga-page-content { padding: var(--ga-space-4); }   /* 16px on mobile */
 }
+
+/* ── Mobile table: card-style responsive rows ──────────────────────────────── */
+/* When MudBlazor stacks MudTable cells (DataLabel responsive mode), each row   */
+/* renders as a card with a label/value grid layout instead of a raw data dump. */
+/* Fixes: status_sent_tab, status_failed_tab, status_scheduled_tab,             */
+/*        admin_user_list, drafts_page, admin_settings (all share same root)    */
+@media (max-width: 599px) {
+
+    /* Card container per data row */
+    .mud-table-body tr.mud-table-row {
+        display: block !important;
+        margin: var(--ga-space-2) 0 !important;
+        padding: var(--ga-space-3) var(--ga-space-4) !important;
+        background: var(--color-bg-surface, #fff) !important;
+        border: 1px solid var(--ga-border) !important;
+        border-radius: var(--ga-radius-md) !important;
+        box-shadow: 0 1px 3px rgba(16,24,40,.07) !important;
+    }
+
+    /* Remove zebra stripe — each card is visually self-contained */
+    .mud-table-body tr.mud-table-row:nth-child(even) td,
+    .mud-table-body tr.mud-table-row:nth-child(even) td.mud-table-cell {
+        background-color: transparent !important;
+    }
+
+    /* Each cell: 2-column grid (label pinned left | value fills right) */
+    .mud-table-body td.mud-table-cell {
+        display: grid !important;
+        grid-template-columns: 96px 1fr !important;
+        align-items: center !important;
+        gap: 0 var(--ga-space-2) !important;
+        padding: 3px 0 !important;
+        border-bottom: none !important;
+        min-height: 26px;
+    }
+
+    /* DataLabel pseudo-element = left column label */
+    .mud-table-body td.mud-table-cell[data-label]::before {
+        font-size: var(--font-xs) !important;
+        font-weight: 600 !important;
+        color: var(--ga-text-disabled) !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+        line-height: 1.4 !important;
+        align-self: center !important;
+    }
+
+    /* First cell acts as card header — visually separated from metadata rows */
+    .mud-table-body td.mud-table-cell:first-child {
+        padding-bottom: var(--ga-space-2) !important;
+        margin-bottom: var(--ga-space-2) !important;
+        border-bottom: 1px solid var(--ga-border) !important;
+    }
+
+    /* Action cells (DataLabel="") — right-aligned, no label separator */
+    .mud-table-body td.mud-table-cell[data-label=""] {
+        display: block !important;
+        text-align: right !important;
+        grid-template-columns: unset !important;
+        padding-top: 0 !important;
+        min-height: 0 !important;
+        border-bottom: none !important;
+    }
+    .mud-table-body td.mud-table-cell[data-label=""]::before {
+        content: none !important;
+    }
+
+    /* Card hover — lift + primary border accent (overrides the td-level hover rule) */
+    .mud-table-body tr.mud-table-row:hover {
+        border-color: var(--ga-primary) !important;
+        box-shadow: 0 2px 8px rgba(16,24,40,.10) !important;
+        cursor: pointer;
+    }
+
+    .mud-table-row:hover td {
+        background-color: transparent !important;
+    }
+}
+
+/* ── Table: compact chip sizing in table context ─────────────────────────────── */
+/* Smaller pills inside data rows — doesn't affect chips used as filters/tags    */
+.mud-table .mud-chip {
+    height: 20px !important;
+    font-size: 11px !important;
+    padding: 0 6px !important;
+    letter-spacing: 0 !important;
+}
+
+/* ── Mobile: reduced card padding for higher information density ─────────────── */
+@media (max-width: 599px) {
+    .mud-card .mud-card-content {
+        padding: var(--ga-space-3) !important;   /* 12px — was default 16px */
+    }
+    .mud-card-header {
+        padding: var(--ga-space-3) var(--ga-space-3) 0 !important;
+    }
+}

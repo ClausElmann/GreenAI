@@ -1,3 +1,13 @@
+@* EmptyLayout — used for auth pages (login, select-customer, select-profile).
+   Includes GreenAiTheme so all MudBlazor components get consistent typography +
+   palette. Pages that use this layout must render their own centred content. *@
 @inherits LayoutComponentBase
+@using GreenAi.Api.Components.Layout
 
-@Body
+<GreenAiTheme />
+
+<MudLayout>
+    <MudMainContent Style="min-height:100vh;background:var(--color-bg-main)">
+        @Body
+    </MudMainContent>
+</MudLayout>

@@ -2,12 +2,14 @@
 .main-content-inner {
     padding: var(--ga-space-4) var(--ga-space-5) var(--ga-space-6);
     width: 100%;
+    max-width: 1440px;      /* enterprise viewport cap — prevents ultra-wide sprawl */
+    margin: 0 auto;         /* center content on large monitors */
     box-sizing: border-box;
 }
 
 @media (max-width: 600px) {
     .main-content-inner {
-        padding: var(--ga-space-3) var(--ga-space-3) var(--ga-space-5);
+        padding: var(--ga-space-3) var(--ga-space-3) var(--ga-space-4); /* tighter bottom on mobile */
     }
 }
 

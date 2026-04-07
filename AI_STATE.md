@@ -48,7 +48,7 @@ MudTheme palette override: inline `<style id="greenai-palette-override">` i `Mai
 
 ## Active Work
 
-*(ingen — DRY audit afsluttet 2026-04-06)*
+*(ingen — visual audit layout-pass afsluttet 2026-04-07)*
 
 ---
 
@@ -56,11 +56,11 @@ MudTheme palette override: inline `<style id="greenai-palette-override">` i `Mai
 
 | Dato | Beslutning |
 |---|---|
+| 2026-04-07 | Visual audit: 7 layout-fixes implementeret — MudTextField Margin.Dense i tabeller, MudDivider før action-knapper, WizardLayout MudPaper surface, BroadcastTable Metode → chip, OverlayNav labels lokaliseret, QuickSend min-height, SettingsTab ga-section-label |
+| 2026-04-07 | Governance: `font-size: 11px` i greenai-enterprise.css → `var(--font-xs)` token |
+| 2026-04-07 | Labels oprettet: `nav.SectionNavigation`, `nav.SectionAccount`, `feature.customerAdmin.SettingsSection` |
 | 2026-04-06 | DRY audit: 3 redirect stubs slettet, README links rettet, greenai-ui-skin.md §2-4 → pointer til color-system.md |
-| 2026-04-06 | Color SSOT migreret til `design-tokens.css` (--color-*). Bridge: `app.css` `--ga-primary: var(--color-primary)` |
 | 2026-04-06 | 9 governance tests: `GreenAi.E2E/Governance/CssTokenComplianceTests.cs`, alle `Category=Governance` |
-| 2026-04-06 | UI CSS cascade etableret (6-lag order ovenfor) |
-| 2026-04-03 | Audit log pattern: V016_AuditLog.sql + ExecuteInTransactionAsync |
 
 ---
 

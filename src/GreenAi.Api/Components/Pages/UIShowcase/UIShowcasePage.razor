@@ -1,0 +1,686 @@
+@page "/ui-showcase"
+@using GreenAi.Api.Mocks
+@inject ILocalizationContext Loc
+@inject ISnackbar Snackbar
+
+@* ──────────────────────────────────────────────────────────────────────────────
+   UI SHOWCASE — green-ai component coverage page
+   
+   Purpose: Visual validation that ALL MudBlazor components in use render
+   correctly with the green-ai theme before backend implementation.
+   
+   All data is mocked. Sections map to real green-ai use-cases.
+   Route: /ui-showcase  (authenticated, MainLayout)
+   ────────────────────────────────────────────────────────────────────────────── *@
+
+<AppShell Title="UI Showcase — Komponent-oversigt" IsLoading="false">
+
+    @* ══════════════════════════════════════════════════════════════════════════
+       §1  KPI STAT CARDS  (used: StatusDetailPage, future dashboard)
+       ══════════════════════════════════════════════════════════════════════════ *@
+    <MudText Typo="Typo.h6" Class="mb-3" data-testid="section-kpi">KPI-kort</MudText>
+    <MudGrid Spacing="2" Class="mb-6" data-testid="kpi-cards">
+        <MudItem xs="6" sm="3">
+            <MudPaper Class="stat-card" Elevation="1">
+                <MudIcon Icon="@Icons.Material.Filled.Send" Color="Color.Primary" Size="Size.Medium" />
+                <MudText Typo="Typo.h4" Class="stat-value">@MockData.KpiMessagesToday.ToString("N0")</MudText>
+                <MudText Typo="Typo.caption" Color="Color.Secondary">Sendt i dag</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="6" sm="3">
+            <MudPaper Class="stat-card" Elevation="1">
+                <MudIcon Icon="@Icons.Material.Filled.Schedule" Color="Color.Info" Size="Size.Medium" />
+                <MudText Typo="Typo.h4" Class="stat-value">@MockData.ScheduledBroadcasts.Count</MudText>
+                <MudText Typo="Typo.caption" Color="Color.Secondary">Planlagte</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="6" sm="3">
+            <MudPaper Class="stat-card stat-card--error" Elevation="1">
+                <MudIcon Icon="@Icons.Material.Filled.Error" Color="Color.Error" Size="Size.Medium" />
+                <MudText Typo="Typo.h4" Class="stat-value">@MockData.KpiFailed.ToString("N0")</MudText>
+                <MudText Typo="Typo.caption" Color="Color.Secondary">Fejlede</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="6" sm="3">
+            <MudPaper Class="stat-card" Elevation="1">
+                <MudIcon Icon="@Icons.Material.Filled.People" Color="Color.Success" Size="Size.Medium" />
+                <MudText Typo="Typo.h4" Class="stat-value">@MockData.Users.Count</MudText>
+                <MudText Typo="Typo.caption" Color="Color.Secondary">Aktive brugere</MudText>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+    @* ══════════════════════════════════════════════════════════════════════════
+       §2  TABS: flat + nested + with badge
+       ══════════════════════════════════════════════════════════════════════════ *@
+    <MudText Typo="Typo.h6" Class="mb-3" data-testid="section-tabs">Tabs</MudText>
+    <MudTabs Elevation="1" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-4" Class="mb-6"
+             data-testid="showcase-outer-tabs" data-showcase-demo="true">
+
+        @* Tab 1: Brugere (table inside) *@
+        <MudTabPanel Text="@($"Brugere ({MockData.Users.Count})")" Icon="@Icons.Material.Filled.People"
+                     data-testid="tab-users-panel">
+            <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-3">
+                Reelt brugerdata fra CustomerAdmin.
+            </MudText>
+            <MudTable T="UserMock" Items="_filteredUsers" Dense="true" Hover="true"
+                      Breakpoint="Breakpoint.Sm" data-testid="user-table">
+                <ToolBarContent>
+                    <MudTextField @bind-Value="_userSearch"
+                                  Placeholder="Søg bruger..."
+                                  Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Search"
+                                  IconSize="Size.Medium"
+                                  Variant="Variant.Outlined"
+                                  Margin="Margin.Dense"
+                                  Immediate="true"
+                                  data-testid="user-search" />
+                    <MudSpacer />
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               StartIcon="@Icons.Material.Filled.PersonAdd"
+                               OnClick="OpenCreateUserDialog"
+                               data-testid="btn-add-user">
+                        Opret bruger
+                    </MudButton>
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh><MudTableSortLabel SortBy="new Func<UserMock,object>(u=>u.DisplayName)">Navn</MudTableSortLabel></MudTh>
+                    <MudTh>E-mail</MudTh>
+                    <MudTh>Rolle</MudTh>
+                    <MudTh>Status</MudTh>
+                    <MudTh>Sidst aktiv</MudTh>
+                    <MudTh></MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Navn">
+                        <MudText Typo="Typo.body2"><b>@context.DisplayName</b></MudText>
+                    </MudTd>
+                    <MudTd DataLabel="E-mail">
+                        <MudText Typo="Typo.body2" Class="ga-text-cell-truncate">@context.Email</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Rolle">
+                        <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Class="ga-chip-reset">
+                            @context.Role
+                        </MudChip>
+                    </MudTd>
+                    <MudTd DataLabel="Status">
+                        @{
+                            var statusClass = context.Status switch {
+                                "Active"   => "ga-status-sent",
+                                "Inactive" => "ga-status-failed",
+                                _          => "ga-status-scheduled"
+                            };
+                        }
+                        <MudChip T="string" Size="Size.Small" Class="@($"ga-chip-reset {statusClass}")">
+                            @context.Status
+                        </MudChip>
+                    </MudTd>
+                    <MudTd DataLabel="Sidst aktiv">
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">
+                            @context.LastLogin.ToString("d. MMM HH:mm")
+                        </MudText>
+                    </MudTd>
+                    <MudTd>
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small"
+                                   Color="Color.Error" title="Slet bruger"
+                                       OnClick="() => OpenDeleteConfirmDialog(context)" />
+                    </MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager PageSizeOptions="new int[]{10, 25, 50}" />
+                </PagerContent>
+                <NoRecordsContent>
+                    <div class="ga-empty-state">
+                        <MudIcon Icon="@Icons.Material.Filled.PersonOff" Class="ga-icon-xl-faded" />
+                        <MudText Typo="Typo.body2">Ingen brugere matcher søgningen</MudText>
+                    </div>
+                </NoRecordsContent>
+            </MudTable>
+        </MudTabPanel>
+
+        @* Tab 2: Beskeder — nested tabs inside *@
+        <MudTabPanel Text="Beskeder" Icon="@Icons.Material.Filled.Message"
+                     data-testid="tab-messages-panel">
+            <MudTabs Elevation="0" PanelClass="pt-3" data-testid="showcase-inner-tabs">
+                <MudTabPanel Text="@($"Sendte ({MockData.SentBroadcasts.Count})")"
+                             Icon="@Icons.Material.Filled.CheckCircle">
+                    <BroadcastTable Items="MockData.SentBroadcasts.Take(5).ToList()"
+                                    OnRowClick="_ => {}" Loc="Loc" />
+                </MudTabPanel>
+                <MudTabPanel Text="@($"Planlagte ({MockData.ScheduledBroadcasts.Count})")"
+                             Icon="@Icons.Material.Filled.Schedule">
+                    <BroadcastTable Items="MockData.ScheduledBroadcasts"
+                                    OnRowClick="_ => {}" Loc="Loc" ShowScheduled="true" />
+                </MudTabPanel>
+                <MudTabPanel Text="@($"Fejlede ({MockData.FailedBroadcasts.Count})")"
+                             Icon="@Icons.Material.Filled.Error">
+                    <BroadcastTable Items="MockData.FailedBroadcasts"
+                                    OnRowClick="_ => {}" Loc="Loc" ShowFailed="true" />
+                </MudTabPanel>
+                <MudTabPanel Text="Tom tilstand" Icon="@Icons.Material.Filled.Inbox">
+                    <BroadcastTable Items="new List<BroadcastMock>()"
+                                    OnRowClick="_ => {}" Loc="Loc" />
+                </MudTabPanel>
+            </MudTabs>
+        </MudTabPanel>
+
+        @* Tab 3: Aktivitet *@
+        <MudTabPanel Text="Aktivitet" Icon="@Icons.Material.Filled.Timeline"
+                     data-testid="tab-activity-panel">
+            <MudList T="ActivityMock" Dense="true" data-testid="activity-list">
+                @foreach (var a in MockData.Activities)
+                {
+                    var severity = a.Severity switch {
+                        "success" => Color.Success,
+                        "error"   => Color.Error,
+                        "warning" => Color.Warning,
+                        _         => Color.Info
+                    };
+                    var icon = a.Severity switch {
+                        "success" => Icons.Material.Filled.CheckCircle,
+                        "error"   => Icons.Material.Filled.Error,
+                        "warning" => Icons.Material.Filled.Warning,
+                        _         => Icons.Material.Filled.Info
+                    };
+                    var chipClass = a.Severity == "success" ? "ga-chip-reset ga-chip-count-success"
+                                  : a.Severity == "error"   ? "ga-chip-reset ga-chip-count-warning"
+                                  : "ga-chip-reset ga-chip-count-info";
+                    <MudListItem T="ActivityMock" Value="a">
+                        <div class="d-flex align-center gap-3 w-100">
+                            <MudIcon Icon="@icon" Color="@severity" Size="Size.Small" />
+                            <div class="flex-grow-1">
+                                <MudText Typo="Typo.body2"><b>@a.Action</b> — @a.Subject</MudText>
+                                <MudText Typo="Typo.caption" Color="Color.Secondary">@a.Profile · @a.At.ToString("d. MMM HH:mm")</MudText>
+                            </div>
+                            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Class="@chipClass">
+                                @a.Severity
+                            </MudChip>
+                        </div>
+                    </MudListItem>
+                    <MudDivider />
+                }
+            </MudList>
+        </MudTabPanel>
+
+    </MudTabs>
+
+    @* ══════════════════════════════════════════════════════════════════════════
+       §3  FORMULARER — alle input-typer
+       ══════════════════════════════════════════════════════════════════════════ *@
+    <MudText Typo="Typo.h6" Class="mb-3" data-testid="section-forms">Formularer</MudText>
+    <MudGrid Spacing="4" Class="mb-6">
+
+        @* SMS-kanal opsætning *@
+        <MudItem xs="12" md="6">
+            <MudPaper Elevation="1" Class="pa-4" data-testid="form-sms-settings" data-showcase-demo="true">
+                <MudText Typo="Typo.subtitle2" Class="mb-3"><b>SMS-kanal opsætning</b></MudText>
+
+                <MudTextField @bind-Value="_formSenderName"
+                              Label="Afsendernavn"
+                              Variant="Variant.Outlined"
+                              Margin="Margin.Dense"
+                              MaxLength="11"
+                              HelperText="Maks. 11 tegn"
+                              Error="@(_formSenderName.Length > 11)"
+                              ErrorText="For langt afsendernavn"
+                              Class="mb-3"
+                              data-testid="input-sender-name" />
+
+                <MudTextField @bind-Value="_formWebhookUrl"
+                              Label="Webhook URL"
+                              Variant="Variant.Outlined"
+                              Margin="Margin.Dense"
+                              InputType="InputType.Url"
+                              Placeholder="https://dit-system.dk/webhook"
+                              Class="mb-3"
+                              data-testid="input-webhook-url" />
+
+                <MudSelect T="string" @bind-Value="_formEncoding"
+                           Label="Tegnkodning"
+                           Variant="Variant.Outlined"
+                           Margin="Margin.Dense"
+                           Class="mb-3"
+                           data-testid="select-encoding">
+                    <MudSelectItem Value="@("GSM7")">GSM-7 (160 tegn)</MudSelectItem>
+                    <MudSelectItem Value="@("UCS2")">UCS-2 / Unicode (70 tegn)</MudSelectItem>
+                    <MudSelectItem Value="@("AUTO")">Automatisk</MudSelectItem>
+                </MudSelect>
+
+                <MudNumericField T="int" @bind-Value="_formRetryCount"
+                                 Label="Forsøg igen (antal)"
+                                 Variant="Variant.Outlined"
+                                 Margin="Margin.Dense"
+                                 Min="0" Max="5"
+                                 Class="mb-3"
+                                 data-testid="input-retry-count" />
+
+                <MudDatePicker @bind-Date="_formExpiryDate"
+                               Label="Udløbsdato"
+                               Variant="Variant.Outlined"
+                               Margin="Margin.Dense"
+                               Class="mb-3"
+                               data-testid="picker-expiry-date" />
+
+                <MudSwitch T="bool" @bind-Value="_formDeliveryReport"
+                           Label="Leveringsrapport aktiveret"
+                           Color="Color.Primary"
+                           Class="mb-3"
+                           data-testid="switch-delivery-report" />
+
+                <MudCheckBox T="bool" @bind-Value="_formGdprConsent"
+                             Label="GDPR-samtykke bekræftet"
+                             Color="Color.Primary"
+                             data-testid="checkbox-gdpr" />
+
+                <MudStack Row="true" Spacing="2" Class="mt-4" Justify="Justify.FlexEnd">
+                    <MudButton Variant="Variant.Outlined"
+                               data-testid="btn-cancel-settings">
+                        Annuller
+                    </MudButton>
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               OnClick="@(() => ShowSnackbar("Indstillinger gemt", Severity.Success))"
+                               data-testid="btn-save-settings">
+                        Gem indstillinger
+                    </MudButton>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+
+        @* Formular med valideringsfejl (error state) *@
+        <MudItem xs="12" md="6">
+            <MudPaper Elevation="1" Class="pa-4" data-testid="form-validation-errors">
+                <MudText Typo="Typo.subtitle2" Class="mb-3"><b>Formular med valideringsfejl</b></MudText>
+
+                <MudTextField Value="@("ugyldig-email")"
+                              Label="E-mail"
+                              Variant="Variant.Outlined"
+                              Margin="Margin.Dense"
+                              Error="true"
+                              ErrorText="Ugyldig e-mailadresse"
+                              Class="mb-3"
+                              data-testid="input-email-error" />
+
+                <MudTextField Value="@("")"
+                              Label="Påkrævet felt"
+                              Variant="Variant.Outlined"
+                              Margin="Margin.Dense"
+                              Error="true"
+                              ErrorText="Dette felt er påkrævet"
+                              Class="mb-3"
+                              data-testid="input-required-error" />
+
+                <MudSelect T="string" Value="@("")"
+                           Label="Vælg profil"
+                           Variant="Variant.Outlined"
+                           Margin="Margin.Dense"
+                           Error="true"
+                           ErrorText="Vælg mindst én profil"
+                           Class="mb-3"
+                           data-testid="select-profile-error">
+                    <MudSelectItem Value="@("p1")">VetClinic Aarhus</MudSelectItem>
+                    <MudSelectItem Value="@("p2")">RetailPlus</MudSelectItem>
+                </MudSelect>
+
+                <MudAlert Severity="Severity.Error" Variant="Variant.Outlined" Class="mb-2"
+                          data-testid="alert-form-error" data-showcase-demo="true">
+                    Formularen indeholder fejl. Ret venligst de markerede felter.
+                </MudAlert>
+
+                <MudStack Row="true" Spacing="2" Justify="Justify.FlexEnd">
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Error"
+                               StartIcon="@Icons.Material.Filled.Error"
+                               Class="ga-btn-danger"
+                               data-testid="btn-submit-error">
+                        Gem (med fejl)
+                    </MudButton>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+    @* ══════════════════════════════════════════════════════════════════════════
+       §4  ALERTS & STATE FEEDBACK
+       ══════════════════════════════════════════════════════════════════════════ *@
+    <MudText Typo="Typo.h6" Class="mb-3" data-testid="section-alerts">Alerts og tilstandsfeedback</MudText>
+    <MudStack Spacing="2" Class="mb-4" data-testid="alert-stack">
+        <MudAlert Severity="Severity.Success" data-testid="alert-success">
+            Beskeden er sendt til 247 modtagere.
+        </MudAlert>
+        <MudAlert Severity="Severity.Info" data-testid="alert-info">
+            3 beskeder er planlagt og afventer afsendelse.
+        </MudAlert>
+        <MudAlert Severity="Severity.Warning" data-testid="alert-warning">
+            Afsendernavn er for langt og vil blive afkortet til 11 tegn.
+        </MudAlert>
+        <MudAlert Severity="Severity.Error" data-testid="alert-error" data-showcase-demo="true">
+            Afsendelse mislykkedes. 333 modtagere modtog ikke beskeden.
+        </MudAlert>
+        <MudAlert Severity="Severity.Success" Variant="Variant.Outlined" Dense="true" data-testid="alert-success-dense">
+            Gemt succesfuldt (Dense + Outlined).
+        </MudAlert>
+        <MudAlert Severity="Severity.Info" Variant="Variant.Filled" data-testid="alert-info-filled">
+            Systembesked (Filled variant).
+        </MudAlert>
+    </MudStack>
+
+    @* Loading skeleton *@
+    <div data-testid="loading-skeleton" class="mb-6">
+        <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-2">Loading skeleton:</MudText>
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="44px" Class="mb-2" />
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="44px" Class="mb-2" />
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="60%" Height="44px" />
+    </div>
+
+    @* ══════════════════════════════════════════════════════════════════════════
+       §5  CHIPS & STATUS BADGES
+       ══════════════════════════════════════════════════════════════════════════ *@
+    <MudText Typo="Typo.h6" Class="mb-3" data-testid="section-chips">Chips og statusmærker</MudText>
+    <MudStack Row="true" Spacing="2" Wrap="Wrap.Wrap" Class="mb-3" data-testid="status-chips">
+        <MudChip T="string" Class="ga-status-sent">Sendt</MudChip>
+        <MudChip T="string" Class="ga-status-scheduled">Planlagt</MudChip>
+        <MudChip T="string" Class="ga-status-failed">Fejlet</MudChip>
+        <MudChip T="string" Class="ga-status-draft">Kladde</MudChip>
+        <MudChip T="string" Class="ga-status-unapproved">Afventer godkendelse</MudChip>
+    </MudStack>
+    <MudStack Row="true" Spacing="2" Wrap="Wrap.Wrap" Class="mb-6" data-testid="count-chips">
+        <MudChip T="string" Color="Color.Default" Variant="Variant.Outlined" Class="ga-chip-count-success">247 leveret</MudChip>
+        <MudChip T="string" Color="Color.Default" Variant="Variant.Outlined" Class="ga-chip-count-info">3 planlagt</MudChip>
+        <MudChip T="string" Color="Color.Default" Variant="Variant.Outlined" Class="ga-chip-count-warning">13 fejlet</MudChip>
+        <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Class="ga-chip-reset">VetClinic Aarhus</MudChip>
+        <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Class="ga-chip-reset">RetailPlus</MudChip>
+    </MudStack>
+
+    @* ══════════════════════════════════════════════════════════════════════════
+       §6  BUTTONS & ACTIONS
+       ══════════════════════════════════════════════════════════════════════════ *@
+    <MudText Typo="Typo.h6" Class="mb-3" data-testid="section-buttons">Knapper</MudText>
+    <MudStack Row="true" Spacing="2" Wrap="Wrap.Wrap" Class="mb-4" data-testid="button-row-filled">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Send">
+            Send nu
+        </MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Schedule">
+            Planlæg
+        </MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" Class="ga-btn-danger"
+                   StartIcon="@Icons.Material.Filled.Delete">
+            Slet
+        </MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="true">
+            Deaktiveret
+        </MudButton>
+    </MudStack>
+    <MudStack Row="true" Spacing="2" Wrap="Wrap.Wrap" Class="mb-4" data-testid="button-row-outlined">
+        <MudButton Variant="Variant.Outlined" Color="Color.Primary">Primær outlined</MudButton>
+        <MudButton Variant="Variant.Outlined" Color="Color.Default">Sekundær</MudButton>
+        <MudButton Variant="Variant.Text" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add">
+            Tilføj
+        </MudButton>
+        <MudButton Variant="Variant.Text" Color="Color.Default">Annuller</MudButton>
+    </MudStack>
+    <MudStack Row="true" Spacing="1" Class="mb-6" data-testid="button-row-icon">
+        <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" title="Rediger" />
+        <MudIconButton Icon="@Icons.Material.Filled.Download" Color="Color.Default" title="Download" />
+        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" title="Slet" />
+        <MudIconButton Icon="@Icons.Material.Filled.Refresh" Color="Color.Default" title="Opdater" />
+    </MudStack>
+
+    @* ══════════════════════════════════════════════════════════════════════════
+       §7  SNACKBAR TRIGGERS
+       ══════════════════════════════════════════════════════════════════════════ *@
+    <MudText Typo="Typo.h6" Class="mb-3" data-testid="section-snackbar">Snackbar</MudText>
+    <MudStack Row="true" Spacing="2" Wrap="Wrap.Wrap" Class="mb-6" data-testid="snackbar-triggers">
+        <MudButton Variant="Variant.Outlined"
+                   OnClick="@(() => ShowSnackbar("Beskeden er sendt!", Severity.Success))"
+                   data-testid="btn-snackbar-success">
+            Success snackbar
+        </MudButton>
+        <MudButton Variant="Variant.Outlined"
+                   OnClick="@(() => ShowSnackbar("3 beskeder planlagt", Severity.Info))"
+                   data-testid="btn-snackbar-info">
+            Info snackbar
+        </MudButton>
+        <MudButton Variant="Variant.Outlined"
+                   OnClick="@(() => ShowSnackbar("Afsendernavn afkortet", Severity.Warning))"
+                   data-testid="btn-snackbar-warning">
+            Warning snackbar
+        </MudButton>
+        <MudButton Variant="Variant.Outlined"
+                   OnClick="@(() => ShowSnackbar("Afsendelse mislykkedes", Severity.Error))"
+                   data-testid="btn-snackbar-error">
+            Error snackbar
+        </MudButton>
+    </MudStack>
+
+    @* ══════════════════════════════════════════════════════════════════════════
+       §8  TOMME TILSTANDE (empty state)
+       ══════════════════════════════════════════════════════════════════════════ *@
+    <MudText Typo="Typo.h6" Class="mb-3" data-testid="section-empty-states">Tomme tilstande</MudText>
+    <MudGrid Spacing="3" Class="mb-6" data-testid="empty-state-grid">
+        <MudItem xs="12" sm="4">
+            <MudPaper Elevation="1" Class="pa-4">
+                <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mb-2">Tom beskedeliste</MudText>
+                <div class="ga-empty-state">
+                    <MudIcon Icon="@Icons.Material.Filled.Email" Class="ga-icon-xl-faded" />
+                    <MudText Typo="Typo.body2">Ingen beskeder sendt endnu</MudText>
+                    <MudButton Variant="Variant.Outlined" Size="Size.Small">Start her</MudButton>
+                </div>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="4">
+            <MudPaper Elevation="1" Class="pa-4">
+                <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mb-2">Intet søgeresultat</MudText>
+                <div class="ga-empty-state">
+                    <MudIcon Icon="@Icons.Material.Filled.SearchOff" Class="ga-icon-xl-faded" />
+                    <MudText Typo="Typo.body2">Ingen brugere matcher din søgning</MudText>
+                </div>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="4">
+            <MudPaper Elevation="1" Class="pa-4">
+                <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mb-2">Fejltilstand</MudText>
+                <div class="ga-empty-state">
+                    <MudIcon Icon="@Icons.Material.Filled.CloudOff" Class="ga-icon-xl-faded" />
+                    <MudText Typo="Typo.body2">Forbindelsen til serveren mislykkedes</MudText>
+                    <MudButton Variant="Variant.Outlined" Size="Size.Small" Color="Color.Error">Prøv igen</MudButton>
+                </div>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+    @* ══════════════════════════════════════════════════════════════════════════
+       §9  BRØDKRUMMER + HEADINGS
+       ══════════════════════════════════════════════════════════════════════════ *@
+    <MudText Typo="Typo.h6" Class="mb-3" data-testid="section-typography">Typografi-hierarki</MudText>
+    <MudPaper Elevation="1" Class="pa-4 mb-6" data-testid="typography-samples">
+        <MudBreadcrumbs Items="_breadcrumbs" Class="px-0 mb-4" data-showcase-demo="true" />
+        <MudText Typo="Typo.h4" Class="mb-1">H4 — Sideoverskrift</MudText>
+        <MudText Typo="Typo.h5" Class="mb-1">H5 — Sektionsoverskrift</MudText>
+        <MudText Typo="Typo.h6" Class="mb-2">H6 — Panel-overskrift</MudText>
+        <MudText Typo="Typo.subtitle1" Class="mb-1">Subtitle1 — Kortoverskrift</MudText>
+        <MudText Typo="Typo.subtitle2" Class="mb-2">Subtitle2 — Label/kolonne</MudText>
+        <MudText Typo="Typo.body1" Class="mb-1">Body1 — Primær brødtekst, normal vægt</MudText>
+        <MudText Typo="Typo.body2" Class="mb-1">Body2 — Sekundær brødtekst, tabel-indhold</MudText>
+        <MudText Typo="Typo.caption" Color="Color.Secondary">Caption — Hjælpetekst, timestamps, labels</MudText>
+    </MudPaper>
+
+    @* ══════════════════════════════════════════════════════════════════════════
+       §10  MODALER — vises via InvokeAsync pga. Blazor circuit krav
+       ══════════════════════════════════════════════════════════════════════════ *@
+    <MudText Typo="Typo.h6" Class="mb-3" data-testid="section-dialogs">Dialoger</MudText>
+    <MudStack Row="true" Spacing="2" Wrap="Wrap.Wrap" Class="mb-6" data-testid="dialog-triggers">
+        <MudButton Variant="Variant.Outlined"
+                   OnClick="OpenDeleteConfirmDialogDirect"
+                   data-testid="btn-open-delete-dialog">
+            Slet-bekræftelse dialog
+        </MudButton>
+        <MudButton Variant="Variant.Outlined"
+                   OnClick="OpenCreateUserDialog"
+                   data-testid="btn-open-create-dialog">
+            Opret bruger dialog
+        </MudButton>
+    </MudStack>
+
+    @* ─── Slet-bekræftelse dialog ─────────────────────────────────────────────── *@
+    <MudDialog @bind-Visible="_showDeleteDialog" data-testid="delete-confirm-dialog">
+        <TitleContent>
+            <MudText Typo="Typo.h6">
+                <MudIcon Icon="@Icons.Material.Filled.Warning" Color="Color.Warning" Class="mr-2" />
+                Bekræft sletning
+            </MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudText>
+                Er du sikker på, at du vil slette brugeren
+                <b>@(_deleteTarget?.DisplayName ?? "?")</b>?
+            </MudText>
+            <MudAlert Severity="Severity.Warning" Dense="true" Class="mt-3">
+                Denne handling kan ikke fortrydes.
+            </MudAlert>
+        </DialogContent>
+        <DialogActions>
+            <MudButton Variant="Variant.Outlined"
+                       OnClick="@(() => _showDeleteDialog = false)"
+                       data-testid="dialog-cancel">
+                Annuller
+            </MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Error"
+                       Class="ga-btn-danger"
+                       OnClick="ConfirmDelete"
+                       data-testid="dialog-confirm-delete">
+                Slet
+            </MudButton>
+        </DialogActions>
+    </MudDialog>
+
+    @* ─── Opret bruger formular-dialog ─────────────────────────────────────────── *@
+    <MudDialog @bind-Visible="_showCreateDialog" data-testid="create-user-dialog">
+        <TitleContent>
+            <MudText Typo="Typo.h6">
+                <MudIcon Icon="@Icons.Material.Filled.PersonAdd" Color="Color.Primary" Class="mr-2" />
+                Opret ny bruger
+            </MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudTextField @bind-Value="_newUserEmail"
+                          Label="E-mail"
+                          Variant="Variant.Outlined"
+                          Margin="Margin.Dense"
+                          InputType="InputType.Email"
+                          Required="true"
+                          Error="@_newUserEmailError"
+                          ErrorText="Ugyldig e-mailadresse"
+                          Class="mb-3"
+                          data-testid="dialog-email" />
+            <MudTextField @bind-Value="_newUserName"
+                          Label="Navn"
+                          Variant="Variant.Outlined"
+                          Margin="Margin.Dense"
+                          Required="true"
+                          Class="mb-3"
+                          data-testid="dialog-name" />
+            <MudSelect T="string" @bind-Value="_newUserRole"
+                       Label="Rolle"
+                       Variant="Variant.Outlined"
+                       Margin="Margin.Dense"
+                       data-testid="dialog-role">
+                <MudSelectItem Value="@("CanBroadcast")">Kan sende beskeder</MudSelectItem>
+                <MudSelectItem Value="@("ManageUsers")">Administrer brugere</MudSelectItem>
+                <MudSelectItem Value="@("Viewer")">Se kun</MudSelectItem>
+            </MudSelect>
+        </DialogContent>
+        <DialogActions>
+            <MudButton Variant="Variant.Outlined"
+                       OnClick="@(() => _showCreateDialog = false)">
+                Annuller
+            </MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                       OnClick="ConfirmCreateUser"
+                       data-testid="dialog-confirm-create">
+                Opret bruger
+            </MudButton>
+        </DialogActions>
+    </MudDialog>
+
+</AppShell>
+
+@code {
+    // ── Search / filter ───────────────────────────────────────────────────────
+    private string _userSearch = string.Empty;
+    private IEnumerable<UserMock> _filteredUsers =>
+        string.IsNullOrWhiteSpace(_userSearch)
+            ? MockData.Users
+            : MockData.Users.Where(u =>
+                u.DisplayName.Contains(_userSearch, StringComparison.OrdinalIgnoreCase) ||
+                u.Email.Contains(_userSearch, StringComparison.OrdinalIgnoreCase));
+
+    // ── SMS form state ────────────────────────────────────────────────────────
+    private string   _formSenderName    = "GreenAi";
+    private string   _formWebhookUrl    = "";
+    private string   _formEncoding      = "AUTO";
+    private int      _formRetryCount    = 2;
+    private DateTime? _formExpiryDate   = null;
+    private bool     _formDeliveryReport = true;
+    private bool     _formGdprConsent   = false;
+
+    // ── Delete dialog ─────────────────────────────────────────────────────────
+    private bool      _showDeleteDialog = false;
+    private UserMock? _deleteTarget     = null;
+
+    private void OpenDeleteConfirmDialog(UserMock user)
+    {
+        _deleteTarget     = user;
+        _showDeleteDialog = true;
+    }
+
+    private void OpenDeleteConfirmDialogDirect()
+    {
+        _deleteTarget     = MockData.Users.First();
+        _showDeleteDialog = true;
+    }
+
+    private void ConfirmDelete()
+    {
+        _showDeleteDialog = false;
+        ShowSnackbar($"Bruger '{_deleteTarget?.DisplayName}' slettet", Severity.Success);
+    }
+
+    // ── Create user dialog ────────────────────────────────────────────────────
+    private bool   _showCreateDialog  = false;
+    private string _newUserEmail      = "";
+    private string _newUserName       = "";
+    private string _newUserRole       = "CanBroadcast";
+    private bool   _newUserEmailError = false;
+
+    private void OpenCreateUserDialog()
+    {
+        _newUserEmail      = "";
+        _newUserName       = "";
+        _newUserRole       = "CanBroadcast";
+        _newUserEmailError = false;
+        _showCreateDialog  = true;
+    }
+
+    private void ConfirmCreateUser()
+    {
+        _newUserEmailError = string.IsNullOrWhiteSpace(_newUserEmail) || !_newUserEmail.Contains('@');
+        if (_newUserEmailError) return;
+
+        _showCreateDialog = false;
+        ShowSnackbar($"Bruger '{_newUserName}' oprettet", Severity.Success);
+    }
+
+    // ── Breadcrumbs ───────────────────────────────────────────────────────────
+    private readonly List<BreadcrumbItem> _breadcrumbs =
+    [
+        new("Startside",        href: "/"),
+        new("Admin",            href: "/admin"),
+        new("UI Showcase",      href: null, disabled: true),
+    ];
+
+    // ── Snackbar helper ───────────────────────────────────────────────────────
+    private void ShowSnackbar(string message, Severity severity)
+        => Snackbar.Add(message, severity);
+}

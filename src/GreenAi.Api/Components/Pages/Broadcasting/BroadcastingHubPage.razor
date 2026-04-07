@@ -9,7 +9,7 @@
     <MudGrid Spacing="2" Class="mb-5" data-testid="send-methods-grid">
         @foreach (var m in _sendMethods)
         {
-            <MudItem @key="m.Key" xs="6" sm="4" md="2">
+            <MudItem @key="m.Key" xs="4" sm="4" md="2">
                 <MudPaper Class="send-method-card"
                           Elevation="1"
                           @onclick="() => StartWizard(m.Key)"
@@ -75,7 +75,7 @@
                     <MudText Typo="Typo.subtitle2"><b>@Loc.Get("page.broadcasting.QuickSendTitle")</b></MudText>
                 </div>
                 <div class="pa-3">
-                    <MudTabs Elevation="0" Class="mb-2" data-testid="quick-send-tabs">
+                    <MudTabs Elevation="0" Class="mb-2" PanelClass="quick-send-tab-panel" data-testid="quick-send-tabs">
                         <MudTabPanel Text="@Loc.Get("page.broadcasting.QuickSendSmsTab")" Icon="@Icons.Material.Filled.Sms">
                             <MudTextField @bind-Value="_qsPhone"
                                           Label="@Loc.Get("page.broadcasting.QuickSendPhone")"

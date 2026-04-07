@@ -19,63 +19,61 @@
 
 <PageTitle>Log ind — GreenAi</PageTitle>
 
-<MudGrid Justify="Justify.Center" Class="mt-16">
-    <MudItem xs="12" sm="8" md="5" lg="4">
-        <MudPaper Elevation="4" Class="pa-8">
-            <MudText Typo="Typo.h5" Align="Align.Center" Class="mb-6">@Loc.Get("auth.Login.Title")</MudText>
+<MudContainer MaxWidth="MaxWidth.Small" Class="pt-16">
+    <MudPaper Elevation="4" Class="pa-8">
+        <MudText Typo="Typo.h5" Align="Align.Center" Class="mb-6">@Loc.Get("auth.Login.Title")</MudText>
 
-            <EditForm Model="_model" OnValidSubmit="HandleLoginAsync">
-                <DataAnnotationsValidator />
+        <EditForm Model="_model" OnValidSubmit="HandleLoginAsync">
+            <DataAnnotationsValidator />
 
-                <MudTextField @bind-Value="_model.Email"
-                              Label="@Loc.Get("shared.EmailLabel")"
-                              Variant="Variant.Outlined"
-                              InputType="InputType.Email"
-                              Adornment="Adornment.Start"
-                              AdornmentIcon="@Icons.Material.Filled.Email"
-                              Margin="Margin.Dense"
-                              Class="mb-4"
-                              UserAttributes="@(new Dictionary<string, object>{ ["data-testid"] = "login-email" })"
-                              Disabled="_loading" />
+            <MudTextField @bind-Value="_model.Email"
+                          Label="@Loc.Get("shared.EmailLabel")"
+                          Variant="Variant.Outlined"
+                          InputType="InputType.Email"
+                          Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Email"
+                          Margin="Margin.Dense"
+                          Class="mb-4"
+                          UserAttributes="@(new Dictionary<string, object>{ ["data-testid"] = "login-email" })"
+                          Disabled="_loading" />
 
-                <MudTextField @bind-Value="_model.Password"
-                              Label="@Loc.Get("auth.Login.PasswordLabel")"
-                              Variant="Variant.Outlined"
-                              InputType="_showPassword ? InputType.Text : InputType.Password"
-                              Adornment="Adornment.End"
-                              AdornmentIcon="@(_showPassword ? Icons.Material.Filled.VisibilityOff : Icons.Material.Filled.Visibility)"
-                              OnAdornmentClick="() => _showPassword = !_showPassword"
-                              Margin="Margin.Dense"
-                              Class="mb-2"
-                              UserAttributes="@(new Dictionary<string, object>{ ["data-testid"] = "login-password" })"
-                              Disabled="_loading" />
+            <MudTextField @bind-Value="_model.Password"
+                          Label="@Loc.Get("auth.Login.PasswordLabel")"
+                          Variant="Variant.Outlined"
+                          InputType="_showPassword ? InputType.Text : InputType.Password"
+                          Adornment="Adornment.End"
+                          AdornmentIcon="@(_showPassword ? Icons.Material.Filled.VisibilityOff : Icons.Material.Filled.Visibility)"
+                          OnAdornmentClick="() => _showPassword = !_showPassword"
+                          Margin="Margin.Dense"
+                          Class="mb-2"
+                          UserAttributes="@(new Dictionary<string, object>{ ["data-testid"] = "login-password" })"
+                          Disabled="_loading" />
 
-                @if (_errorMessage is not null)
+            @if (_errorMessage is not null)
+            {
+                <MudAlert Severity="Severity.Error" Class="mb-4">@_errorMessage</MudAlert>
+            }
+
+            <MudButton ButtonType="ButtonType.Submit"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       FullWidth="true"
+                       Disabled="_loading"
+                       data-testid="login-submit"
+                       Class="mt-2">
+                @if (_loading)
                 {
-                    <MudAlert Severity="Severity.Error" Class="mb-4">@_errorMessage</MudAlert>
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                    <span>@Loc.Get("auth.Login.Loading")</span>
                 }
-
-        <MudButton ButtonType="ButtonType.Submit"
-                   Variant="Variant.Filled"
-                   Color="Color.Primary"
-                   FullWidth="true"
-                   Disabled="_loading"
-                   data-testid="login-submit"
-                   Class="mt-2">
-                    @if (_loading)
-                    {
-                        <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
-                        <span>@Loc.Get("auth.Login.Loading")</span>
-                    }
-                    else
-                    {
-                        <span>@Loc.Get("auth.Login.SubmitButton")</span>
-                    }
-                </MudButton>
-            </EditForm>
-        </MudPaper>
-    </MudItem>
-</MudGrid>
+                else
+                {
+                    <span>@Loc.Get("auth.Login.SubmitButton")</span>
+                }
+            </MudButton>
+        </EditForm>
+    </MudPaper>
+</MudContainer>
 
 @* Blazor circuit readiness marker — only rendered after OnAfterRenderAsync.
    Tests wait for this element before interacting so they know event handlers are wired. *@

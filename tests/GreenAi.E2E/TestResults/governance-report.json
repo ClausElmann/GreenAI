@@ -1,0 +1,47 @@
+{
+  "page": "/broadcasting",
+  "device": "Desktop",
+  "timestamp": "2026-04-07T09:01:18.2493939Z",
+  "score": 100,
+  "criticalCount": 0,
+  "majorCount": 0,
+  "minorCount": 0,
+  "rules": [
+    {
+      "ruleKey": "layout.no_horizontal_overflow",
+      "ruleId": "AssertNoHorizontalOverflowAsync",
+      "ruleName": "NoHorizontalOverflow",
+      "severity": "major",
+      "passed": true,
+      "message": null,
+      "elements": [],
+      "selector": null,
+      "selectorType": null,
+      "executionMs": 22
+    },
+    {
+      "ruleKey": "tokens.primary_color",
+      "ruleId": "AssertTokensDefinedAsync",
+      "ruleName": "ColorTokenPrimary",
+      "severity": "critical",
+      "passed": true,
+      "message": null,
+      "elements": [],
+      "selector": null,
+      "selectorType": null,
+      "executionMs": 15
+    },
+    {
+      "ruleKey": "typography.no_text_overflow",
+      "ruleId": "AssertNoTextOverflowAsync",
+      "ruleName": "NoTextOverflow",
+      "severity": "minor",
+      "passed": true,
+      "message": null,
+      "elements": [],
+      "selector": null,
+      "selectorType": null,
+      "executionMs": 20
+    }
+  ]
+}

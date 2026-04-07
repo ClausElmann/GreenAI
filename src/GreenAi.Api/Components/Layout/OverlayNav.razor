@@ -43,7 +43,7 @@
         <MudDivider Class="mb-2" />
 
         @* Section: Primary *@
-        <div class="overlay-nav-group-label">Navigation</div>
+        <div class="overlay-nav-group-label">@Loc.Get("nav.SectionNavigation")</div>
         <div class="overlay-nav-section">
             <MudNavLink Href="/broadcasting"
                         Icon="@Icons.Material.Outlined.Hub"
@@ -68,12 +68,12 @@
             </MudNavLink>
         </div>
 
-        <MudDivider Class="my-2" />
+        <MudDivider Class="mt-4 mb-1" />
 
         @* Section: Account + Admin (authenticated) *@
         <AuthorizeView>
             <Authorized>
-                <div class="overlay-nav-group-label">Konto</div>
+                <div class="overlay-nav-group-label">@Loc.Get("nav.SectionAccount")</div>
                 <div class="overlay-nav-section">
                     <MudNavLink Href="/user/profile"
                                 Icon="@Icons.Material.Filled.Person"

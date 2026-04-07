@@ -9,46 +9,38 @@
 @inject BlazorPrincipalHolder PrincipalHolder
 @inject ILocalizationContext Loc
 
-<PageTitle>@Loc.Get("nav.CustomerAdmin") — GreenAi</PageTitle>
+<AppShell Title="@(_user?.Email ?? string.Empty)"
+          IsLoading="@_loading"
+          ErrorMessage="@_errorMessage"
+          Breadcrumbs="_breadcrumbs">
 
-@if (_loading)
-{
-    <MudProgressLinear Indeterminate="true" />
-    return;
-}
+    @if (!_loading && _user is null)
+    {
+        <MudAlert Severity="Severity.Warning">
+            @string.Format(Loc.Get("feature.user.NotFound"), UserId)
+        </MudAlert>
+        <MudButton Variant="Variant.Text"
+                   StartIcon="@Icons.Material.Filled.ArrowBack"
+                   Href="/customer-admin"
+                   Class="mt-3"
+                   data-testid="back-to-customer-admin">
+            @Loc.Get("shared.BackToCustomerAdmin")
+        </MudButton>
+    }
+    else if (_user is not null)
+    {
+        <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-4" Spacing="2">
+            <MudAvatar Color="Color.Primary">@_user.Email[0]</MudAvatar>
+            <MudSpacer />
+            <MudChip T="string"
+                     Color="@(_user.IsActive ? Color.Success : Color.Default)"
+                     Size="Size.Small"
+                     data-testid="user-status-chip">
+                @(_user.IsActive ? Loc.Get("shared.Active") : Loc.Get("shared.Inactive"))
+            </MudChip>
+        </MudStack>
 
-@if (_user is null)
-{
-    <MudAlert Severity="@(_errorMessage is not null ? Severity.Error : Severity.Warning)">
-        @(_errorMessage ?? string.Format(Loc.Get("feature.user.NotFound"), UserId))
-    </MudAlert>
-    <MudButton Variant="Variant.Text"
-               StartIcon="@Icons.Material.Filled.ArrowBack"
-               Href="/customer-admin"
-               Class="mt-3"
-               data-testid="back-to-customer-admin">
-        @Loc.Get("shared.BackToCustomerAdmin")
-    </MudButton>
-    return;
-}
-
-<MudBreadcrumbs Items="_breadcrumbs" Class="mb-4 px-0" />
-
-<MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-4" Spacing="2">
-    <MudAvatar Color="Color.Primary">@_user.Email[0]</MudAvatar>
-    <div>
-        <MudText Typo="Typo.h5">@_user.Email</MudText>
-    </div>
-    <MudSpacer />
-    <MudChip T="string"
-             Color="@(_user.IsActive ? Color.Success : Color.Default)"
-             Size="Size.Small"
-             data-testid="user-status-chip">
-        @(_user.IsActive ? Loc.Get("shared.Active") : Loc.Get("shared.Inactive"))
-    </MudChip>
-</MudStack>
-
-<MudTabs Elevation="1" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pt-4">
+        <MudTabs Elevation="1" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pt-4">
     <MudTabPanel Text="@Loc.Get("feature.user.TabProfiles")" Icon="@Icons.Material.Filled.AccountTree">
         @if (_user.Profiles.Count == 0)
         {
@@ -91,6 +83,9 @@
         }
     </MudTabPanel>
 </MudTabs>
+    }
+
+</AppShell>
 
 @code {
     [CascadingParameter] private Task<AuthenticationState> AuthStateTask { get; set; } = null!;

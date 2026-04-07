@@ -1,0 +1,47 @@
+{
+  "page": "/broadcasting",
+  "device": "Desktop",
+  "timestamp": "2026-04-07T09:01:22.246329Z",
+  "score": 79,
+  "criticalCount": 0,
+  "majorCount": 1,
+  "minorCount": 0,
+  "rules": [
+    {
+      "ruleKey": "layout.no_horizontal_overflow",
+      "ruleId": "AssertNoHorizontalOverflowAsync",
+      "ruleName": "NoHorizontalOverflow",
+      "severity": "major",
+      "passed": false,
+      "message": "Horizontal overflow: scrollWidth exceeds innerWidth by 580px at http://localhost:5057/broadcasting. Check for elements wider than viewport or missing max-width/overflow-x:hidden.",
+      "elements": [],
+      "selector": null,
+      "selectorType": null,
+      "executionMs": 11
+    },
+    {
+      "ruleKey": "tokens.primary_color",
+      "ruleId": "AssertTokensDefinedAsync",
+      "ruleName": "ColorTokenPrimary",
+      "severity": "critical",
+      "passed": true,
+      "message": null,
+      "elements": [],
+      "selector": null,
+      "selectorType": null,
+      "executionMs": 2
+    },
+    {
+      "ruleKey": "typography.no_text_overflow",
+      "ruleId": "AssertNoTextOverflowAsync",
+      "ruleName": "NoTextOverflow",
+      "severity": "minor",
+      "passed": true,
+      "message": null,
+      "elements": [],
+      "selector": null,
+      "selectorType": null,
+      "executionMs": 3
+    }
+  ]
+}

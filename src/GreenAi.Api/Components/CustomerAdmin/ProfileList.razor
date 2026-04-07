@@ -5,7 +5,7 @@
 @inject ILocalizationContext Loc
 
 <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-3">
-    <MudText Typo="Typo.subtitle1">@Profiles.Count profil(er)</MudText>
+    <MudText Typo="Typo.subtitle1">@string.Format(Loc.Get("feature.profile.ProfileCount"), Profiles.Count)</MudText>
     <MudButton Variant="Variant.Filled"
                Color="Color.Primary"
                StartIcon="@Icons.Material.Filled.Add"

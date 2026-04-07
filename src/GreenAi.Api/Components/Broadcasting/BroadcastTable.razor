@@ -41,9 +41,9 @@
             </MudChip>
         </MudTd>
         <MudTd DataLabel="Metode">
-            <MudText Typo="Typo.caption" Color="Color.Secondary">
+            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Class="ga-chip-reset">
                 @MockData.GetSendMethodLabel(MockData.GetSendMethodKey(context.Id))
-            </MudText>
+            </MudChip>
         </MudTd>
         <MudTd DataLabel="Modtagere" Class="ga-col-numeric">
             @context.Recipients.ToString("N0")

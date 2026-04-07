@@ -60,7 +60,8 @@
   --font-lg:  18px;
   --font-xl:  20px;
   --font-2xl: 24px;
-  --font-3xl: 30px;
+  --font-3xl:     30px;
+  --font-display: 1.75rem; /* 28px — stat card metrics, hero numbers */
 
   /* Font weights */
   --font-weight-normal: 400;

@@ -565,11 +565,13 @@ public abstract class VisualTestBase : IAsyncLifetime
                 + "A backend exception or SignalR circuit failure occurred.");
 
         // 2. Visible MudBlazor error alerts (Severity.Error)
+        // Excludes alerts marked data-showcase-demo="true" — those are intentional demo content.
         var mudErrors = await page.EvaluateAsync<string[]>("""
             () => {
                 const sel = '.mud-alert-filled-error, .mud-alert-outlined-error, .mud-alert-text-error';
                 const out = [];
                 for (const el of document.querySelectorAll(sel)) {
+                    if (el.closest('[data-showcase-demo]')) continue; // intentional demo
                     const r = el.getBoundingClientRect();
                     if (r.width > 0 && r.height > 0)
                         out.push((el.textContent?.trim() ?? '').slice(0, 100));
@@ -676,6 +678,9 @@ public abstract class VisualTestBase : IAsyncLifetime
                 ];
                 for (const sel of selectors) {
                     for (const el of document.querySelectorAll(sel)) {
+                        if (el.closest('[data-showcase-demo]')) continue; // intentional demo
+                        if (el.closest('.mud-breadcrumbs')) continue; // inline nav — WCAG 2.5.5 inline exception
+                        if (el.hasAttribute('data-inline-action')) continue; // compact inline-action (merge tokens, etc.)
                         const cls = typeof el.className === 'string' ? el.className : '';
                         if (cls.includes('mud-icon-root')) continue;
                         const r = el.getBoundingClientRect();

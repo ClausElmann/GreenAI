@@ -9,70 +9,67 @@
 @inject BlazorPrincipalHolder PrincipalHolder
 @inject ILocalizationContext Loc
 
-<PageTitle>@Loc.Get("nav.CustomerAdmin") — GreenAi</PageTitle>
+<AppShell Title="@(_profile?.Name ?? string.Empty)"
+          IsLoading="@_loading"
+          Breadcrumbs="_breadcrumbs">
 
-@if (_loading)
-{
-    <MudProgressLinear Indeterminate="true" />
-    return;
-}
+    @if (!_loading && _profile is null)
+    {
+        <MudAlert Severity="Severity.Warning">
+            @string.Format(Loc.Get("feature.profile.NotFound"), ProfileId)
+        </MudAlert>
+        <MudButton Variant="Variant.Text"
+                   StartIcon="@Icons.Material.Filled.ArrowBack"
+                   Href="/customer-admin"
+                   Class="mt-3"
+                   data-testid="back-to-customer-admin">
+            @Loc.Get("shared.BackToCustomerAdmin")
+        </MudButton>
+    }
+    else if (_profile is not null)
+    {
+        <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-4" Spacing="2">
+            <MudIcon Icon="@Icons.Material.Filled.AccountTree" Size="Size.Large" Color="Color.Primary" />
+            <MudSpacer />
+            <MudChip T="string"
+                     Color="@(_profile.IsActive ? Color.Success : Color.Default)"
+                     Size="Size.Small">
+                @(_profile.IsActive ? Loc.Get("shared.Active") : Loc.Get("shared.Inactive"))
+            </MudChip>
+        </MudStack>
 
-@if (_profile is null)
-{
-    <MudAlert Severity="Severity.Warning">@string.Format(Loc.Get("feature.profile.NotFound"), ProfileId)</MudAlert>
-    <MudButton Variant="Variant.Text"
-               StartIcon="@Icons.Material.Filled.ArrowBack"
-               Href="/customer-admin"
-               Class="mt-3"
-               data-testid="back-to-customer-admin">
-        @Loc.Get("shared.BackToCustomerAdmin")
-    </MudButton>
-    return;
-}
+        <MudTabs Elevation="1" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pt-4">
 
-<MudBreadcrumbs Items="_breadcrumbs" Class="mb-4 px-0" />
+            <MudTabPanel Text="@Loc.Get("feature.profile.InfoTab")" Icon="@Icons.Material.Filled.Info">
+                <MudForm @ref="_infoForm">
+                    <MudGrid>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField @bind-Value="_editName"
+                                          Label="@Loc.Get("feature.profile.NameLabel")"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense"
+                                          Required="true"
+                                          Class="mb-3"
+                                          UserAttributes="@(new Dictionary<string, object>{ ["data-testid"] = "profile-name" })" />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudDivider Class="mb-4" />
+                            <MudButton Variant="Variant.Filled"
+                                       Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.Save"
+                                       OnClick="SaveInfoAsync"
+                                       data-testid="profile-save">
+                                @Loc.Get("shared.SaveButton")
+                            </MudButton>
+                        </MudItem>
+                    </MudGrid>
+                </MudForm>
+            </MudTabPanel>
 
-<MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-4" Spacing="2">
-    <MudIcon Icon="@Icons.Material.Filled.AccountTree" Size="Size.Large" Color="Color.Primary" />
-    <div>
-        <MudText Typo="Typo.h5">@_profile.Name</MudText>
-    </div>
-    <MudSpacer />
-    <MudChip T="string"
-             Color="@(_profile.IsActive ? Color.Success : Color.Default)"
-             Size="Size.Small">
-        @(_profile.IsActive ? Loc.Get("shared.Active") : Loc.Get("shared.Inactive"))
-    </MudChip>
-</MudStack>
+        </MudTabs>
+    }
 
-<MudTabs Elevation="1" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pt-4">
-
-    <MudTabPanel Text="@Loc.Get("feature.profile.InfoTab")" Icon="@Icons.Material.Filled.Info">
-        <MudForm @ref="_infoForm">
-            <MudGrid>
-                <MudItem xs="12" sm="6">
-                    <MudTextField @bind-Value="_editName"
-                                  Label="@Loc.Get("feature.profile.NameLabel")"
-                                  Variant="Variant.Outlined"
-                                  Margin="Margin.Dense"
-                                  Required="true"
-                                  Class="mb-3"
-                                  UserAttributes="@(new Dictionary<string, object>{ ["data-testid"] = "profile-name" })" />
-                </MudItem>
-                <MudItem xs="12">
-                    <MudButton Variant="Variant.Filled"
-                               Color="Color.Primary"
-                               StartIcon="@Icons.Material.Filled.Save"
-                               OnClick="SaveInfoAsync"
-                               data-testid="profile-save">
-                        @Loc.Get("shared.SaveButton")
-                    </MudButton>
-                </MudItem>
-            </MudGrid>
-        </MudForm>
-    </MudTabPanel>
-
-</MudTabs>
+</AppShell>
 
 @code {
     [Parameter] public int ProfileId { get; set; }

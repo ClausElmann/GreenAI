@@ -32,10 +32,13 @@ public abstract class E2ETestBase : IAsyncLifetime
     public async ValueTask InitializeAsync()
     {
         _playwright = await Playwright.CreateAsync();
+        var headless = !string.Equals(
+            Environment.GetEnvironmentVariable("E2E_SHOW_BROWSER"), "1",
+            StringComparison.OrdinalIgnoreCase);
         _browser    = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
         {
-            Headless = false,
-            SlowMo   = 150
+            Headless = headless,
+            SlowMo   = headless ? 0 : 150
         });
 
         var context = await _browser.NewContextAsync(new BrowserNewContextOptions

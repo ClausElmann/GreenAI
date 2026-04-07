@@ -25,10 +25,11 @@
                 <MudTd DataLabel="Value">
                     <MudTextField @bind-Value="@_editValues[context.Key]"
                                   Variant="Variant.Text"
+                                  Margin="Margin.Dense"
                                   Immediate="true"
                                   data-testid="@($"setting-{context.Name}-input")" />
                 </MudTd>
-                <MudTd>
+                <MudTd DataLabel="">
                     <MudIconButton Icon="@Icons.Material.Filled.Save"
                                    Color="Color.Primary"
                                    Size="Size.Small"

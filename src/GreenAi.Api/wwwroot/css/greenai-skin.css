@@ -105,19 +105,19 @@
 
 .mud-input-control {
     font-size: var(--font-md) !important; /* 16px — prevents iOS auto-zoom, improves readability */
-    margin-bottom: var(--space-2) !important; /* 8px — consistent vertical gap between stacked form controls */
+    margin-bottom: var(--space-1) !important; /* 4px — tighter vertical rhythm, enterprise density */
 }
 
-/* Input height 44px — reduce MudBlazor default 56px to 44px.
+/* Input height 40px — reduce MudBlazor default 56px to 40px.
    MudBlazor's height comes from .mud-input-slot padding (18.5px top/bottom by default).
-   We override slot padding to 10px → 10+10+24(line-height) = 44px. */
+   We override slot padding to 8px → 8+8+24(line-height) = 40px. */
 .mud-input-root {
-    min-height: 44px !important;
+    min-height: 40px !important;
 }
 
 .mud-input:not(.mud-input-multiline) .mud-input-slot {
-    padding-top: 10px !important;
-    padding-bottom: 10px !important;
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
 }
 
 /* Inner input/textarea: explicit font + balanced vertical padding */
@@ -190,20 +190,7 @@
     letter-spacing: 0 !important;
 }
 
-/* ── MudText overrides ──────────────────────────────────────────────────────── */
-.mud-typography-h5 {
-    font-size: 1.125rem !important;
-    font-weight: 600 !important;
-    color: var(--ga-text) !important;
-    letter-spacing: -0.01em !important;
-}
-
-.mud-typography-h6 {
-    font-size: 1rem !important;
-    font-weight: 600 !important;
-    color: var(--ga-text) !important;
-}
-
+/* ── MudText overrides — h5/h6 canonical scale defined in "Typography scale" section below ── */
 .mud-typography-subtitle2 {
     font-size: var(--ga-font-xs) !important;
     font-weight: 600 !important;
@@ -260,7 +247,7 @@
 /* ── Page title decoration ──────────────────────────────────────────────────── */
 /* AppShell uses MudText Typo.h5 for page titles — enforce enterprise weight */
 .ga-page-title.mud-typography-h5 {
-    font-size: 1.25rem !important;
+    font-size: var(--font-xl) !important; /* 20px = 1.25rem */
     font-weight: 700 !important;
     color: var(--ga-text) !important;
     letter-spacing: -0.02em !important;
@@ -334,7 +321,7 @@
 /* ── Typography scale — enterprise hierarchy ────────────────────────────────── */
 /* AppShell page title — 24px / 700 */
 [data-testid="page-title"].mud-typography-h5 {
-    font-size: 1.5rem !important;    /* 24px */
+    font-size: var(--font-2xl) !important;    /* 24px = 1.5rem */
     font-weight: 700 !important;
     color: var(--ga-text) !important;
     letter-spacing: -0.02em !important;
@@ -344,7 +331,7 @@
 
 /* Section title — 20px / 600 */
 .mud-typography-h6 {
-    font-size: 1.25rem !important;   /* 20px */
+    font-size: var(--font-xl) !important;   /* 20px = 1.25rem */
     font-weight: 600 !important;
     color: var(--ga-text) !important;
     letter-spacing: -0.01em !important;
@@ -352,14 +339,14 @@
 
 /* Card title — 16px / 600 */
 .mud-typography-h5 {
-    font-size: 1rem !important;      /* 16px */
+    font-size: var(--font-md) !important;      /* 16px = 1rem */
     font-weight: 600 !important;
     color: var(--ga-text) !important;
 }
 
 /* Stat value (large number in stat cards) */
 .mud-typography-h4 {
-    font-size: 1.75rem !important;   /* 28px — emphasised metric */
+    font-size: var(--font-display) !important;   /* 28px = 1.75rem — emphasised metric */
     font-weight: 700 !important;
     color: var(--ga-text) !important;
     line-height: 1.1 !important;
@@ -534,7 +521,7 @@
 /* Per spec: 28px / 700 for metrics */
 .stat-card .mud-typography-h4,
 .stat-card .stat-value {
-    font-size: 1.75rem !important;
+    font-size: var(--font-display) !important; /* 28px = 1.75rem — stat metric */
     font-weight: 700 !important;
     line-height: 1 !important;
 }
@@ -549,17 +536,19 @@
 .mud-dialog {
     border-radius: var(--ga-radius-lg) !important;
     box-shadow: var(--ga-shadow-palette) !important;
+    min-width: clamp(440px, 50vw, 640px) !important; /* enterprise modal — not a small popup */
 }
 
 .mud-dialog-title {
-    font-size: 1rem !important;
+    font-size: var(--font-lg) !important; /* 18px — stronger header hierarchy than body */
     font-weight: 600 !important;
     color: var(--ga-text) !important;
-    padding: var(--ga-space-4) var(--ga-space-5) var(--ga-space-3) !important;
+    padding: var(--ga-space-4) var(--ga-space-5) var(--ga-space-4) !important;
+    border-bottom: 1px solid var(--ga-border) !important; /* clear title / content separation */
 }
 
 .mud-dialog-content {
-    padding: 0 var(--ga-space-5) var(--ga-space-4) !important;
+    padding: var(--ga-space-4) var(--ga-space-5) !important; /* uniform top + bottom */
     font-size: var(--ga-font-sm) !important;
 }
 
