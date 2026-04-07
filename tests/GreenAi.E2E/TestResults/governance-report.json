@@ -1,11 +1,23 @@
 {
   "page": "/broadcasting",
   "device": "Desktop",
-  "timestamp": "2026-04-07T09:01:18.2493939Z",
+  "timestamp": "2026-04-07T09:55:39.9624955Z",
   "score": 100,
   "criticalCount": 0,
   "majorCount": 0,
   "minorCount": 0,
+  "dimensions": {
+    "layout": 1,
+    "tokens": 1,
+    "typography": 1,
+    "z-index": 1
+  },
+  "delta": {
+    "previousScore": 100,
+    "currentScore": 100,
+    "scoreDelta": 0,
+    "isRegression": false
+  },
   "rules": [
     {
       "ruleKey": "layout.no_horizontal_overflow",
@@ -17,7 +29,7 @@
       "elements": [],
       "selector": null,
       "selectorType": null,
-      "executionMs": 22
+      "executionMs": 7
     },
     {
       "ruleKey": "tokens.primary_color",
@@ -29,7 +41,7 @@
       "elements": [],
       "selector": null,
       "selectorType": null,
-      "executionMs": 15
+      "executionMs": 5
     },
     {
       "ruleKey": "typography.no_text_overflow",
@@ -41,7 +53,55 @@
       "elements": [],
       "selector": null,
       "selectorType": null,
-      "executionMs": 20
+      "executionMs": 10
+    },
+    {
+      "ruleKey": "layout.topbar_not_clipping",
+      "ruleId": "AssertTopBarNotClippingContentAsync",
+      "ruleName": "TopBarNotClipping",
+      "severity": "major",
+      "passed": true,
+      "message": null,
+      "elements": [],
+      "selector": null,
+      "selectorType": null,
+      "executionMs": 7
+    },
+    {
+      "ruleKey": "z-index.no_overlapping_clickable",
+      "ruleId": "AssertNoOverlappingClickableElementsAsync",
+      "ruleName": "NoOverlappingClickableElements",
+      "severity": "major",
+      "passed": true,
+      "message": null,
+      "elements": [],
+      "selector": null,
+      "selectorType": null,
+      "executionMs": 4
+    },
+    {
+      "ruleKey": "layout.spacing_scale",
+      "ruleId": "AssertSpacingScaleAsync",
+      "ruleName": "SpacingScale",
+      "severity": "minor",
+      "passed": true,
+      "message": null,
+      "elements": [],
+      "selector": null,
+      "selectorType": null,
+      "executionMs": 5
+    },
+    {
+      "ruleKey": "typography.font_scale",
+      "ruleId": "AssertFontScaleAsync",
+      "ruleName": "FontScale",
+      "severity": "minor",
+      "passed": true,
+      "message": null,
+      "elements": [],
+      "selector": null,
+      "selectorType": null,
+      "executionMs": 3
     }
   ]
 }

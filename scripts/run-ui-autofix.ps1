@@ -1,72 +1,95 @@
 # scripts/run-ui-autofix.ps1
-# UI Auto-Fix entrypoint — runs full quality gate loop.
-# See: docs/SSOT/testing/ui-auto-fix-protocol.md
+# UI Governance Loop — Slice 5
+# Reads governance-delta.json after each test run and applies stop conditions.
 #
-# Usage (inline terminal, no .ps1 file needed for one-off runs):
-#   $env:GREENAI_ACCESSIBILITY_GATES="true"
-#   dotnet test tests/GreenAi.E2E --filter "FullyQualifiedName~Visual" -v n
-#
-# This script is the registered entrypoint for the ui_auto_fix tool.
+# Stop conditions (in priority order):
+#   SUCCESS:    score >= 80 AND scoreDelta >= 0
+#   REGRESSION: scoreDelta < 0
+#   STUCK:      scoreDelta == 0 for 2 consecutive iterations
+#   TIMEOUT:    iterations > maxIterations
 
-param(
-    [int]    $MaxIterations = 3,
-    [string] $Filter        = "FullyQualifiedName~Visual",
-    [switch] $Headless
-)
+$maxIterations = 3
+$iteration     = 1
+$stuckCount    = 0
 
-Set-StrictMode -Version Latest
-$ErrorActionPreference = "Stop"
+$deltaPath  = Join-Path $PSScriptRoot "..\tests\GreenAi.E2E\TestResults\governance-delta.json"
+$reportPath = Join-Path $PSScriptRoot "..\tests\GreenAi.E2E\TestResults\governance-report.json"
+$fixPath    = Join-Path $PSScriptRoot "..\tests\GreenAi.E2E\TestResults\copilot-fix-input.json"
 
-$env:GREENAI_ACCESSIBILITY_GATES = "true"
-if ($Headless) { $env:GREENAI_VISUAL_HEADLESS = "true" }
+Write-Host "Starting UI Governance Loop..."
 
-$projectPath  = "c:\Udvikling\green-ai\tests\GreenAi.E2E\GreenAi.E2E.csproj"
-$outputDir    = "c:\Udvikling\green-ai\TestResults\Visual"
-$failuresFile = Join-Path $outputDir "ui-failures.json"
+while ($iteration -le $maxIterations) {
 
-New-Item -ItemType Directory -Force $outputDir | Out-Null
+    Write-Host ""
+    Write-Host "Iteration $iteration"
 
-Write-Host "=== UI Auto-Fix Loop (max $MaxIterations iterations) ===" -ForegroundColor Cyan
+    dotnet test tests/GreenAi.E2E --filter "Category=UIGovernance" --nologo
 
-for ($i = 1; $i -le $MaxIterations; $i++) {
-    Write-Host "`n--- Iteration $i/$MaxIterations ---" -ForegroundColor Yellow
+    if (!(Test-Path $deltaPath)) {
+        Write-Host "Delta file missing"
+        exit 1
+    }
 
-    $logFile = Join-Path $env:TEMP "greenai-ui-autofix-run$i.txt"
-    dotnet test $projectPath --filter $Filter -v n 2>&1 | Tee-Object -FilePath $logFile
-    $exitCode = $LASTEXITCODE
+    $delta      = Get-Content $deltaPath | ConvertFrom-Json
+    $score      = $delta.currentScore
+    $deltaScore = $delta.scoreDelta
 
-    if ($exitCode -eq 0) {
-        Write-Host "`n✅ All visual tests PASSED on iteration $i" -ForegroundColor Green
-        Remove-Item $failuresFile -Force -ErrorAction SilentlyContinue
+    Write-Host "Score: $score (delta: $deltaScore)"
+
+    # ── Generate copilot-fix-input.json ───────────────────────────────────────
+    if (Test-Path $reportPath) {
+        $report   = Get-Content $reportPath | ConvertFrom-Json
+        $failures = $report.rules | Where-Object { $_.passed -eq $false }
+
+        $priorityOrder = @{ "critical" = 1; "major" = 2; "minor" = 3 }
+        $sorted = $failures | Sort-Object { $priorityOrder[$_.severity] }
+
+        $fixTarget = "NONE"
+        if ($sorted.Count -gt 0) {
+            $fixTarget = switch ($sorted[0].severity) {
+                "critical" { "TOP_CRITICAL_FIRST" }
+                "major"    { "TOP_MAJOR_FIRST" }
+                default    { "TOP_MINOR_FIRST" }
+            }
+        }
+
+        $index = 1
+        $fixes = @($sorted | ForEach-Object {
+            $entry = @{ priority = $index; ruleKey = $_.ruleKey; severity = $_.severity; message = $_.message }
+            $index++
+            $entry
+        })
+
+        @{ iteration = $iteration; score = $score; fixTarget = $fixTarget; fixes = $fixes } |
+            ConvertTo-Json -Depth 5 | Set-Content -Path $fixPath
+        Write-Host "Fix input: $fixTarget ($($fixes.Count) failure(s)) → $fixPath"
+    }
+
+    # SUCCESS
+    if ($score -ge 80 -and $deltaScore -ge 0) {
+        Write-Host "SUCCESS"
         exit 0
     }
 
-    Write-Host "`n⚠️  Failures detected on iteration $i — parsing output..." -ForegroundColor Yellow
-
-    # Parse failures from test log into structured JSON
-    $content  = Get-Content $logFile -Raw
-    $failures = @()
-
-    if ($content -match "color-contrast") {
-        $failures += @{ type = "contrast"; selector = ".mud-secondary-text, .mud-text-secondary"; issue = "WCAG AA contrast violation"; suggestedFix = "Ensure palette override in layout after MudThemeProvider" }
-    }
-    if ($content -match "touch target") {
-        $failures += @{ type = "touch-target"; selector = ".mud-button-root, .mud-icon-button"; issue = "Mobile tap target below 44x44px"; suggestedFix = "Add min-height:44px in @media (max-width:768px) in greenai-skin.css" }
-    }
-    if ($content -match "document-title") {
-        $failures += @{ type = "document-title"; selector = "html > head > title"; issue = "Missing <title> element"; suggestedFix = "Add <title>GreenAI</title> in App.razor" }
-    }
-    if ($content -match "Design token violations") {
-        $failures += @{ type = "contrast"; selector = ":root --ga-*"; issue = "CSS design tokens missing or incorrect"; suggestedFix = "Verify app.css is loaded before greenai-skin.css" }
-    }
-    if ($content -match "outline-width") {
-        $failures += @{ type = "focus"; selector = ":focus-visible"; issue = "Focus ring missing or too thin"; suggestedFix = "Add :focus-visible outline rule in greenai-skin.css" }
+    # REGRESSION
+    if ($deltaScore -lt 0) {
+        Write-Host "REGRESSION DETECTED"
+        exit 1
     }
 
-    $failureDoc = @{ generated_at = (Get-Date -Format "o"); iteration = $i; failures = $failures }
-    $failureDoc | ConvertTo-Json -Depth 5 | Set-Content $failuresFile -Encoding UTF8
-    Write-Host "  → Wrote $($failures.Count) failure(s) to $failuresFile"
+    # STUCK DETECTION
+    if ($deltaScore -eq 0) {
+        $stuckCount++
+        if ($stuckCount -ge 2) {
+            Write-Host "STUCK DETECTED"
+            exit 1
+        }
+    } else {
+        $stuckCount = 0
+    }
+
+    $iteration++
 }
 
-Write-Host "`n❌ Still failing after $MaxIterations iterations. See: $failuresFile" -ForegroundColor Red
+Write-Host "MAX ITERATIONS REACHED"
 exit 1

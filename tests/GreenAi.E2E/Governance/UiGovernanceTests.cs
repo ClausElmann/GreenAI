@@ -66,9 +66,26 @@ public sealed class UiGovernanceTests : IAsyncLifetime
         var runner  = new UiGovernanceRunner(_page);
         var results = await runner.RunAsync();
 
-        var (score, critical, major, minor) = GovernanceScorer.Score(results);
+        var (score, critical, major, minor, dimensions) = GovernanceScorer.Score(results);
 
-        await WriteReportAsync(score, critical, major, minor, results);
+        var reportPath = Path.GetFullPath(
+            Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "TestResults", "governance-report.json"));
+
+        int previousScore = -1;
+        if (File.Exists(reportPath))
+        {
+            try
+            {
+                using var doc = JsonDocument.Parse(await File.ReadAllTextAsync(reportPath, TestContext.Current.CancellationToken));
+                previousScore = doc.RootElement.GetProperty("score").GetInt32();
+            }
+            catch { previousScore = -1; }
+        }
+
+        int scoreDelta = previousScore == -1 ? 0 : score - previousScore;
+        var delta = new { previousScore, currentScore = score, scoreDelta, isRegression = scoreDelta < 0 };
+
+        await WriteReportAsync(score, critical, major, minor, dimensions, delta, results, reportPath);
 
         if (score < 80)
             throw new Exception(
@@ -103,7 +120,10 @@ public sealed class UiGovernanceTests : IAsyncLifetime
 
     private static async Task WriteReportAsync(
         int score, int critical, int major, int minor,
-        List<GovernanceRuleResult> rules)
+        Dictionary<string, double> dimensions,
+        object delta,
+        List<GovernanceRuleResult> rules,
+        string reportPath)
     {
         var report = new
         {
@@ -114,19 +134,17 @@ public sealed class UiGovernanceTests : IAsyncLifetime
             criticalCount = critical,
             majorCount    = major,
             minorCount    = minor,
+            dimensions,
+            delta,
             rules,
         };
 
-        var json = JsonSerializer.Serialize(report, new JsonSerializerOptions
-        {
-            WriteIndented  = true,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        });
+        var opts = new JsonSerializerOptions { WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
-        var outPath = Path.GetFullPath(
-            Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "TestResults", "governance-report.json"));
+        Directory.CreateDirectory(Path.GetDirectoryName(reportPath)!);
+        await File.WriteAllTextAsync(reportPath, JsonSerializer.Serialize(report, opts));
 
-        Directory.CreateDirectory(Path.GetDirectoryName(outPath)!);
-        await File.WriteAllTextAsync(outPath, json);
+        var deltaPath = Path.Combine(Path.GetDirectoryName(reportPath)!, "governance-delta.json");
+        await File.WriteAllTextAsync(deltaPath, JsonSerializer.Serialize(delta, opts));
     }
 }

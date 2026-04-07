@@ -9,7 +9,7 @@ namespace GreenAi.E2E.Governance;
 /// </summary>
 public static class GovernanceScorer
 {
-    public static (int Score, int Critical, int Major, int Minor) Score(
+    public static (int Score, int Critical, int Major, int Minor, Dictionary<string, double> Dimensions) Score(
         List<GovernanceRuleResult> results)
     {
         int maxScore    = 0;
@@ -43,6 +43,37 @@ public static class GovernanceScorer
         }
 
         var score = maxScore == 0 ? 100 : (int)Math.Round((double)earnedScore / maxScore * 100);
-        return (score, critical, major, minor);
+        var dimensions = CalculateDimensions(results);
+        return (score, critical, major, minor, dimensions);
     }
+
+    public static Dictionary<string, double> CalculateDimensions(List<GovernanceRuleResult> results)
+    {
+        return results
+            .GroupBy(r => GetCategory(r.RuleKey))
+            .ToDictionary(
+                g => g.Key,
+                g =>
+                {
+                    int max    = 0;
+                    int earned = 0;
+                    foreach (var r in g)
+                    {
+                        int w = GetWeight(r.Severity);
+                        max    += w;
+                        if (r.Passed) earned += w;
+                    }
+                    return max == 0 ? 1.0 : (double)earned / max;
+                });
+    }
+
+    private static string GetCategory(string ruleKey) => ruleKey.Split('.')[0];
+
+    private static int GetWeight(string severity) => severity switch
+    {
+        "critical" => 50,
+        "major"    => 15,
+        "minor"    => 5,
+        _          => 0,
+    };
 }
